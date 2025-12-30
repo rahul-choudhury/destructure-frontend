@@ -52,21 +52,7 @@ async function fetchApi<T>(
   url: string,
   options: RequestOptions = {},
 ): Promise<ApiResponse<T>> {
-  const {
-    method = "GET",
-    headers = {},
-    body,
-    cookie,
-    params,
-    cache = "no-store",
-    next,
-  } = options;
-
-  // Get cookies from the request when running on server
-  let cookieHeader = cookie;
-  if (typeof window === "undefined" && !cookie) {
-    cookieHeader = await getServerCookies();
-  }
+  const { method = "GET", headers = {}, body, params, cache, next } = options;
 
   const fullUrl = buildUrlWithParams(`${API_URL}${url}`, params);
 
@@ -76,7 +62,6 @@ async function fetchApi<T>(
       "Content-Type": "application/json",
       Accept: "application/json",
       ...headers,
-      ...(cookieHeader ? { Cookie: cookieHeader } : {}),
     },
     body: body ? JSON.stringify(body) : undefined,
     credentials: "include",
