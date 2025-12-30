@@ -2,6 +2,13 @@ import { api } from "@/lib/api-client";
 import { Blog } from "@/lib/definitions";
 import { formatDate } from "@/lib/utils";
 
+export async function generateStaticParams() {
+  const blogs = await api.get<Blog[]>("/api/blogs");
+  return blogs.data.map((blog) => ({
+    slug: blog.slug,
+  }));
+}
+
 export default async function Page({
   params,
 }: {
