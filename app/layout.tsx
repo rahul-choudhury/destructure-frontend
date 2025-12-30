@@ -30,9 +30,9 @@ export default function RootLayout({
       <body
         className={`${inter.className} ${firaCode.variable} ${instrumentSerif.variable} antialiased root`}
       >
-        <div className="grid grid-cols-[1fr_minmax(auto,700px)_1fr] gap-x-4 *:col-start-2">
+        <main className="grid grid-cols-[1fr_minmax(auto,700px)_1fr] gap-x-4 *:col-start-2">
           {children}
-        </div>
+        </main>
       </body>
     </html>
   );

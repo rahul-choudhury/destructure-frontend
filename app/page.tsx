@@ -8,7 +8,7 @@ export default async function Home() {
   const { data: blogs } = await api.get<Blog[]>("/api/blogs");
   return (
     <>
-      <h1 className="font-serif text-6xl pt-30 md:pt-40 mb-4">
+      <h1 className="font-serif text-6xl pt-10 md:pt-40 mb-4">
         <span className="text-accent mr-2">*</span>
         destructure
       </h1>

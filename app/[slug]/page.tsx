@@ -12,7 +12,7 @@ export default async function Page({
 
   return (
     <>
-      <h1 className="font-serif text-6xl pt-30 md:pt-40 mb-4">
+      <h1 className="font-serif text-6xl pt-10 md:pt-40 mb-4">
         <span className="text-accent mr-2">*</span>
         {blog.title}
       </h1>
@@ -20,7 +20,10 @@ export default async function Page({
         <p>{formatDate(blog.createdAt)}</p>
         <p>~ {blog.author.name}</p>
       </div>
-      <article>{blog.content}</article>
+      <article
+        className="blog-content pb-10 min-w-0"
+        dangerouslySetInnerHTML={{ __html: blog.content }}
+      />
     </>
   );
 }
