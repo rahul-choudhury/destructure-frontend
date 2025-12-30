@@ -16,6 +16,7 @@ export type Blog = {
   title: string;
   banner: string | null;
   description: string;
+  content: string;
   author: User;
   coAuthor: User | null;
   comments: number;
