@@ -30,7 +30,10 @@ export default async function Home() {
               {blog.title.toLowerCase()}
             </h2>
             <div className="flex items-center justify-between mt-2 text-sm text-foreground/50">
-              <span>~{blog.author.name.toLowerCase()} • {formatDate(blog.createdAt).toLowerCase()}</span>
+              <span>
+                ~{blog.author.name.toLowerCase()} •{" "}
+                {formatDate(blog.createdAt).toLowerCase()}
+              </span>
             </div>
           </Link>
         ))}
