@@ -2,21 +2,23 @@ import { PageTitle } from "@/components/page-title";
 import { api } from "@/lib/api-client";
 import { Blog } from "@/lib/definitions";
 import { formatDate } from "@/lib/utils";
-
-export async function generateStaticParams() {
-  const blogs = await api.get<Blog[]>("/api/blogs");
-  return blogs.data.map((blog) => ({
-    slug: blog.slug,
-  }));
-}
+import { getTokenFromCookie } from "@/lib/utils.server";
 
 export default async function Page({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const token = await getTokenFromCookie();
   const { slug } = await params;
-  const { data: blog } = await api.get<Blog>(`/api/blogs/details?slug=${slug}`);
+  const { data: blog } = await api.get<Blog>(
+    `/api/blogs/details?slug=${slug}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
 
   return (
     <>

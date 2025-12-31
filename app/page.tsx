@@ -1,4 +1,5 @@
 import { Kbd } from "@/components/kbd";
+import { PageTitle } from "@/components/page-title";
 import { api } from "@/lib/api-client";
 import { Blog } from "@/lib/definitions";
 import { formatDate } from "@/lib/utils";
@@ -8,10 +9,7 @@ export default async function Home() {
   const { data: blogs } = await api.get<Blog[]>("/api/blogs");
   return (
     <>
-      <h1 className="font-serif text-6xl pt-10 md:pt-40 mb-4">
-        <span className="text-accent mr-2">*</span>
-        destructure
-      </h1>
+      <PageTitle>destructure</PageTitle>
       <div className="md:flex items-center gap-2 hidden text-foreground/50 text-sm mb-8">
         <p>
           press <Kbd>/</Kbd> to search
@@ -32,8 +30,7 @@ export default async function Home() {
               {blog.title.toLowerCase()}
             </h2>
             <div className="flex items-center justify-between mt-2 text-sm text-foreground/50">
-              <span>~ {blog.author.name.toLowerCase()}</span>
-              <span>{formatDate(blog.createdAt).toLowerCase()}</span>
+              <span>~{blog.author.name.toLowerCase()} • {formatDate(blog.createdAt).toLowerCase()}</span>
             </div>
           </Link>
         ))}
