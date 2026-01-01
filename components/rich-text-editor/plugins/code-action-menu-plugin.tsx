@@ -1,20 +1,21 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $isCodeNode, CodeNode } from "@lexical/code";
 import { loadCodeLanguage } from "@lexical/code-shiki";
 import { $getNodeByKey, $getSelection, $isRangeSelection } from "lexical";
 import { $getNearestNodeOfType } from "@lexical/utils";
-import { ChevronDown } from "lucide-react";
+import { Select } from "@base-ui/react/select";
+import { ChevronDown, Check } from "lucide-react";
 
-const CODE_LANGUAGE_OPTIONS: [string, string][] = [
-  ["javascript", "JavaScript"],
-  ["typescript", "TypeScript"],
-  ["go", "Go"],
-  ["python", "Python"],
-  ["java", "Java"],
+const CODE_LANGUAGE_OPTIONS = [
+  { value: "javascript", label: "JavaScript" },
+  { value: "typescript", label: "TypeScript" },
+  { value: "go", label: "Go" },
+  { value: "python", label: "Python" },
+  { value: "java", label: "Java" },
 ];
 
 function CodeActionMenu({
@@ -28,19 +29,10 @@ function CodeActionMenu({
   currentLanguage: string;
   onLanguageChange: (language: string) => void;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
   const [position, setPosition] = useState<{
     top: number;
     right: number;
   } | null>({ top: 0, right: 0 });
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  const currentLabel = useMemo(() => {
-    const option = CODE_LANGUAGE_OPTIONS.find(
-      ([value]) => value === currentLanguage,
-    );
-    return option ? option[1] : currentLanguage;
-  }, [currentLanguage]);
 
   useEffect(() => {
     const updatePosition = () => {
@@ -73,61 +65,44 @@ function CodeActionMenu({
     };
   }, [codeElement, anchorElement]);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen]);
-
   if (!position) {
     return null;
   }
 
   return (
     <div
-      ref={menuRef}
       className="absolute z-10"
       style={{ top: position.top, right: position.right }}
     >
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1 rounded bg-foreground/10 px-2 py-1 text-xs text-foreground/60 transition-colors hover:bg-foreground/20 hover:text-foreground"
+      <Select.Root
+        value={currentLanguage}
+        onValueChange={onLanguageChange}
       >
-        {currentLabel}
-        <ChevronDown size={12} />
-      </button>
-      {isOpen && (
-        <div className="absolute right-0 top-full mt-1 max-h-64 w-40 overflow-y-auto rounded-md border border-foreground/20 bg-background shadow-lg">
-          {CODE_LANGUAGE_OPTIONS.map(([value, label]) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => {
-                onLanguageChange(value);
-                setIsOpen(false);
-              }}
-              className={`w-full px-3 py-1.5 text-left text-sm transition-colors hover:bg-foreground/10 ${
-                value === currentLanguage
-                  ? "bg-foreground/10 text-accent"
-                  : "text-foreground/70"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      )}
+        <Select.Trigger className="flex items-center gap-1 rounded bg-foreground/10 px-2 py-1 text-xs text-foreground/60 transition-colors hover:bg-foreground/20 hover:text-foreground focus:outline-none">
+          <Select.Value>
+            {(value) => CODE_LANGUAGE_OPTIONS.find((opt) => opt.value === value)?.label ?? value}
+          </Select.Value>
+          <ChevronDown size={12} />
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Positioner sideOffset={4} align="end" alignItemWithTrigger={false}>
+            <Select.Popup className="max-h-64 w-40 overflow-y-auto rounded-md border border-foreground/20 bg-background shadow-lg origin-(--transform-origin) transition-all duration-150 data-starting-style:opacity-0 data-starting-style:scale-95 data-ending-style:opacity-0 data-ending-style:scale-95">
+              {CODE_LANGUAGE_OPTIONS.map((option) => (
+                <Select.Item
+                  key={option.value}
+                  value={option.value}
+                  className="flex items-center justify-between px-3 py-1.5 text-sm text-foreground/70 transition-colors outline-none data-[highlighted]:bg-foreground/10 data-[selected]:text-accent"
+                >
+                  <Select.ItemText>{option.label}</Select.ItemText>
+                  <Select.ItemIndicator>
+                    <Check size={14} />
+                  </Select.ItemIndicator>
+                </Select.Item>
+              ))}
+            </Select.Popup>
+          </Select.Positioner>
+        </Select.Portal>
+      </Select.Root>
     </div>
   );
 }
