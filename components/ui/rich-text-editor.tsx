@@ -268,7 +268,7 @@ export function RichTextEditor({
   return (
     <div
       className={cn(
-        "min-h-64 w-full rounded-md border border-foreground/20 bg-transparent text-sm text-foreground focus-within:outline-2 focus-within:outline-accent focus-within:-outline-offset-1",
+        "w-full rounded-md border border-foreground/20 bg-transparent text-sm text-foreground focus-within:outline-2 focus-within:outline-accent focus-within:-outline-offset-1",
         className,
       )}
     >
@@ -280,7 +280,7 @@ export function RichTextEditor({
               <ContentEditable
                 id={id}
                 aria-labelledby={ariaLabelledby}
-                className="min-h-64 px-3 py-2 outline-none"
+                className="h-64 overflow-y-auto px-3 py-2 outline-none"
               />
             }
             placeholder={
