@@ -17,3 +17,24 @@ export async function checkSlugUniqueness(slug: string) {
     return false;
   }
 }
+
+export async function generateUniqueSlug(title: string) {
+  const token = await getTokenFromCookie();
+
+  // NOTE: manual delay to actually let the spinner spin
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
+  try {
+    const res = await api.get<{ slug: string }>(
+      `/api/admin/slug/generate?title=${title}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    return res.data.slug;
+  } catch {
+    return undefined;
+  }
+}
