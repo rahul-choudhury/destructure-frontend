@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fira_Code, Instrument_Serif, Inter } from "next/font/google";
 import "./globals.css";
+import Script from "next/script";
 
 const instrumentSerif = Instrument_Serif({
   variable: "--font-serif",
@@ -27,6 +28,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {process.env.NODE_ENV === "development" && (
+          <Script
+            src="//unpkg.com/react-grab/dist/index.global.js"
+            crossOrigin="anonymous"
+            strategy="beforeInteractive"
+          />
+        )}
+      </head>
       <body
         className={`${inter.className} ${firaCode.variable} ${instrumentSerif.variable} antialiased root`}
       >
