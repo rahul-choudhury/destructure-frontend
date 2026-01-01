@@ -22,7 +22,7 @@ export async function generateUniqueSlug(title: string) {
   const token = await getTokenFromCookie();
 
   // NOTE: manual delay to actually let the spinner spin
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 300));
 
   try {
     const res = await api.get<{ slug: string }>(
