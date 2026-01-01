@@ -1,41 +1,73 @@
 "use client";
 
-import { useState } from "react";
-import { Field } from "@base-ui/react/field";
-import { Input } from "@/components/ui/input";
+import { useState, useMemo } from "react";
+import { checkSlugUniqueness } from "@/lib/actions";
+import { debounce } from "@/lib/utils";
+import { Field } from "@/components/ui/field";
 import { RichTextEditor } from "@/components/rich-text-editor";
 import { PageTitle } from "@/components/page-title";
 
 export default function Page() {
   const [content, setContent] = useState("");
+  const [slug, setSlug] = useState("");
+  const [slugError, setSlugError] = useState("");
+  const [isCheckingSlug, setIsCheckingSlug] = useState(false);
+
+  const checkSlug = useMemo(
+    () =>
+      debounce(async (value: string) => {
+        if (!value) {
+          setSlugError("");
+          setIsCheckingSlug(false);
+          return;
+        }
+
+        setIsCheckingSlug(true);
+        const isUnique = await checkSlugUniqueness(value);
+        setIsCheckingSlug(false);
+
+        if (!isUnique) {
+          setSlugError("This slug is already in use");
+        } else {
+          setSlugError("");
+        }
+      }),
+    [],
+  );
+
+  const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSlug(value);
+    setSlugError("");
+    setIsCheckingSlug(true);
+    checkSlug(value);
+  };
 
   return (
     <>
       <PageTitle>New Blog</PageTitle>
       <form className="mt-8 max-w-2xl space-y-6 pb-10">
-        <Field.Root className="flex flex-col items-start gap-1.5">
-          <Field.Label className="text-sm font-medium text-foreground">
-            Title
-          </Field.Label>
-          <Field.Control
-            render={(props) => (
-              <Input {...props} placeholder="Blog post title" name="title" />
-            )}
-          />
-        </Field.Root>
+        <Field>
+          <Field.Label htmlFor="title">Title</Field.Label>
+          <Field.Input id="title" placeholder="Blog post title" name="title" />
+        </Field>
 
-        <Field.Root className="flex flex-col items-start gap-1.5">
-          <Field.Label className="text-sm font-medium text-foreground">
-            Slug
-          </Field.Label>
-          <Field.Control
-            render={(props) => (
-              <Input {...props} placeholder="blog-post-slug" name="slug" />
-            )}
+        <Field>
+          <Field.Label htmlFor="slug">Slug</Field.Label>
+          <Field.Input
+            id="slug"
+            name="slug"
+            placeholder="blog-post-slug"
+            value={slug}
+            onChange={handleSlugChange}
+            aria-invalid={!!slugError}
+            aria-describedby={slugError ? "slug-error" : undefined}
+            aria-busy={isCheckingSlug}
           />
-        </Field.Root>
+          {slugError && <Field.Error id="slug-error">{slugError}</Field.Error>}
+        </Field>
 
-        <div className="flex flex-col items-start gap-1.5">
+        <Field>
           <span
             id="content-label"
             className="text-sm font-medium text-foreground cursor-default"
@@ -50,7 +82,7 @@ export default function Page() {
             onChange={setContent}
           />
           <input type="hidden" name="content" value={content} />
-        </div>
+        </Field>
 
         <button
           type="submit"
