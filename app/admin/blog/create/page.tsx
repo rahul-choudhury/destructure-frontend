@@ -1,10 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { Field } from "@base-ui/react/field";
 import { Input } from "@/components/ui/input";
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 import { PageTitle } from "@/components/page-title";
 
 export default function Page() {
+  const [content, setContent] = useState("");
+
   return (
     <>
       <PageTitle>New Blog</PageTitle>
@@ -35,16 +39,11 @@ export default function Page() {
           <Field.Label className="text-sm font-medium text-foreground">
             Content
           </Field.Label>
-          <Field.Control
-            render={(props) => (
-              <textarea
-                {...props}
-                className="h-64 w-full rounded-md border border-foreground/20 bg-transparent px-3 py-2 text-sm text-foreground placeholder:text-foreground/40 focus:outline-2 focus:outline-accent focus:-outline-offset-1 resize-none"
-                placeholder="Blog post content..."
-                name="content"
-              />
-            )}
+          <RichTextEditor
+            placeholder="Blog post content..."
+            onChange={setContent}
           />
+          <input type="hidden" name="content" value={content} />
         </Field.Root>
 
         <button
