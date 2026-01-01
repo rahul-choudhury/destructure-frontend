@@ -227,15 +227,19 @@ function OnChangePlugin({ onChange }: { onChange?: (html: string) => void }) {
 }
 
 export type RichTextEditorProps = {
+  id?: string;
   className?: string;
   placeholder?: string;
   onChange?: (html: string) => void;
+  "aria-labelledby"?: string;
 };
 
 export function RichTextEditor({
+  id,
   className,
   placeholder = "Start writing...",
   onChange,
+  "aria-labelledby": ariaLabelledby,
 }: RichTextEditorProps) {
   const initialConfig = {
     namespace: "BlogEditor",
@@ -273,7 +277,11 @@ export function RichTextEditor({
         <div className="relative">
           <RichTextPlugin
             contentEditable={
-              <ContentEditable className="min-h-64 px-3 py-2 outline-none" />
+              <ContentEditable
+                id={id}
+                aria-labelledby={ariaLabelledby}
+                className="min-h-64 px-3 py-2 outline-none"
+              />
             }
             placeholder={
               <div className="pointer-events-none absolute left-3 top-2 text-foreground/40">

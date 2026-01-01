@@ -35,16 +35,22 @@ export default function Page() {
           />
         </Field.Root>
 
-        <Field.Root className="flex flex-col items-start gap-1.5">
-          <Field.Label className="text-sm font-medium text-foreground">
+        <div className="flex flex-col items-start gap-1.5">
+          <span
+            id="content-label"
+            className="text-sm font-medium text-foreground cursor-default"
+            onClick={() => document.getElementById("content-editor")?.focus()}
+          >
             Content
-          </Field.Label>
+          </span>
           <RichTextEditor
+            id="content-editor"
+            aria-labelledby="content-label"
             placeholder="Blog post content..."
             onChange={setContent}
           />
           <input type="hidden" name="content" value={content} />
-        </Field.Root>
+        </div>
 
         <button
           type="submit"
