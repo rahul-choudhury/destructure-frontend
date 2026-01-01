@@ -3,18 +3,21 @@
 import { RefreshCcw } from "lucide-react";
 import { Tooltip } from "@base-ui/react/tooltip";
 
-import { useState, useMemo, useTransition } from "react";
+import { useRef, useState, useMemo, useTransition, FormEvent } from "react";
 import { checkSlugUniqueness, generateUniqueSlug } from "@/lib/actions";
 import { cn, debounce } from "@/lib/utils";
 import { Field } from "@/components/ui/field";
-import { RichTextEditor } from "@/components/rich-text-editor";
+import {
+  RichTextEditor,
+  type RichTextEditorRef,
+} from "@/components/rich-text-editor";
 import { PageTitle } from "@/components/page-title";
 
 export default function Page() {
+  const editorRef = useRef<RichTextEditorRef>(null);
   const [values, setValues] = useState({
     title: "",
     slug: "",
-    content: "",
   });
   const [slugError, setSlugError] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -58,14 +61,25 @@ export default function Page() {
     setValues((prev) => ({ ...prev, title: e.target.value }));
   };
 
-  const handleContentChange = (value: string) => {
-    setValues((prev) => ({ ...prev, content: value }));
+  const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const content = editorRef.current?.getHtml();
+    if (!content) {
+      return;
+    }
+
+    const data = { ...values, content };
+    console.log(data);
   };
 
   return (
     <Tooltip.Provider>
       <PageTitle>New Blog</PageTitle>
-      <form className="mt-8 max-w-2xl space-y-6 pb-10">
+      <form
+        className="mt-8 max-w-2xl space-y-6 pb-10"
+        onSubmit={handleFormSubmit}
+      >
         <Field>
           <Field.Label htmlFor="title">Title</Field.Label>
           <Field.Input
@@ -74,6 +88,7 @@ export default function Page() {
             placeholder="Blog post title"
             value={values.title}
             onChange={handleTitleChange}
+            required
           />
         </Field>
 
@@ -89,6 +104,7 @@ export default function Page() {
               aria-invalid={!!slugError}
               aria-describedby={slugError ? "slug-error" : undefined}
               className="pr-10"
+              required
             />
             {values.title && slugError && (
               <Tooltip.Root>
@@ -131,12 +147,11 @@ export default function Page() {
             Content
           </span>
           <RichTextEditor
+            ref={editorRef}
             id="content-editor"
             aria-labelledby="content-label"
             placeholder="Blog post content..."
-            onChange={handleContentChange}
           />
-          <input type="hidden" name="content" value={values.content} />
         </Field>
 
         <button

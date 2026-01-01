@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useImperativeHandle, useState } from "react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -223,28 +223,39 @@ function RestrictHeadingsPlugin() {
   return null;
 }
 
-function OnChangePlugin({ onChange }: { onChange?: (html: string) => void }) {
+function EditorRefPlugin({
+  editorRef,
+}: {
+  editorRef?: React.Ref<RichTextEditorRef>;
+}) {
   const [editor] = useLexicalComposerContext();
 
-  useEffect(() => {
-    if (!onChange) return;
-
-    return editor.registerUpdateListener(({ editorState }) => {
-      editorState.read(() => {
-        const html = $generateHtmlFromNodes(editor);
-        onChange(html);
-      });
-    });
-  }, [editor, onChange]);
+  useImperativeHandle(
+    editorRef,
+    () => ({
+      getHtml: () => {
+        let html = "";
+        editor.getEditorState().read(() => {
+          html = $generateHtmlFromNodes(editor);
+        });
+        return html.replace(/\s*class="[^"]*"/g, "");
+      },
+    }),
+    [editor],
+  );
 
   return null;
 }
+
+export type RichTextEditorRef = {
+  getHtml: () => string;
+};
 
 export type RichTextEditorProps = {
   id?: string;
   className?: string;
   placeholder?: string;
-  onChange?: (html: string) => void;
+  ref?: React.Ref<RichTextEditorRef>;
   "aria-labelledby"?: string;
 };
 
@@ -252,7 +263,7 @@ export function RichTextEditor({
   id,
   className,
   placeholder = "Start writing...",
-  onChange,
+  ref,
   "aria-labelledby": ariaLabelledby,
 }: RichTextEditorProps) {
   const [floatingAnchorElem, setFloatingAnchorElem] =
@@ -280,13 +291,6 @@ export function RichTextEditor({
       console.error("Lexical error:", error);
     },
   };
-
-  const handleChange = useCallback(
-    (html: string) => {
-      onChange?.(html);
-    },
-    [onChange],
-  );
 
   return (
     <div
@@ -318,7 +322,7 @@ export function RichTextEditor({
         <ListPlugin />
         <LinkPlugin />
         <RestrictHeadingsPlugin />
-        <OnChangePlugin onChange={handleChange} />
+        <EditorRefPlugin editorRef={ref} />
         <CodeHighlightPlugin />
         {floatingAnchorElem && (
           <CodeActionMenuPlugin anchorElem={floatingAnchorElem} />
