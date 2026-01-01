@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -10,10 +10,38 @@ import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $generateHtmlFromNodes } from "@lexical/html";
-import { HeadingNode, QuoteNode, $createHeadingNode } from "@lexical/rich-text";
-import { ListNode, ListItemNode } from "@lexical/list";
+import {
+  HeadingNode,
+  QuoteNode,
+  $createHeadingNode,
+  $isHeadingNode,
+} from "@lexical/rich-text";
+import {
+  ListNode,
+  ListItemNode,
+  INSERT_UNORDERED_LIST_COMMAND,
+  INSERT_ORDERED_LIST_COMMAND,
+  $isListNode,
+} from "@lexical/list";
 import { LinkNode } from "@lexical/link";
 import { CodeNode, CodeHighlightNode } from "@lexical/code";
+import { $setBlocksType } from "@lexical/selection";
+import {
+  $getSelection,
+  $isRangeSelection,
+  FORMAT_TEXT_COMMAND,
+} from "lexical";
+import { $getNearestNodeOfType } from "@lexical/utils";
+import { Toggle } from "@base-ui/react/toggle";
+import {
+  Bold,
+  Italic,
+  Heading2,
+  Heading3,
+  List,
+  ListOrdered,
+  Code,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const editorTheme = {
@@ -41,6 +69,130 @@ const editorTheme = {
   code: "bg-foreground/5 p-4 rounded-lg overflow-x-auto mb-6 font-mono text-sm text-foreground block",
   quote: "border-l-4 border-foreground/20 pl-4 italic text-foreground/60 mb-5",
 };
+
+const toolbarButtonClass =
+  "p-2 rounded text-foreground/60 hover:text-foreground hover:bg-foreground/10 focus:outline-2 focus:outline-accent focus:-outline-offset-1 data-[pressed]:text-accent data-[pressed]:bg-foreground/10";
+
+function ToolbarPlugin() {
+  const [editor] = useLexicalComposerContext();
+  const [isBold, setIsBold] = useState(false);
+  const [isItalic, setIsItalic] = useState(false);
+  const [isCode, setIsCode] = useState(false);
+  const [headingTag, setHeadingTag] = useState<string | null>(null);
+  const [listType, setListType] = useState<string | null>(null);
+
+  useEffect(() => {
+    return editor.registerUpdateListener(({ editorState }) => {
+      editorState.read(() => {
+        const selection = $getSelection();
+        if (!$isRangeSelection(selection)) return;
+
+        setIsBold(selection.hasFormat("bold"));
+        setIsItalic(selection.hasFormat("italic"));
+        setIsCode(selection.hasFormat("code"));
+
+        const anchorNode = selection.anchor.getNode();
+        const element =
+          anchorNode.getKey() === "root"
+            ? anchorNode
+            : anchorNode.getTopLevelElementOrThrow();
+
+        if ($isHeadingNode(element)) {
+          setHeadingTag(element.getTag());
+        } else {
+          setHeadingTag(null);
+        }
+
+        const listNode = $getNearestNodeOfType(anchorNode, ListNode);
+        if ($isListNode(listNode)) {
+          setListType(listNode.getListType());
+        } else {
+          setListType(null);
+        }
+      });
+    });
+  }, [editor]);
+
+  const formatHeading = (tag: "h2" | "h3") => {
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        $setBlocksType(selection, () => $createHeadingNode(tag));
+      }
+    });
+  };
+
+  return (
+    <div className="flex gap-1 border-b border-foreground/20 p-2">
+      <Toggle
+        aria-label="Bold"
+        className={toolbarButtonClass}
+        pressed={isBold}
+        onPressedChange={() =>
+          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "bold")
+        }
+      >
+        <Bold size={18} />
+      </Toggle>
+      <Toggle
+        aria-label="Italic"
+        className={toolbarButtonClass}
+        pressed={isItalic}
+        onPressedChange={() =>
+          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "italic")
+        }
+      >
+        <Italic size={18} />
+      </Toggle>
+      <Toggle
+        aria-label="Heading 2"
+        className={toolbarButtonClass}
+        pressed={headingTag === "h2"}
+        onPressedChange={() => formatHeading("h2")}
+      >
+        <Heading2 size={18} />
+      </Toggle>
+      <Toggle
+        aria-label="Heading 3"
+        className={toolbarButtonClass}
+        pressed={headingTag === "h3"}
+        onPressedChange={() => formatHeading("h3")}
+      >
+        <Heading3 size={18} />
+      </Toggle>
+      <Toggle
+        aria-label="Bullet List"
+        className={toolbarButtonClass}
+        pressed={listType === "bullet"}
+        onPressedChange={() =>
+          editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
+        }
+      >
+        <List size={18} />
+      </Toggle>
+      <Toggle
+        aria-label="Numbered List"
+        className={toolbarButtonClass}
+        pressed={listType === "number"}
+        onPressedChange={() =>
+          editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
+        }
+      >
+        <ListOrdered size={18} />
+      </Toggle>
+      <Toggle
+        aria-label="Inline Code"
+        className={toolbarButtonClass}
+        pressed={isCode}
+        onPressedChange={() =>
+          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code")
+        }
+      >
+        <Code size={18} />
+      </Toggle>
+    </div>
+  );
+}
 
 function RestrictHeadingsPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -117,6 +269,7 @@ export function RichTextEditor({
       )}
     >
       <LexicalComposer initialConfig={initialConfig}>
+        <ToolbarPlugin />
         <div className="relative">
           <RichTextPlugin
             contentEditable={
