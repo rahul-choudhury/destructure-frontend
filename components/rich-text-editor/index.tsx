@@ -24,12 +24,7 @@ import {
   $isListNode,
 } from "@lexical/list";
 import { LinkNode } from "@lexical/link";
-import {
-  CodeNode,
-  CodeHighlightNode,
-  $createCodeNode,
-  $isCodeNode,
-} from "@lexical/code";
+import { CodeNode, CodeHighlightNode, $createCodeNode } from "@lexical/code";
 import { $setBlocksType } from "@lexical/selection";
 import {
   $createParagraphNode,
@@ -51,6 +46,7 @@ import {
 import { cn } from "@/lib/utils";
 import { CodeHighlightPlugin } from "./plugins/code-highlight-plugin";
 import { CodeActionMenuPlugin } from "./plugins/code-action-menu-plugin";
+import { useCodeBlockState } from "./hooks/use-code-block-state";
 
 const editorTheme = {
   paragraph: "text-foreground/70 mb-5",
@@ -85,9 +81,9 @@ function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
-  const [isCodeBlock, setIsCodeBlock] = useState(false);
   const [headingTag, setHeadingTag] = useState<string | null>(null);
   const [listType, setListType] = useState<string | null>(null);
+  const { isCodeBlock } = useCodeBlockState();
 
   useEffect(() => {
     return editor.registerUpdateListener(({ editorState }) => {
@@ -116,9 +112,6 @@ function ToolbarPlugin() {
         } else {
           setListType(null);
         }
-
-        const codeNode = $getNearestNodeOfType(anchorNode, CodeNode);
-        setIsCodeBlock($isCodeNode(codeNode));
       });
     });
   }, [editor]);

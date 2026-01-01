@@ -3,12 +3,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $isCodeNode, CodeNode } from "@lexical/code";
+import { $isCodeNode } from "@lexical/code";
 import { loadCodeLanguage } from "@lexical/code-shiki";
-import { $getNodeByKey, $getSelection, $isRangeSelection } from "lexical";
-import { $getNearestNodeOfType } from "@lexical/utils";
+import { $getNodeByKey } from "lexical";
 import { Select } from "@base-ui/react/select";
 import { ChevronDown, Check } from "lucide-react";
+import { useCodeBlockState } from "../hooks/use-code-block-state";
 
 const CODE_LANGUAGE_OPTIONS = [
   { value: "javascript", label: "JavaScript" },
@@ -27,7 +27,7 @@ function CodeActionMenu({
   codeElement: HTMLElement;
   anchorElement: HTMLElement;
   currentLanguage: string;
-  onLanguageChange: (language: string) => void;
+  onLanguageChange: (language: string | null) => void;
 }) {
   const [position, setPosition] = useState<{
     top: number;
@@ -71,27 +71,31 @@ function CodeActionMenu({
 
   return (
     <div
-      className="absolute z-10"
+      className="absolute"
       style={{ top: position.top, right: position.right }}
     >
-      <Select.Root
-        value={currentLanguage}
-        onValueChange={onLanguageChange}
-      >
+      <Select.Root value={currentLanguage} onValueChange={onLanguageChange}>
         <Select.Trigger className="flex items-center gap-1 rounded bg-foreground/10 px-2 py-1 text-xs text-foreground/60 transition-colors hover:bg-foreground/20 hover:text-foreground focus:outline-none">
           <Select.Value>
-            {(value) => CODE_LANGUAGE_OPTIONS.find((opt) => opt.value === value)?.label ?? value}
+            {(value) =>
+              CODE_LANGUAGE_OPTIONS.find((opt) => opt.value === value)?.label ??
+              value
+            }
           </Select.Value>
           <ChevronDown size={12} />
         </Select.Trigger>
         <Select.Portal>
-          <Select.Positioner sideOffset={4} align="end" alignItemWithTrigger={false}>
+          <Select.Positioner
+            sideOffset={4}
+            align="end"
+            alignItemWithTrigger={false}
+          >
             <Select.Popup className="max-h-64 w-40 overflow-y-auto rounded-md border border-foreground/20 bg-background shadow-lg origin-(--transform-origin) transition-all duration-150 data-starting-style:opacity-0 data-starting-style:scale-95 data-ending-style:opacity-0 data-ending-style:scale-95">
               {CODE_LANGUAGE_OPTIONS.map((option) => (
                 <Select.Item
                   key={option.value}
                   value={option.value}
-                  className="flex items-center justify-between px-3 py-1.5 text-sm text-foreground/70 transition-colors outline-none data-[highlighted]:bg-foreground/10 data-[selected]:text-accent"
+                  className="flex items-center justify-between px-3 py-1.5 text-sm text-foreground/70 transition-colors outline-none data-highlighted:bg-foreground/10 data-selected:text-accent"
                 >
                   <Select.ItemText>{option.label}</Select.ItemText>
                   <Select.ItemIndicator>
@@ -113,42 +117,11 @@ export function CodeActionMenuPlugin({
   anchorElem: HTMLElement;
 }) {
   const [editor] = useLexicalComposerContext();
-  const [codeElement, setCodeElement] = useState<HTMLElement | null>(null);
-  const [codeNodeKey, setCodeNodeKey] = useState<string | null>(null);
-  const [currentLanguage, setCurrentLanguage] = useState<string>("javascript");
-
-  useEffect(() => {
-    return editor.registerUpdateListener(({ editorState }) => {
-      editorState.read(() => {
-        const selection = $getSelection();
-        if (!$isRangeSelection(selection)) {
-          setCodeElement(null);
-          setCodeNodeKey(null);
-          return;
-        }
-
-        const anchorNode = selection.anchor.getNode();
-        const codeNode = $getNearestNodeOfType(anchorNode, CodeNode);
-
-        if ($isCodeNode(codeNode)) {
-          const key = codeNode.getKey();
-          const element = editor.getElementByKey(key);
-          if (element) {
-            setCodeElement(element);
-            setCodeNodeKey(key);
-            setCurrentLanguage(codeNode.getLanguage() || "javascript");
-          }
-        } else {
-          setCodeElement(null);
-          setCodeNodeKey(null);
-        }
-      });
-    });
-  }, [editor]);
+  const { codeElement, codeNodeKey, currentLanguage } = useCodeBlockState();
 
   const handleLanguageChange = useCallback(
-    (language: string) => {
-      if (!codeNodeKey) return;
+    (language: string | null) => {
+      if (!codeNodeKey || !language) return;
 
       loadCodeLanguage(language, editor, codeNodeKey);
 
@@ -158,8 +131,6 @@ export function CodeActionMenuPlugin({
           node.setLanguage(language);
         }
       });
-
-      setCurrentLanguage(language);
     },
     [editor, codeNodeKey],
   );
