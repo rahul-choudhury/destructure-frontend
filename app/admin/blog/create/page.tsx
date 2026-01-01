@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Field } from "@base-ui/react/field";
 import { Input } from "@/components/ui/input";
-import { RichTextEditor } from "@/components/ui/rich-text-editor";
+import { RichTextEditor } from "@/components/rich-text-editor";
 import { PageTitle } from "@/components/page-title";
 
 export default function Page() {

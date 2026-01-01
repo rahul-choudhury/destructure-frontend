@@ -24,9 +24,15 @@ import {
   $isListNode,
 } from "@lexical/list";
 import { LinkNode } from "@lexical/link";
-import { CodeNode, CodeHighlightNode } from "@lexical/code";
+import {
+  CodeNode,
+  CodeHighlightNode,
+  $createCodeNode,
+  $isCodeNode,
+} from "@lexical/code";
 import { $setBlocksType } from "@lexical/selection";
 import {
+  $createParagraphNode,
   $getSelection,
   $isRangeSelection,
   FORMAT_TEXT_COMMAND,
@@ -35,14 +41,16 @@ import { $getNearestNodeOfType } from "@lexical/utils";
 import { Toggle } from "@base-ui/react/toggle";
 import {
   Bold,
+  Code,
   Italic,
   Heading2,
   Heading3,
   List,
   ListOrdered,
-  Code,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CodeHighlightPlugin } from "./plugins/code-highlight-plugin";
+import { CodeActionMenuPlugin } from "./plugins/code-action-menu-plugin";
 
 const editorTheme = {
   paragraph: "text-foreground/70 mb-5",
@@ -66,7 +74,7 @@ const editorTheme = {
       listitem: "list-none",
     },
   },
-  code: "bg-foreground/5 p-4 rounded-lg overflow-x-auto mb-6 font-mono text-sm text-foreground block",
+  code: "PlaygroundEditorTheme__code relative bg-[#0b0e14] p-4 rounded-lg overflow-x-auto mb-6 font-mono text-sm block",
   quote: "border-l-4 border-foreground/20 pl-4 italic text-foreground/60 mb-5",
 };
 
@@ -77,7 +85,7 @@ function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
-  const [isCode, setIsCode] = useState(false);
+  const [isCodeBlock, setIsCodeBlock] = useState(false);
   const [headingTag, setHeadingTag] = useState<string | null>(null);
   const [listType, setListType] = useState<string | null>(null);
 
@@ -89,7 +97,6 @@ function ToolbarPlugin() {
 
         setIsBold(selection.hasFormat("bold"));
         setIsItalic(selection.hasFormat("italic"));
-        setIsCode(selection.hasFormat("code"));
 
         const anchorNode = selection.anchor.getNode();
         const element =
@@ -109,6 +116,9 @@ function ToolbarPlugin() {
         } else {
           setListType(null);
         }
+
+        const codeNode = $getNearestNodeOfType(anchorNode, CodeNode);
+        setIsCodeBlock($isCodeNode(codeNode));
       });
     });
   }, [editor]);
@@ -118,6 +128,19 @@ function ToolbarPlugin() {
       const selection = $getSelection();
       if ($isRangeSelection(selection)) {
         $setBlocksType(selection, () => $createHeadingNode(tag));
+      }
+    });
+  };
+
+  const formatCodeBlock = () => {
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        if (isCodeBlock) {
+          $setBlocksType(selection, () => $createParagraphNode());
+        } else {
+          $setBlocksType(selection, () => $createCodeNode("javascript"));
+        }
       }
     });
   };
@@ -181,12 +204,10 @@ function ToolbarPlugin() {
         <ListOrdered size={18} />
       </Toggle>
       <Toggle
-        aria-label="Inline Code"
+        aria-label="Code Block"
         className={toolbarButtonClass}
-        pressed={isCode}
-        onPressedChange={() =>
-          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code")
-        }
+        pressed={isCodeBlock}
+        onPressedChange={formatCodeBlock}
       >
         <Code size={18} />
       </Toggle>
@@ -241,6 +262,15 @@ export function RichTextEditor({
   onChange,
   "aria-labelledby": ariaLabelledby,
 }: RichTextEditorProps) {
+  const [floatingAnchorElem, setFloatingAnchorElem] =
+    useState<HTMLDivElement | null>(null);
+
+  const onFloatingAnchorRef = useCallback((node: HTMLDivElement | null) => {
+    if (node !== null) {
+      setFloatingAnchorElem(node);
+    }
+  }, []);
+
   const initialConfig = {
     namespace: "BlogEditor",
     theme: editorTheme,
@@ -274,7 +304,7 @@ export function RichTextEditor({
     >
       <LexicalComposer initialConfig={initialConfig}>
         <ToolbarPlugin />
-        <div className="relative">
+        <div className="relative" ref={onFloatingAnchorRef}>
           <RichTextPlugin
             contentEditable={
               <ContentEditable
@@ -296,6 +326,10 @@ export function RichTextEditor({
         <LinkPlugin />
         <RestrictHeadingsPlugin />
         <OnChangePlugin onChange={handleChange} />
+        <CodeHighlightPlugin />
+        {floatingAnchorElem && (
+          <CodeActionMenuPlugin anchorElem={floatingAnchorElem} />
+        )}
       </LexicalComposer>
     </div>
   );
