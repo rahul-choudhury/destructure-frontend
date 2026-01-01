@@ -12,3 +12,15 @@ export function formatDate(date: string) {
     day: "numeric",
   }).format(new Date(date));
 }
+
+export function debounce<T extends unknown[]>(
+  fn: (...args: T) => void,
+  limit = 500,
+) {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+
+  return (...args: T) => {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), limit);
+  };
+}
