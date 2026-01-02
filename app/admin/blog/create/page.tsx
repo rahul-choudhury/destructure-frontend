@@ -76,13 +76,13 @@ export default function Page() {
 
   return (
     <Tooltip.Provider>
-      <PageTitle>New Blog</PageTitle>
+      <PageTitle>new blog</PageTitle>
       <form
         className="mt-8 max-w-2xl space-y-6 pb-10"
         onSubmit={handleFormSubmit}
       >
         <Field>
-          <Field.Label htmlFor="title">Title</Field.Label>
+          <Field.Label htmlFor="title">title</Field.Label>
           <Field.Input
             id="title"
             name="title"
@@ -94,7 +94,7 @@ export default function Page() {
         </Field>
 
         <Field>
-          <Field.Label htmlFor="slug">Slug</Field.Label>
+          <Field.Label htmlFor="slug">slug</Field.Label>
           <div className="relative w-full">
             <Field.Input
               id="slug"
@@ -147,7 +147,7 @@ export default function Page() {
             className="text-sm font-medium text-foreground cursor-default"
             onClick={() => document.getElementById("content-editor")?.focus()}
           >
-            Content
+            content
           </span>
           <RichTextEditor
             ref={editorRef}
