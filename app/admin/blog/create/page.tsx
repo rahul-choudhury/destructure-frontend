@@ -6,6 +6,7 @@ import { Tooltip } from "@base-ui/react/tooltip";
 import { useRef, useState, useMemo, useTransition, FormEvent } from "react";
 import { checkSlugUniqueness, generateUniqueSlug } from "@/lib/actions";
 import { cn, debounce } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import {
   RichTextEditor,
@@ -110,10 +111,12 @@ export default function Page() {
               <Tooltip.Root>
                 <Tooltip.Trigger
                   render={(props) => (
-                    <button
+                    <Button
                       {...props}
                       type="button"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-foreground/50 hover:text-foreground"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-2 top-1/2 size-auto -translate-y-1/2 p-1"
                       aria-label="Generate unique slug"
                       onClick={generateSlug}
                       disabled={isPending}
@@ -122,7 +125,7 @@ export default function Page() {
                         size={18}
                         className={cn(isPending && "animate-spin")}
                       />
-                    </button>
+                    </Button>
                   )}
                 />
                 <Tooltip.Portal>
@@ -154,12 +157,7 @@ export default function Page() {
           />
         </Field>
 
-        <button
-          type="submit"
-          className="rounded-md bg-foreground px-4 py-2 text-sm font-medium text-background focus:outline-2 focus:outline-accent focus:-outline-offset-1"
-        >
-          Create Post
-        </button>
+        <Button type="submit">Create Blog</Button>
       </form>
     </Tooltip.Provider>
   );
