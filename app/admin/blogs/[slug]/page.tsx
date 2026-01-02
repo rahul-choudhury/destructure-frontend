@@ -1,4 +1,4 @@
-import { ArrowLeft, Pencil } from "lucide-react";
+import { Pencil } from "lucide-react";
 import Link from "next/link";
 
 import { DeleteBlogButton } from "@/components/delete-blog-button";
