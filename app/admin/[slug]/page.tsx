@@ -1,4 +1,4 @@
-import { Pencil } from "lucide-react";
+import { ArrowLeft, Pencil } from "lucide-react";
 import Link from "next/link";
 
 import { DeleteBlogButton } from "@/components/delete-blog-button";
@@ -7,6 +7,7 @@ import { api } from "@/lib/api-client";
 import { Blog } from "@/lib/definitions";
 import { formatDate } from "@/lib/utils";
 import { getTokenFromCookie } from "@/lib/utils.server";
+import { TitleNav } from "@/components/title-nav";
 
 export default async function Page({
   params,
@@ -26,7 +27,9 @@ export default async function Page({
 
   return (
     <>
-      <PageTitle>{blog.title}</PageTitle>
+      <TitleNav href="/admin">
+        <PageTitle>{blog.title}</PageTitle>
+      </TitleNav>
       <div className="text-sm text-foreground/50 mb-8 flex justify-between">
         <p>
           {formatDate(blog.createdAt)} •{" "}

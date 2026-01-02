@@ -1,4 +1,5 @@
 import { PageTitle } from "@/components/page-title";
+import { TitleNav } from "@/components/title-nav";
 import { api } from "@/lib/api-client";
 import { Blog } from "@/lib/definitions";
 import { formatDate } from "@/lib/utils";
@@ -20,7 +21,9 @@ export default async function Page({
 
   return (
     <>
-      <PageTitle>{blog.title}</PageTitle>
+      <TitleNav href="/">
+        <PageTitle>{blog.title}</PageTitle>
+      </TitleNav>
       <div className="text-sm text-foreground/50 mb-8 flex justify-between">
         <p>{formatDate(blog.createdAt)}</p>
         <p>~ {blog.author.name}</p>
