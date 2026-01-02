@@ -16,6 +16,7 @@ const firaCode = Fira_Code({
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://destructure.in"),
   title: "Destructure",
   description: "A blog by Rahul & Shakti",
 };
