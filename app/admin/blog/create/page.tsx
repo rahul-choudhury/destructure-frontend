@@ -3,8 +3,20 @@
 import { RefreshCcw } from "lucide-react";
 import { Tooltip } from "@base-ui/react/tooltip";
 
-import { useRef, useState, useMemo, useTransition, FormEvent } from "react";
-import { checkSlugUniqueness, generateUniqueSlug } from "@/lib/actions";
+import {
+  useRef,
+  useState,
+  useMemo,
+  useTransition,
+  FormEvent,
+  useActionState,
+  startTransition,
+} from "react";
+import {
+  checkSlugUniqueness,
+  createBlog,
+  generateUniqueSlug,
+} from "@/lib/actions";
 import { cn, debounce } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
@@ -21,7 +33,13 @@ export default function Page() {
     slug: "",
   });
   const [slugError, setSlugError] = useState("");
-  const [isPending, startTransition] = useTransition();
+  const [isPendingSlugGen, startSlugGenTransition] = useTransition();
+  const [createBlogState, createBlogAction, isPendingCreation] = useActionState(
+    createBlog,
+    undefined,
+  );
+
+  console.log(createBlogState);
 
   const checkSlug = useMemo(
     () =>
@@ -42,7 +60,7 @@ export default function Page() {
   );
 
   const generateSlug = () => {
-    startTransition(async () => {
+    startSlugGenTransition(async () => {
       const slug = await generateUniqueSlug(values.title);
       if (slug) {
         setValues((prev) => ({ ...prev, slug }));
@@ -71,7 +89,7 @@ export default function Page() {
     }
 
     const data = { ...values, content };
-    console.log(data);
+    startTransition(() => createBlogAction(data));
   };
 
   return (
@@ -119,11 +137,11 @@ export default function Page() {
                       className="absolute right-2 top-1/2 size-auto -translate-y-1/2 p-1"
                       aria-label="Generate unique slug"
                       onClick={generateSlug}
-                      disabled={isPending}
+                      disabled={isPendingSlugGen}
                     >
                       <RefreshCcw
                         size={18}
-                        className={cn(isPending && "animate-spin")}
+                        className={cn(isPendingSlugGen && "animate-spin")}
                       />
                     </Button>
                   )}

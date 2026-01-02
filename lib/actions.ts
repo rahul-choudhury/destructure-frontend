@@ -38,3 +38,26 @@ export async function generateUniqueSlug(title: string) {
     return undefined;
   }
 }
+
+export async function createBlog(state: unknown, data: unknown) {
+  const token = await getTokenFromCookie();
+
+  try {
+    const res = await api.post("/api/admin/blog", data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return res;
+  } catch (e) {
+    let message = "Blog creation failed.";
+    if (e instanceof Error) {
+      message = e.message;
+    }
+
+    return {
+      isSuccess: false,
+      message,
+    };
+  }
+}
