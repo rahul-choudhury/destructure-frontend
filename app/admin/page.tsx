@@ -7,6 +7,7 @@ import { Blog, User } from "@/lib/definitions";
 import { formatDate } from "@/lib/utils";
 import { getTokenFromCookie } from "@/lib/utils.server";
 import { PlusIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default async function Page() {
   const token = await getTokenFromCookie();
@@ -27,13 +28,13 @@ export default async function Page() {
     <>
       <div className="flex items-end justify-between flex-wrap gap-4 mb-4">
         <PageTitle className="mb-0">hello {firstName}!</PageTitle>
-        <Link
-          href="/admin/blog/create"
-          className="inline-flex items-center gap-1 px-4 py-2 bg-foreground text-background rounded-lg text-sm font-medium"
+        <Button
+          render={<Link href="/admin/blog/create" />}
+          nativeButton={false}
         >
           <PlusIcon size={16} />
           blog
-        </Link>
+        </Button>
       </div>
       <p className="text-foreground/50 mb-8">manage your blogs</p>
       <div className="space-y-4">
