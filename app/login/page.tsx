@@ -7,6 +7,7 @@ export default function Page() {
       <Button
         variant="outline"
         size="lg"
+        nativeButton={false}
         render={<a href={`${API_URL}/api/auth/login`} />}
       >
         <svg viewBox="0 0 24 24" className="w-5 h-5">
