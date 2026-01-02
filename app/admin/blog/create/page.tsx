@@ -107,7 +107,7 @@ export default function Page() {
               className="pr-10"
               required
             />
-            {values.title && slugError && (
+            {values.title && (
               <Tooltip.Root>
                 <Tooltip.Trigger
                   render={(props) => (
