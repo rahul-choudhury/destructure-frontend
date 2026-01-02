@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect, RedirectType } from "next/navigation";
 import { api } from "./api-client";
 import { getTokenFromCookie } from "./utils.server";
@@ -56,6 +57,7 @@ export async function createBlog(state: unknown, data: unknown) {
     };
   }
 
+  revalidatePath("/");
   redirect("/admin");
 }
 
@@ -75,6 +77,8 @@ export async function updateBlog(slug: string, state: unknown, data: unknown) {
     };
   }
 
+  revalidatePath("/");
+  revalidatePath(`/${slug}`);
   redirect(`/admin/blogs/${slug}`, RedirectType.replace);
 }
 
@@ -94,6 +98,8 @@ export async function deleteBlog(slug: string) {
     };
   }
 
+  revalidatePath("/");
+  revalidatePath(`/${slug}`);
   redirect("/admin");
 }
 
@@ -117,6 +123,8 @@ export async function toggleBlogVisibility(slug: string, isPublic: boolean) {
     };
   }
 
+  revalidatePath("/");
+  revalidatePath(`/${slug}`);
   redirect("/admin");
 }
 
