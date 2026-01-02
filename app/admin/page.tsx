@@ -2,7 +2,7 @@ import Link from "next/link";
 import { PageTitle } from "@/components/page-title";
 import { api } from "@/lib/api-client";
 import { Blog, User } from "@/lib/definitions";
-import { formatDate } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { getTokenFromCookie } from "@/lib/utils.server";
 
 export default async function Page() {
@@ -58,11 +58,10 @@ export default async function Page() {
                 {formatDate(blog.createdAt).toLowerCase()}
               </span>
               <span
-                className={`px-1.5 py-0.5 text-xs font-mono rounded ${
-                  blog.isPublic
-                    ? "bg-accent/10 text-accent/80"
-                    : "bg-foreground/10 text-foreground/50"
-                }`}
+                className={cn(
+                  "px-1.5 py-0.5 text-xs font-mono rounded bg-foreground/10 text-foreground/50",
+                  blog.isPublic && "bg-accent/10 text-accent/80",
+                )}
               >
                 {blog.isPublic ? "public" : "private"}
               </span>
