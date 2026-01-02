@@ -6,6 +6,7 @@ import { api } from "@/lib/api-client";
 import { Blog, User } from "@/lib/definitions";
 import { formatDate } from "@/lib/utils";
 import { getTokenFromCookie } from "@/lib/utils.server";
+import { PlusIcon } from "lucide-react";
 
 export default async function Page() {
   const token = await getTokenFromCookie();
@@ -30,16 +31,7 @@ export default async function Page() {
           href="/admin/blog/create"
           className="inline-flex items-center gap-1 px-4 py-2 bg-foreground text-background rounded-lg text-sm font-medium"
         >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path d="M12 5v14M5 12h14" />
-          </svg>
+          <PlusIcon size={16} />
           blog
         </Link>
       </div>
