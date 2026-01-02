@@ -29,7 +29,7 @@ export default async function Page() {
       <div className="flex items-end justify-between flex-wrap gap-4 mb-4">
         <PageTitle className="mb-0">hello {firstName}!</PageTitle>
         <Button
-          render={<Link href="/admin/blog/create" />}
+          render={<Link href="/admin/blogs/create" />}
           nativeButton={false}
         >
           <PlusIcon size={16} />
@@ -41,7 +41,7 @@ export default async function Page() {
         {blogs.map((blog) => (
           <Link
             key={blog._id}
-            href={`/admin/${blog.slug}`}
+            href={`/admin/blogs/${blog.slug}`}
             className="block group p-4 border border-foreground/10 rounded-lg hover:border-accent/50 transition-colors"
           >
             <h2 className="text-lg font-medium group-hover:text-accent transition-colors">

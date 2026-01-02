@@ -24,7 +24,7 @@ export default async function Page({
 
   return (
     <>
-      <TitleNav href={`/admin/${slug}`}>
+      <TitleNav href={`/admin/blogs/${slug}`}>
         <PageTitle>edit blog</PageTitle>
       </TitleNav>
       <BlogForm data={blog} />

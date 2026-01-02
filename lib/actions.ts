@@ -75,7 +75,7 @@ export async function updateBlog(slug: string, state: unknown, data: unknown) {
     };
   }
 
-  redirect(`/admin/${slug}`, RedirectType.replace);
+  redirect(`/admin/blogs/${slug}`, RedirectType.replace);
 }
 
 export async function deleteBlog(slug: string) {

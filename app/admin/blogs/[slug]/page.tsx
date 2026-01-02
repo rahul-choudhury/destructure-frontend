@@ -34,7 +34,7 @@ export default async function Page({
         <p>
           {formatDate(blog.createdAt)} •{" "}
           <Link
-            href={`/admin/${slug}/edit`}
+            href={`/admin/blogs/${slug}/edit`}
             className="inline-flex items-center gap-1 hover:text-accent transition-colors"
           >
             <Pencil className="size-3" />
