@@ -1,6 +1,6 @@
 "use client";
 
-import { RefreshCcw } from "lucide-react";
+import { Loader2, RefreshCcw } from "lucide-react";
 import { Tooltip } from "@base-ui/react/tooltip";
 
 import {
@@ -34,12 +34,11 @@ export default function Page() {
   });
   const [slugError, setSlugError] = useState("");
   const [isPendingSlugGen, startSlugGenTransition] = useTransition();
+  // TODO: add a toast for this state
   const [createBlogState, createBlogAction, isPendingCreation] = useActionState(
     createBlog,
     undefined,
   );
-
-  console.log(createBlogState);
 
   const checkSlug = useMemo(
     () =>
@@ -95,10 +94,7 @@ export default function Page() {
   return (
     <Tooltip.Provider>
       <PageTitle>new blog</PageTitle>
-      <form
-        className="mt-8 max-w-2xl space-y-6 pb-10"
-        onSubmit={handleFormSubmit}
-      >
+      <form className="mt-8 max-w-2xl space-y-6" onSubmit={handleFormSubmit}>
         <Field>
           <Field.Label htmlFor="title">title</Field.Label>
           <Field.Input
@@ -175,7 +171,10 @@ export default function Page() {
           />
         </Field>
 
-        <Button type="submit">Create Blog</Button>
+        <Button type="submit" disabled={isPendingCreation} className="group">
+          <Loader2 className="absolute animate-spin group-enabled:opacity-0" />
+          <span className="group-disabled:opacity-0">Create Blog</span>
+        </Button>
       </form>
     </Tooltip.Provider>
   );

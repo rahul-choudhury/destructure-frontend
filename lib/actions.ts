@@ -1,5 +1,6 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { api } from "./api-client";
 import { getTokenFromCookie } from "./utils.server";
 
@@ -43,7 +44,20 @@ export async function createBlog(state: unknown, data: unknown) {
   const token = await getTokenFromCookie();
 
   try {
-    const res = await api.post("/api/admin/blog", data, {
+    await api.post("/api/admin/blog", data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (e) {
+    return {
+      isSuccess: false,
+      message: e instanceof Error ? e.message : "Blog creation failed.",
+    };
+  }
+
+  redirect("/admin");
+}
       headers: {
         Authorization: `Bearer ${token}`,
       },
