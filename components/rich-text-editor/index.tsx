@@ -47,6 +47,9 @@ import { cn } from "@/lib/utils";
 import { CodeHighlightPlugin } from "./plugins/code-highlight-plugin";
 import { CodeActionMenuPlugin } from "./plugins/code-action-menu-plugin";
 import { useCodeBlockState } from "./hooks/use-code-block-state";
+import { ImageNode } from "./nodes/image-node";
+import { ImagePlugin } from "./plugins/image-plugin";
+import { ImageUploadDialog } from "./components/image-upload-dialog";
 
 const editorTheme = {
   paragraph: "text-foreground/70 mb-5",
@@ -74,7 +77,7 @@ const editorTheme = {
   quote: "border-l-4 border-foreground/20 pl-4 italic text-foreground/60 mb-5",
 };
 
-const toolbarButtonClass =
+export const toolbarButtonClass =
   "p-2 rounded text-foreground/60 hover:text-foreground hover:bg-foreground/10 focus:outline-2 focus:outline-accent focus:-outline-offset-1 data-[pressed]:text-accent data-[pressed]:bg-foreground/10";
 
 function ToolbarPlugin() {
@@ -204,6 +207,7 @@ function ToolbarPlugin() {
       >
         <Code size={18} />
       </Toggle>
+      <ImageUploadDialog toolbarButtonClass={toolbarButtonClass} />
     </div>
   );
 }
@@ -286,6 +290,7 @@ export function RichTextEditor({
       LinkNode,
       CodeNode,
       CodeHighlightNode,
+      ImageNode,
     ],
     onError: (error: Error) => {
       console.error("Lexical error:", error);
@@ -324,6 +329,7 @@ export function RichTextEditor({
         <RestrictHeadingsPlugin />
         <EditorRefPlugin editorRef={ref} />
         <CodeHighlightPlugin />
+        <ImagePlugin />
         {floatingAnchorElem && (
           <CodeActionMenuPlugin anchorElem={floatingAnchorElem} />
         )}

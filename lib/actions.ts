@@ -58,20 +58,22 @@ export async function createBlog(state: unknown, data: unknown) {
 
   redirect("/admin");
 }
+
+export async function uploadImages(formData: FormData) {
+  const token = await getTokenFromCookie();
+
+  try {
+    const res = await api.post<string[]>("/api/admin/images", formData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
     return res;
   } catch (e) {
-    let message = "Blog creation failed.";
-    if (e instanceof Error) {
-      message = e.message;
-    }
-
     return {
       isSuccess: false,
-      message,
+      message: e instanceof Error ? e.message : "Image upload failed.",
+      data: [] as string[],
     };
   }
 }
