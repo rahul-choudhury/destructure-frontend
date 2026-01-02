@@ -1,6 +1,7 @@
 import { Pencil } from "lucide-react";
 import Link from "next/link";
 
+import { DeleteBlogButton } from "@/components/delete-blog-button";
 import { PageTitle } from "@/components/page-title";
 import { api } from "@/lib/api-client";
 import { Blog } from "@/lib/definitions";
@@ -35,7 +36,8 @@ export default async function Page({
           >
             <Pencil className="size-3" />
             edit
-          </Link>
+          </Link>{" "}
+          • <DeleteBlogButton slug={slug} />
         </p>
         <p>~ {blog.author.name}</p>
       </div>

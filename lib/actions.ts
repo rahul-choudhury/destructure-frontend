@@ -78,6 +78,25 @@ export async function updateBlog(slug: string, state: unknown, data: unknown) {
   redirect(`/admin/${slug}`, RedirectType.replace);
 }
 
+export async function deleteBlog(slug: string) {
+  const token = await getTokenFromCookie();
+
+  try {
+    await api.delete(`/api/admin/blog/${slug}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (e) {
+    return {
+      isSuccess: false,
+      message: e instanceof Error ? e.message : "Blog deletion failed.",
+    };
+  }
+
+  redirect("/admin");
+}
+
 export async function uploadImages(formData: FormData) {
   const token = await getTokenFromCookie();
 
