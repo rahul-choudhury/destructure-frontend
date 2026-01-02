@@ -97,6 +97,29 @@ export async function deleteBlog(slug: string) {
   redirect("/admin");
 }
 
+export async function toggleBlogVisibility(slug: string, isPublic: boolean) {
+  const token = await getTokenFromCookie();
+
+  try {
+    await api.put(
+      `/api/admin/blog/${slug}`,
+      { isPublic },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+  } catch (e) {
+    return {
+      isSuccess: false,
+      message: e instanceof Error ? e.message : "Failed to update visibility.",
+    };
+  }
+
+  redirect("/admin");
+}
+
 export async function uploadImages(formData: FormData) {
   const token = await getTokenFromCookie();
 
