@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useImperativeHandle, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -9,7 +15,7 @@ import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $generateHtmlFromNodes } from "@lexical/html";
+import { $generateHtmlFromNodes, $generateNodesFromDOM } from "@lexical/html";
 import {
   HeadingNode,
   QuoteNode,
@@ -28,6 +34,7 @@ import { CodeNode, CodeHighlightNode, $createCodeNode } from "@lexical/code";
 import { $setBlocksType } from "@lexical/selection";
 import {
   $createParagraphNode,
+  $getRoot,
   $getSelection,
   $isRangeSelection,
   FORMAT_TEXT_COMMAND,
@@ -251,6 +258,30 @@ function EditorRefPlugin({
   return null;
 }
 
+function InitialContentPlugin({
+  initialContent,
+}: {
+  initialContent?: string;
+}) {
+  const [editor] = useLexicalComposerContext();
+  const isInitialized = useRef(false);
+
+  useEffect(() => {
+    if (initialContent && !isInitialized.current) {
+      isInitialized.current = true;
+      editor.update(() => {
+        const parser = new DOMParser();
+        const dom = parser.parseFromString(initialContent, "text/html");
+        const nodes = $generateNodesFromDOM(editor, dom);
+        $getRoot().clear();
+        $getRoot().append(...nodes);
+      });
+    }
+  }, [editor, initialContent]);
+
+  return null;
+}
+
 export type RichTextEditorRef = {
   getHtml: () => string;
 };
@@ -259,6 +290,7 @@ export type RichTextEditorProps = {
   id?: string;
   className?: string;
   placeholder?: string;
+  initialContent?: string;
   ref?: React.Ref<RichTextEditorRef>;
   "aria-labelledby"?: string;
 };
@@ -267,6 +299,7 @@ export function RichTextEditor({
   id,
   className,
   placeholder = "Start writing...",
+  initialContent,
   ref,
   "aria-labelledby": ariaLabelledby,
 }: RichTextEditorProps) {
@@ -328,6 +361,7 @@ export function RichTextEditor({
         <LinkPlugin />
         <RestrictHeadingsPlugin />
         <EditorRefPlugin editorRef={ref} />
+        <InitialContentPlugin initialContent={initialContent} />
         <CodeHighlightPlugin />
         <ImagePlugin />
         {floatingAnchorElem && (

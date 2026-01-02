@@ -1,6 +1,6 @@
 "use server";
 
-import { redirect } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
 import { api } from "./api-client";
 import { getTokenFromCookie } from "./utils.server";
 
@@ -57,6 +57,25 @@ export async function createBlog(state: unknown, data: unknown) {
   }
 
   redirect("/admin");
+}
+
+export async function updateBlog(slug: string, state: unknown, data: unknown) {
+  const token = await getTokenFromCookie();
+
+  try {
+    await api.put(`/api/admin/blog/${slug}`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (e) {
+    return {
+      isSuccess: false,
+      message: e instanceof Error ? e.message : "Blog update failed.",
+    };
+  }
+
+  redirect(`/admin/${slug}`, RedirectType.replace);
 }
 
 export async function uploadImages(formData: FormData) {

@@ -1,3 +1,6 @@
+import { Pencil } from "lucide-react";
+import Link from "next/link";
+
 import { PageTitle } from "@/components/page-title";
 import { api } from "@/lib/api-client";
 import { Blog } from "@/lib/definitions";
@@ -24,7 +27,16 @@ export default async function Page({
     <>
       <PageTitle>{blog.title}</PageTitle>
       <div className="text-sm text-foreground/50 mb-8 flex justify-between">
-        <p>{formatDate(blog.createdAt)}</p>
+        <p>
+          {formatDate(blog.createdAt)} •{" "}
+          <Link
+            href={`/admin/${slug}/edit`}
+            className="inline-flex items-center gap-1 hover:text-accent transition-colors"
+          >
+            <Pencil className="size-3" />
+            edit
+          </Link>
+        </p>
         <p>~ {blog.author.name}</p>
       </div>
       <article
