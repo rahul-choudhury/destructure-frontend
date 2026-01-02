@@ -1,5 +1,6 @@
 import { BlogForm } from "@/components/blog-form";
 import { PageTitle } from "@/components/page-title";
+import { TitleNav } from "@/components/title-nav";
 import { api } from "@/lib/api-client";
 import { Blog } from "@/lib/definitions";
 import { getTokenFromCookie } from "@/lib/utils.server";
@@ -23,7 +24,9 @@ export default async function Page({
 
   return (
     <>
-      <PageTitle>edit blog</PageTitle>
+      <TitleNav href={`/admin/${slug}`}>
+        <PageTitle>edit blog</PageTitle>
+      </TitleNav>
       <BlogForm data={blog} />
     </>
   );
