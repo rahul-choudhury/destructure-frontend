@@ -12,7 +12,7 @@ export function TitleNav({
     <div className="relative">
       <Link
         href={href}
-        className="md:flex gap-1 absolute hidden md:top-30 text-sm opacity-50 hover:opacity-100 transition-opacity items-center"
+        className="absolute hidden items-center gap-1 text-sm opacity-50 transition-opacity hover:opacity-100 md:top-30 md:flex"
       >
         <ArrowLeft size={14} />
         Go Back

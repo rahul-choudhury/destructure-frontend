@@ -24,12 +24,12 @@ export default async function Page({
       <TitleNav href="/">
         <PageTitle>{blog.title}</PageTitle>
       </TitleNav>
-      <div className="text-sm text-foreground/50 mb-8 flex justify-between">
+      <div className="mb-8 flex justify-between text-sm text-foreground/50">
         <p>{formatDate(blog.createdAt)}</p>
         <p>~ {blog.author.name}</p>
       </div>
       <article
-        className="blog-content pb-10 min-w-0"
+        className="blog-content min-w-0 pb-10"
         dangerouslySetInnerHTML={{ __html: blog.content }}
       />
     </>

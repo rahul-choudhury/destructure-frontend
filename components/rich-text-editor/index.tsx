@@ -258,11 +258,7 @@ function EditorRefPlugin({
   return null;
 }
 
-function InitialContentPlugin({
-  initialContent,
-}: {
-  initialContent?: string;
-}) {
+function InitialContentPlugin({ initialContent }: { initialContent?: string }) {
   const [editor] = useLexicalComposerContext();
   const isInitialized = useRef(false);
 
@@ -333,7 +329,7 @@ export function RichTextEditor({
   return (
     <div
       className={cn(
-        "w-full rounded-md border border-foreground/20 bg-transparent text-sm text-foreground focus-within:outline-2 focus-within:outline-accent focus-within:-outline-offset-1",
+        "w-full rounded-md border border-foreground/20 bg-transparent text-sm text-foreground focus-within:outline-2 focus-within:-outline-offset-1 focus-within:outline-accent",
         className,
       )}
     >
@@ -349,7 +345,7 @@ export function RichTextEditor({
               />
             }
             placeholder={
-              <div className="pointer-events-none absolute left-3 top-2 text-foreground/40">
+              <div className="pointer-events-none absolute top-2 left-3 text-foreground/40">
                 {placeholder}
               </div>
             }

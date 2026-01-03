@@ -72,7 +72,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
       <img
         src={this.__src}
         alt={this.__alt}
-        className="max-w-full h-auto rounded-lg my-4"
+        className="my-4 h-auto max-w-full rounded-lg"
       />
     );
   }

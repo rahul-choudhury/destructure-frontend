@@ -136,7 +136,7 @@ export function BlogForm({ data }: BlogFormProps) {
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="absolute right-2 top-1/2 size-auto -translate-y-1/2 p-1"
+                      className="absolute top-1/2 right-2 size-auto -translate-y-1/2 p-1"
                       aria-label="Generate unique slug"
                       onClick={generateSlug}
                       disabled={isPendingSlugGen}
@@ -150,7 +150,7 @@ export function BlogForm({ data }: BlogFormProps) {
                 />
                 <Tooltip.Portal>
                   <Tooltip.Positioner sideOffset={8}>
-                    <Tooltip.Popup className="origin-(--transform-origin) rounded-md bg-background px-2 py-1 text-sm text-foreground shadow-md outline outline-foreground/10 transition-all duration-200 data-ending-style:opacity-0 data-ending-style:scale-95 data-starting-style:opacity-0 data-starting-style:scale-95">
+                    <Tooltip.Popup className="origin-(--transform-origin) rounded-md bg-background px-2 py-1 text-sm text-foreground shadow-md outline outline-foreground/10 transition-all duration-200 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
                       Generate unique slug
                     </Tooltip.Popup>
                   </Tooltip.Positioner>
@@ -164,7 +164,7 @@ export function BlogForm({ data }: BlogFormProps) {
         <Field>
           <span
             id="content-label"
-            className="text-sm font-medium text-foreground cursor-default"
+            className="cursor-default text-sm font-medium text-foreground"
             onClick={() => document.getElementById("content-editor")?.focus()}
           >
             content

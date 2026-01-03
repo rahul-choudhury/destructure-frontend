@@ -11,7 +11,7 @@ export function PageTitle({
   return (
     <h1
       className={cn(
-        "font-serif text-6xl pt-10 md:pt-40 mb-4 gap-4 flex items-center",
+        "mb-4 flex items-center gap-4 pt-10 font-serif text-6xl md:pt-40",
         className,
       )}
     >

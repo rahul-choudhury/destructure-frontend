@@ -26,7 +26,7 @@ export default async function Page() {
 
   return (
     <>
-      <div className="flex items-end justify-between flex-wrap gap-4 mb-4">
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
         <PageTitle className="mb-0">hello {firstName}!</PageTitle>
         <Button
           render={<Link href="/admin/blogs/create" />}
@@ -36,18 +36,18 @@ export default async function Page() {
           blog
         </Button>
       </div>
-      <p className="text-foreground/50 mb-8">manage your blogs</p>
+      <p className="mb-8 text-foreground/50">manage your blogs</p>
       <div className="space-y-4">
         {blogs.map((blog) => (
           <Link
             key={blog._id}
             href={`/admin/blogs/${blog.slug}`}
-            className="block group p-4 border border-foreground/10 rounded-lg hover:border-accent/50 transition-colors"
+            className="group block rounded-lg border border-foreground/10 p-4 transition-colors hover:border-accent/50"
           >
-            <h2 className="text-lg font-medium group-hover:text-accent transition-colors">
+            <h2 className="text-lg font-medium transition-colors group-hover:text-accent">
               {blog.title.toLowerCase()}
             </h2>
-            <div className="flex items-center justify-between mt-2 text-sm text-foreground/50">
+            <div className="mt-2 flex items-center justify-between text-sm text-foreground/50">
               <span>
                 ~{blog.author.name.toLowerCase()} •{" "}
                 {formatDate(blog.createdAt).toLowerCase()}

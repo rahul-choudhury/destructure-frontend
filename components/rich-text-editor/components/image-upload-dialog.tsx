@@ -67,20 +67,20 @@ export function ImageUploadDialog({
         <ImageIcon size={18} />
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 bg-black/50 data-starting-style:opacity-0 data-ending-style:opacity-0 transition-opacity duration-200" />
-        <Dialog.Popup className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md rounded-lg border border-foreground/20 bg-background p-6 shadow-xl data-starting-style:opacity-0 data-starting-style:scale-95 data-ending-style:opacity-0 data-ending-style:scale-95 transition-all duration-200">
-          <div className="flex items-center justify-between mb-4">
+        <Dialog.Backdrop className="fixed inset-0 bg-black/50 transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0" />
+        <Dialog.Popup className="fixed top-1/2 left-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-foreground/20 bg-background p-6 shadow-xl transition-all duration-200 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
+          <div className="mb-4 flex items-center justify-between">
             <Dialog.Title className="text-lg font-medium text-foreground">
               Upload Image
             </Dialog.Title>
-            <Dialog.Close className="p-1 rounded text-foreground/60 hover:text-foreground hover:bg-foreground/10">
+            <Dialog.Close className="rounded p-1 text-foreground/60 hover:bg-foreground/10 hover:text-foreground">
               <X size={18} />
             </Dialog.Close>
           </div>
 
           <div className="space-y-4">
             <div
-              className="border-2 border-dashed border-foreground/20 rounded-lg p-8 text-center hover:border-foreground/40 transition-colors cursor-pointer"
+              className="cursor-pointer rounded-lg border-2 border-dashed border-foreground/20 p-8 text-center transition-colors hover:border-foreground/40"
               onClick={() => fileInputRef.current?.click()}
             >
               <input
@@ -95,7 +95,7 @@ export function ImageUploadDialog({
                 <div className="flex flex-col items-center gap-2">
                   <Loader2
                     size={32}
-                    className="text-foreground/40 animate-spin"
+                    className="animate-spin text-foreground/40"
                   />
                   <p className="text-sm text-foreground/60">Uploading...</p>
                 </div>

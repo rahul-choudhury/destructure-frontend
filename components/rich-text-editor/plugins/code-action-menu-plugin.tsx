@@ -90,7 +90,7 @@ function CodeActionMenu({
             align="end"
             alignItemWithTrigger={false}
           >
-            <Select.Popup className="max-h-64 w-40 overflow-y-auto rounded-md border border-foreground/20 bg-background shadow-lg origin-(--transform-origin) transition-all duration-150 data-starting-style:opacity-0 data-starting-style:scale-95 data-ending-style:opacity-0 data-ending-style:scale-95">
+            <Select.Popup className="max-h-64 w-40 origin-(--transform-origin) overflow-y-auto rounded-md border border-foreground/20 bg-background shadow-lg transition-all duration-150 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
               {CODE_LANGUAGE_OPTIONS.map((option) => (
                 <Select.Item
                   key={option.value}

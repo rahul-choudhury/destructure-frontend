@@ -30,12 +30,12 @@ export default async function Page({
       <TitleNav href="/admin">
         <PageTitle>{blog.title}</PageTitle>
       </TitleNav>
-      <div className="text-sm text-foreground/50 mb-8 flex justify-between">
+      <div className="mb-8 flex justify-between text-sm text-foreground/50">
         <p>
           {formatDate(blog.createdAt)} •{" "}
           <Link
             href={`/admin/blogs/${slug}/edit`}
-            className="inline-flex items-center gap-1 hover:text-accent transition-colors"
+            className="inline-flex items-center gap-1 transition-colors hover:text-accent"
           >
             <Pencil className="size-3" />
             edit
@@ -45,7 +45,7 @@ export default async function Page({
         <p>~ {blog.author.name}</p>
       </div>
       <article
-        className="blog-content pb-10 min-w-0"
+        className="blog-content min-w-0 pb-10"
         dangerouslySetInnerHTML={{ __html: blog.content }}
       />
     </>
