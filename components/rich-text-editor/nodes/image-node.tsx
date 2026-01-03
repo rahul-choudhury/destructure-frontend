@@ -1,6 +1,8 @@
 "use client";
 
 import type {
+  DOMConversionMap,
+  DOMConversionOutput,
   DOMExportOutput,
   LexicalNode,
   NodeKey,
@@ -32,6 +34,23 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 
   static importJSON(serializedNode: SerializedImageNode): ImageNode {
     return $createImageNode(serializedNode.src, serializedNode.alt);
+  }
+
+  static importDOM(): DOMConversionMap | null {
+    return {
+      img: () => ({
+        conversion: (element: HTMLElement): DOMConversionOutput | null => {
+          const img = element as HTMLImageElement;
+          if (!img.src) {
+            return null;
+          }
+          return {
+            node: $createImageNode(img.src, img.alt || ""),
+          };
+        },
+        priority: 0,
+      }),
+    };
   }
 
   constructor(src: string, alt: string = "", key?: NodeKey) {
