@@ -29,25 +29,6 @@ function buildUrlWithParams(
   return `${url}?${queryString}`;
 }
 
-// Create a separate function for getting server-side cookies that can be imported where needed
-export function getServerCookies() {
-  if (typeof window !== "undefined") return "";
-
-  // Dynamic import next/headers only on server-side
-  return import("next/headers").then(async ({ cookies }) => {
-    try {
-      const cookieStore = await cookies();
-      return cookieStore
-        .getAll()
-        .map((c) => `${c.name}=${c.value}`)
-        .join("; ");
-    } catch (error) {
-      console.error("Failed to access cookies:", error);
-      return "";
-    }
-  });
-}
-
 async function fetchApi<T>(
   url: string,
   options: RequestOptions = {},
@@ -66,7 +47,6 @@ async function fetchApi<T>(
       ...headers,
     },
     body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
-    credentials: "include",
     cache,
     next,
   });
