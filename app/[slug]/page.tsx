@@ -24,7 +24,7 @@ export default async function Page({
       <TitleNav href="/">
         <PageTitle>{blog.title}</PageTitle>
       </TitleNav>
-      <div className="mb-8 flex justify-between text-sm text-foreground/50">
+      <div className="mb-8 flex justify-between text-sm text-foreground-50">
         <p>{formatDate(blog.createdAt)}</p>
         <p>~ {blog.author.name}</p>
       </div>

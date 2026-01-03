@@ -75,7 +75,7 @@ function CodeActionMenu({
       style={{ top: position.top, right: position.right }}
     >
       <Select.Root value={currentLanguage} onValueChange={onLanguageChange}>
-        <Select.Trigger className="flex items-center gap-1 rounded bg-foreground/10 px-2 py-1 text-xs text-foreground/60 transition-colors hover:bg-foreground/20 hover:text-foreground focus:outline-none">
+        <Select.Trigger className="flex items-center gap-1 rounded bg-foreground-10 px-2 py-1 text-xs text-foreground-60 transition-colors hover:bg-foreground-20 hover:text-foreground focus:outline-none">
           <Select.Value>
             {(value) =>
               CODE_LANGUAGE_OPTIONS.find((opt) => opt.value === value)?.label ??
@@ -90,12 +90,12 @@ function CodeActionMenu({
             align="end"
             alignItemWithTrigger={false}
           >
-            <Select.Popup className="max-h-64 w-40 origin-(--transform-origin) overflow-y-auto rounded-md border border-foreground/20 bg-background shadow-lg transition-all duration-150 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
+            <Select.Popup className="max-h-64 w-40 origin-(--transform-origin) overflow-y-auto rounded-md border border-foreground-20 bg-background shadow-lg transition-all duration-150 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
               {CODE_LANGUAGE_OPTIONS.map((option) => (
                 <Select.Item
                   key={option.value}
                   value={option.value}
-                  className="flex items-center justify-between px-3 py-1.5 text-sm text-foreground/70 transition-colors outline-none data-highlighted:bg-foreground/10 data-selected:text-accent"
+                  className="flex items-center justify-between px-3 py-1.5 text-sm text-foreground-70 transition-colors outline-none data-highlighted:bg-foreground-10 data-selected:text-accent"
                 >
                   <Select.ItemText>{option.label}</Select.ItemText>
                   <Select.ItemIndicator>

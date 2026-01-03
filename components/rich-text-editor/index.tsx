@@ -59,7 +59,7 @@ import { ImagePlugin } from "./plugins/image-plugin";
 import { ImageUploadDialog } from "./components/image-upload-dialog";
 
 const editorTheme = {
-  paragraph: "text-foreground/70 mb-5",
+  paragraph: "text-foreground-70 mb-5",
   heading: {
     h2: "text-3xl font-medium mt-10 mb-4",
     h3: "text-xl font-medium text-foreground mt-8 mb-3",
@@ -69,23 +69,23 @@ const editorTheme = {
     italic: "italic",
     underline: "underline",
     strikethrough: "line-through",
-    code: "font-mono text-sm text-accent bg-foreground/10 px-1.5 py-0.5 rounded",
+    code: "font-mono text-sm text-accent bg-foreground-10 px-1.5 py-0.5 rounded",
   },
   link: "text-accent underline underline-offset-4 transition-opacity duration-200 hover:opacity-80",
   list: {
     ul: "list-disc list-inside mb-5 pl-4 space-y-1",
     ol: "list-decimal list-inside mb-5 pl-4 space-y-1",
-    listitem: "text-foreground/70",
+    listitem: "text-foreground-70",
     nested: {
       listitem: "list-none",
     },
   },
   code: "PlaygroundEditorTheme__code relative bg-[#0b0e14] p-4 rounded-lg overflow-x-auto mb-6 font-mono text-sm block",
-  quote: "border-l-4 border-foreground/20 pl-4 italic text-foreground/60 mb-5",
+  quote: "border-l-4 border-foreground-20 pl-4 italic text-foreground-60 mb-5",
 };
 
 export const toolbarButtonClass =
-  "p-2 rounded text-foreground/60 hover:text-foreground hover:bg-foreground/10 focus:outline-2 focus:outline-accent focus:-outline-offset-1 data-[pressed]:text-accent data-[pressed]:bg-foreground/10";
+  "p-2 rounded text-foreground-60 hover:text-foreground hover:bg-foreground-10 focus:outline-2 focus:outline-accent focus:-outline-offset-1 data-[pressed]:text-accent data-[pressed]:bg-foreground-10";
 
 function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -149,7 +149,7 @@ function ToolbarPlugin() {
   };
 
   return (
-    <div className="flex gap-1 border-b border-foreground/20 p-2">
+    <div className="flex gap-1 border-b border-foreground-20 p-2">
       <Toggle
         aria-label="Bold"
         className={toolbarButtonClass}
@@ -329,7 +329,7 @@ export function RichTextEditor({
   return (
     <div
       className={cn(
-        "w-full rounded-md border border-foreground/20 bg-transparent text-sm text-foreground focus-within:outline-2 focus-within:-outline-offset-1 focus-within:outline-accent",
+        "w-full rounded-md border border-foreground-20 bg-transparent text-sm text-foreground focus-within:outline-2 focus-within:-outline-offset-1 focus-within:outline-accent",
         className,
       )}
     >
@@ -345,7 +345,7 @@ export function RichTextEditor({
               />
             }
             placeholder={
-              <div className="pointer-events-none absolute top-2 left-3 text-foreground/40">
+              <div className="pointer-events-none absolute top-2 left-3 text-foreground-40">
                 {placeholder}
               </div>
             }

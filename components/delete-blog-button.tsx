@@ -28,11 +28,11 @@ export function DeleteBlogButton({ slug }: DeleteBlogButtonProps) {
       </AlertDialog.Trigger>
       <AlertDialog.Portal>
         <AlertDialog.Backdrop className="fixed inset-0 bg-black/50 transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0" />
-        <AlertDialog.Popup className="fixed top-1/2 left-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-foreground/20 bg-background p-6 shadow-xl transition-all duration-200 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
+        <AlertDialog.Popup className="fixed top-1/2 left-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-foreground-20 bg-background p-6 shadow-xl transition-all duration-200 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
           <AlertDialog.Title className="mb-2 text-lg font-medium text-foreground">
             Delete Blog
           </AlertDialog.Title>
-          <AlertDialog.Description className="mb-6 text-sm text-foreground/60">
+          <AlertDialog.Description className="mb-6 text-sm text-foreground-60">
             Are you sure you want to delete this blog? This action cannot be
             undone.
           </AlertDialog.Description>
