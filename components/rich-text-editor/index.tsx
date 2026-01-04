@@ -64,8 +64,10 @@ import {
   type LinkEditData,
 } from "./plugins/link-click-plugin";
 import { ImageNode } from "./nodes/image-node";
+import { VideoNode } from "./nodes/video-node";
 import { ImagePlugin } from "./plugins/image-plugin";
-import { ImageUploadDialog } from "./components/image-upload-dialog";
+import { VideoPlugin } from "./plugins/video-plugin";
+import { MediaUploadDialog } from "./components/media-upload-dialog";
 
 const editorTheme = {
   paragraph: "text-foreground-70 mb-5",
@@ -286,7 +288,7 @@ function ToolbarPlugin({
       >
         <Link size={18} />
       </Toggle>
-      <ImageUploadDialog toolbarButtonClass={toolbarButtonClass} />
+      <MediaUploadDialog toolbarButtonClass={toolbarButtonClass} />
       <LinkDialog
         open={linkDialogState.open}
         onOpenChange={(open) =>
@@ -419,6 +421,7 @@ export function RichTextEditor({
       CodeNode,
       CodeHighlightNode,
       ImageNode,
+      VideoNode,
     ],
     onError: (error: Error) => {
       console.error("Lexical error:", error);
@@ -462,6 +465,7 @@ export function RichTextEditor({
         <InitialContentPlugin initialContent={initialContent} />
         <CodeHighlightPlugin />
         <ImagePlugin />
+        <VideoPlugin />
         <LinkClickPlugin onEditLink={handleEditLink} />
         {floatingAnchorElem && (
           <CodeActionMenuPlugin anchorElem={floatingAnchorElem} />

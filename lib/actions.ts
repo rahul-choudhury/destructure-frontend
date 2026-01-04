@@ -128,11 +128,11 @@ export async function toggleBlogVisibility(slug: string, isPublic: boolean) {
   redirect("/admin");
 }
 
-export async function uploadImages(formData: FormData) {
+export async function uploadMedia(formData: FormData) {
   const token = await getTokenFromCookie();
 
   try {
-    const res = await api.post<string[]>("/api/admin/images", formData, {
+    const res = await api.post<string[]>("/api/admin/media", formData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -141,7 +141,7 @@ export async function uploadImages(formData: FormData) {
   } catch (e) {
     return {
       isSuccess: false,
-      message: e instanceof Error ? e.message : "Image upload failed.",
+      message: e instanceof Error ? e.message : "Media upload failed.",
       data: [] as string[],
     };
   }
