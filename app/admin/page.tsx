@@ -22,21 +22,21 @@ export default async function Page() {
     api.get<Blog[]>("/api/admin/blog", authHeader),
   ]);
 
-  const firstName = profile.name.split(" ")[0].toLowerCase();
+  const firstName = profile.name.split(" ")[0];
 
   return (
     <>
       <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
-        <PageTitle className="mb-0">hello {firstName}!</PageTitle>
+        <PageTitle className="mb-0">Hello {firstName}!</PageTitle>
         <Button
           render={<Link href="/admin/blogs/create" />}
           nativeButton={false}
         >
           <PlusIcon size={16} />
-          blog
+          Blog
         </Button>
       </div>
-      <p className="mb-8 text-foreground-50">manage your blogs</p>
+      <p className="mb-8 text-foreground-50">Manage your blogs</p>
       <div className="space-y-4">
         {blogs.map((blog) => (
           <Link
@@ -45,12 +45,11 @@ export default async function Page() {
             className="group block rounded-lg border border-foreground-10 p-4 transition-colors hover:border-accent-50"
           >
             <h2 className="text-lg font-medium transition-colors group-hover:text-accent">
-              {blog.title.toLowerCase()}
+              {blog.title}
             </h2>
             <div className="mt-2 flex items-center justify-between text-sm text-foreground-50">
               <span>
-                ~{blog.author.name.toLowerCase()} •{" "}
-                {formatDate(blog.createdAt).toLowerCase()}
+                ~{blog.author.name.toLowerCase()} • {formatDate(blog.createdAt)}
               </span>
               <ToggleVisibilityButton
                 slug={blog.slug}

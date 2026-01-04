@@ -6,7 +6,7 @@ export default function Page() {
   return (
     <>
       <TitleNav href="/admin">
-        <PageTitle>new blog</PageTitle>
+        <PageTitle>New Blog</PageTitle>
       </TitleNav>
       <BlogForm />
     </>

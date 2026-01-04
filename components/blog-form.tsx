@@ -101,7 +101,7 @@ export function BlogForm({ data }: BlogFormProps) {
     <Tooltip.Provider>
       <form className="mt-8 max-w-2xl space-y-6" onSubmit={handleFormSubmit}>
         <Field>
-          <Field.Label htmlFor="title">title</Field.Label>
+          <Field.Label htmlFor="title">Title</Field.Label>
           <Field.Input
             id="title"
             name="title"
@@ -113,7 +113,7 @@ export function BlogForm({ data }: BlogFormProps) {
         </Field>
 
         <Field>
-          <Field.Label htmlFor="slug">slug</Field.Label>
+          <Field.Label htmlFor="slug">Slug</Field.Label>
           <div className="relative w-full">
             <Field.Input
               id="slug"
@@ -167,7 +167,7 @@ export function BlogForm({ data }: BlogFormProps) {
             className="cursor-default text-sm font-medium text-foreground"
             onClick={() => document.getElementById("content-editor")?.focus()}
           >
-            content
+            Content
           </span>
           <RichTextEditor
             ref={editorRef}

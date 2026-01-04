@@ -9,7 +9,7 @@ export default async function Home() {
   const { data: blogs } = await api.get<Blog[]>("/api/blogs");
   return (
     <>
-      <PageTitle className="mb-8">destructure</PageTitle>
+      <PageTitle className="mb-8">Destructure</PageTitle>
       {/* <div className="md:flex items-center gap-2 hidden text-foreground/50 text-sm mb-8"> */}
       {/*   <p> */}
       {/*     press <Kbd>/</Kbd> to search */}
@@ -27,12 +27,11 @@ export default async function Home() {
             className="group block rounded-lg border border-foreground-10 p-4 transition-colors hover:border-accent-50"
           >
             <h2 className="text-lg font-medium transition-colors group-hover:text-accent">
-              {blog.title.toLowerCase()}
+              {blog.title}
             </h2>
             <div className="mt-2 flex items-center justify-between text-sm text-foreground-50">
               <span>
-                ~{blog.author.name.toLowerCase()} •{" "}
-                {formatDate(blog.createdAt).toLowerCase()}
+                ~{blog.author.name} • {formatDate(blog.createdAt)}
               </span>
             </div>
           </Link>
