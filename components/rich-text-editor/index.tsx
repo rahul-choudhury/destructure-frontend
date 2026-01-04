@@ -37,7 +37,9 @@ import {
   $getRoot,
   $getSelection,
   $isRangeSelection,
+  COMMAND_PRIORITY_HIGH,
   FORMAT_TEXT_COMMAND,
+  KEY_DOWN_COMMAND,
 } from "lexical";
 import { $getNearestNodeOfType } from "@lexical/utils";
 import { Toggle } from "@base-ui/react/toggle";
@@ -47,6 +49,7 @@ import {
   Italic,
   Heading2,
   Heading3,
+  Link,
   List,
   ListOrdered,
 } from "lucide-react";
@@ -54,6 +57,12 @@ import { cn } from "@/lib/utils";
 import { CodeHighlightPlugin } from "./plugins/code-highlight-plugin";
 import { CodeActionMenuPlugin } from "./plugins/code-action-menu-plugin";
 import { useCodeBlockState } from "./hooks/use-code-block-state";
+import { useLinkState } from "./hooks/use-link-state";
+import { LinkDialog } from "./components/link-dialog";
+import {
+  LinkClickPlugin,
+  type LinkEditData,
+} from "./plugins/link-click-plugin";
 import { ImageNode } from "./nodes/image-node";
 import { ImagePlugin } from "./plugins/image-plugin";
 import { ImageUploadDialog } from "./components/image-upload-dialog";
@@ -87,13 +96,60 @@ const editorTheme = {
 export const toolbarButtonClass =
   "p-2 rounded text-foreground-60 hover:text-foreground hover:bg-foreground-10 focus:outline-2 focus:outline-accent focus:-outline-offset-1 data-[pressed]:text-accent data-[pressed]:bg-foreground-10";
 
-function ToolbarPlugin() {
+type LinkDialogState = {
+  open: boolean;
+  isEditing: boolean;
+  initialUrl: string;
+  initialLabel: string;
+  linkNodeKey: string | null;
+};
+
+type ToolbarPluginProps = {
+  linkDialogState: LinkDialogState;
+  onLinkDialogChange: (state: LinkDialogState) => void;
+};
+
+function ToolbarPlugin({
+  linkDialogState,
+  onLinkDialogChange,
+}: ToolbarPluginProps) {
   const [editor] = useLexicalComposerContext();
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [headingTag, setHeadingTag] = useState<string | null>(null);
   const [listType, setListType] = useState<string | null>(null);
   const { isCodeBlock } = useCodeBlockState();
+  const { isLink, linkUrl, linkText, linkNodeKey, selectedText } =
+    useLinkState();
+
+  useEffect(() => {
+    return editor.registerCommand(
+      KEY_DOWN_COMMAND,
+      (event: KeyboardEvent) => {
+        if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
+          event.preventDefault();
+          onLinkDialogChange({
+            open: true,
+            isEditing: isLink,
+            initialUrl: isLink ? (linkUrl ?? "") : "",
+            initialLabel: isLink ? (linkText ?? "") : selectedText,
+            linkNodeKey: isLink ? linkNodeKey : null,
+          });
+          return true;
+        }
+        return false;
+      },
+      COMMAND_PRIORITY_HIGH,
+    );
+  }, [
+    editor,
+    isLink,
+    linkUrl,
+    linkText,
+    linkNodeKey,
+    selectedText,
+    onLinkDialogChange,
+  ]);
 
   useEffect(() => {
     return editor.registerUpdateListener(({ editorState }) => {
@@ -214,7 +270,33 @@ function ToolbarPlugin() {
       >
         <Code size={18} />
       </Toggle>
+      <Toggle
+        aria-label="Link"
+        className={toolbarButtonClass}
+        pressed={isLink}
+        onPressedChange={() =>
+          onLinkDialogChange({
+            open: true,
+            isEditing: isLink,
+            initialUrl: isLink ? (linkUrl ?? "") : "",
+            initialLabel: isLink ? (linkText ?? "") : selectedText,
+            linkNodeKey: isLink ? linkNodeKey : null,
+          })
+        }
+      >
+        <Link size={18} />
+      </Toggle>
       <ImageUploadDialog toolbarButtonClass={toolbarButtonClass} />
+      <LinkDialog
+        open={linkDialogState.open}
+        onOpenChange={(open) =>
+          onLinkDialogChange({ ...linkDialogState, open })
+        }
+        isEditing={linkDialogState.isEditing}
+        initialUrl={linkDialogState.initialUrl}
+        initialLabel={linkDialogState.initialLabel}
+        linkNodeKey={linkDialogState.linkNodeKey}
+      />
     </div>
   );
 }
@@ -301,11 +383,28 @@ export function RichTextEditor({
 }: RichTextEditorProps) {
   const [floatingAnchorElem, setFloatingAnchorElem] =
     useState<HTMLDivElement | null>(null);
+  const [linkDialogState, setLinkDialogState] = useState<LinkDialogState>({
+    open: false,
+    isEditing: false,
+    initialUrl: "",
+    initialLabel: "",
+    linkNodeKey: null,
+  });
 
   const onFloatingAnchorRef = useCallback((node: HTMLDivElement | null) => {
     if (node !== null) {
       setFloatingAnchorElem(node);
     }
+  }, []);
+
+  const handleEditLink = useCallback((data: LinkEditData) => {
+    setLinkDialogState({
+      open: true,
+      isEditing: true,
+      initialUrl: data.url,
+      initialLabel: data.text,
+      linkNodeKey: data.nodeKey,
+    });
   }, []);
 
   const initialConfig = {
@@ -334,7 +433,10 @@ export function RichTextEditor({
       )}
     >
       <LexicalComposer initialConfig={initialConfig}>
-        <ToolbarPlugin />
+        <ToolbarPlugin
+          linkDialogState={linkDialogState}
+          onLinkDialogChange={setLinkDialogState}
+        />
         <div className="relative" ref={onFloatingAnchorRef}>
           <RichTextPlugin
             contentEditable={
@@ -360,6 +462,7 @@ export function RichTextEditor({
         <InitialContentPlugin initialContent={initialContent} />
         <CodeHighlightPlugin />
         <ImagePlugin />
+        <LinkClickPlugin onEditLink={handleEditLink} />
         {floatingAnchorElem && (
           <CodeActionMenuPlugin anchorElem={floatingAnchorElem} />
         )}
