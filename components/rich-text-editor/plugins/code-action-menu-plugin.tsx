@@ -13,9 +13,11 @@ import { useCodeBlockState } from "../hooks/use-code-block-state";
 const CODE_LANGUAGE_OPTIONS = [
   { value: "javascript", label: "JavaScript" },
   { value: "typescript", label: "TypeScript" },
+  { value: "tsx", label: "TSX" },
   { value: "go", label: "Go" },
   { value: "python", label: "Python" },
   { value: "java", label: "Java" },
+  { value: "json", label: "JSON" },
 ];
 
 function CodeActionMenu({
