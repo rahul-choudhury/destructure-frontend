@@ -20,7 +20,9 @@ import {
   HeadingNode,
   QuoteNode,
   $createHeadingNode,
+  $createQuoteNode,
   $isHeadingNode,
+  $isQuoteNode,
 } from "@lexical/rich-text";
 import {
   ListNode,
@@ -46,12 +48,14 @@ import { Toggle } from "@base-ui/react/toggle";
 import {
   Bold,
   Code,
+  CodeXml,
   Italic,
   Heading2,
   Heading3,
   Link,
   List,
   ListOrdered,
+  TextQuote,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CodeHighlightPlugin } from "./plugins/code-highlight-plugin";
@@ -118,8 +122,10 @@ function ToolbarPlugin({
   const [editor] = useLexicalComposerContext();
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
+  const [isCode, setIsCode] = useState(false);
   const [headingTag, setHeadingTag] = useState<string | null>(null);
   const [listType, setListType] = useState<string | null>(null);
+  const [isQuote, setIsQuote] = useState(false);
   const { isCodeBlock } = useCodeBlockState();
   const { isLink, linkUrl, linkText, linkNodeKey, selectedText } =
     useLinkState();
@@ -161,6 +167,7 @@ function ToolbarPlugin({
 
         setIsBold(selection.hasFormat("bold"));
         setIsItalic(selection.hasFormat("italic"));
+        setIsCode(selection.hasFormat("code"));
 
         const anchorNode = selection.anchor.getNode();
         const element =
@@ -180,6 +187,8 @@ function ToolbarPlugin({
         } else {
           setListType(null);
         }
+
+        setIsQuote($isQuoteNode(element));
       });
     });
   }, [editor]);
@@ -201,6 +210,19 @@ function ToolbarPlugin({
           $setBlocksType(selection, () => $createParagraphNode());
         } else {
           $setBlocksType(selection, () => $createCodeNode("javascript"));
+        }
+      }
+    });
+  };
+
+  const formatQuote = () => {
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        if (isQuote) {
+          $setBlocksType(selection, () => $createParagraphNode());
+        } else {
+          $setBlocksType(selection, () => $createQuoteNode());
         }
       }
     });
@@ -265,12 +287,30 @@ function ToolbarPlugin({
         <ListOrdered size={18} />
       </Toggle>
       <Toggle
+        aria-label="Inline Code"
+        className={toolbarButtonClass}
+        pressed={isCode}
+        onPressedChange={() =>
+          editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code")
+        }
+      >
+        <CodeXml size={18} />
+      </Toggle>
+      <Toggle
         aria-label="Code Block"
         className={toolbarButtonClass}
         pressed={isCodeBlock}
         onPressedChange={formatCodeBlock}
       >
         <Code size={18} />
+      </Toggle>
+      <Toggle
+        aria-label="Blockquote"
+        className={toolbarButtonClass}
+        pressed={isQuote}
+        onPressedChange={formatQuote}
+      >
+        <TextQuote size={18} />
       </Toggle>
       <Toggle
         aria-label="Link"
