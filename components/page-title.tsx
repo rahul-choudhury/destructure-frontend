@@ -9,9 +9,9 @@ export function PageTitle({
 }) {
   return (
     <h1 className={cn("mb-4 pt-10 font-serif text-6xl md:pt-40", className)}>
-      <span className="text-accent">{"{ "}</span>
+      <span className="text-accent">{"{"}</span>
       {children}
-      <span className="text-accent">{" }"}</span>
+      <span className="text-accent">{"}"}</span>
     </h1>
   );
 }
