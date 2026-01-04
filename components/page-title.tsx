@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils";
-import { Braces } from "lucide-react";
 
 export function PageTitle({
   children,
@@ -9,14 +8,10 @@ export function PageTitle({
   className?: string;
 }) {
   return (
-    <h1
-      className={cn(
-        "mb-4 flex items-center gap-4 pt-10 font-serif text-6xl md:pt-40",
-        className,
-      )}
-    >
-      <Braces className="text-accent" size={50} />
+    <h1 className={cn("mb-4 pt-10 font-serif text-6xl md:pt-40", className)}>
+      <span className="text-accent">{"{ "}</span>
       {children}
+      <span className="text-accent">{" }"}</span>
     </h1>
   );
 }
