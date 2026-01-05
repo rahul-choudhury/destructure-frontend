@@ -41,7 +41,7 @@ export default async function Page({
             className="inline-flex items-center gap-1 transition-colors hover:text-accent"
           >
             <Pencil className="size-3" />
-            edit
+            Edit
           </Link>{" "}
           • <DeleteBlogButton slug={slug} />
         </p>

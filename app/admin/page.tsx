@@ -49,7 +49,7 @@ export default async function Page() {
             </h2>
             <div className="mt-2 flex items-center justify-between text-sm text-foreground-50">
               <span>
-                ~{blog.author.name.toLowerCase()} • {formatDate(blog.createdAt)}
+                ~ {blog.author.name} • {formatDate(blog.createdAt)}
               </span>
               <ToggleVisibilityButton
                 slug={blog.slug}

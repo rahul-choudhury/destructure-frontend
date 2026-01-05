@@ -24,7 +24,7 @@ export function DeleteBlogButton({ slug }: DeleteBlogButtonProps) {
     <AlertDialog.Root>
       <AlertDialog.Trigger className="inline-flex items-center gap-1 transition-colors hover:text-accent">
         <Trash2 className="size-3" />
-        delete
+        Delete
       </AlertDialog.Trigger>
       <AlertDialog.Portal>
         <AlertDialog.Backdrop className="fixed inset-0 bg-black/50 transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0" />
