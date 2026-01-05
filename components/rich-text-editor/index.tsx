@@ -33,6 +33,7 @@ import {
 } from "@lexical/list";
 import { LinkNode } from "@lexical/link";
 import { CodeNode, CodeHighlightNode, $createCodeNode } from "@lexical/code";
+import { CustomCodeHighlightNode } from "./nodes/custom-code-highlight-node";
 import { $setBlocksType } from "@lexical/selection";
 import {
   $createParagraphNode,
@@ -459,7 +460,13 @@ export function RichTextEditor({
       ListItemNode,
       LinkNode,
       CodeNode,
-      CodeHighlightNode,
+      CustomCodeHighlightNode,
+      {
+        replace: CodeHighlightNode,
+        with: (node: CodeHighlightNode) =>
+          new CustomCodeHighlightNode(node.__text, node.__highlightType ?? undefined),
+        withKlass: CustomCodeHighlightNode,
+      },
       ImageNode,
       VideoNode,
     ],
