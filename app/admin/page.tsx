@@ -31,6 +31,7 @@ export default async function Page() {
         <Button
           render={<Link href="/admin/blogs/create" />}
           nativeButton={false}
+          className="hidden md:inline-flex"
         >
           <PlusIcon size={16} />
           Blog
@@ -59,6 +60,13 @@ export default async function Page() {
           </Link>
         ))}
       </div>
+      <Button
+        render={<Link href="/admin/blogs/create" />}
+        nativeButton={false}
+        className="fixed right-4 bottom-4 aspect-square items-center justify-center md:hidden"
+      >
+        <PlusIcon size={20} />
+      </Button>
     </>
   );
 }
