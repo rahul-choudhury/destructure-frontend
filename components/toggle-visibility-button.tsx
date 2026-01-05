@@ -40,7 +40,7 @@ export function ToggleVisibilityButton({
             isPublic && "bg-accent-10 text-accent-80",
           )}
         >
-          {isPublic ? "public" : "private"}
+          {isPublic ? "Public" : "Private"}
         </AlertDialog.Trigger>
         <AlertDialog.Portal>
           <AlertDialog.Backdrop className="fixed inset-0 bg-black/50 transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0" />
