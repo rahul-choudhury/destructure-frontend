@@ -1,6 +1,26 @@
 import { rehype } from "rehype";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
+import { visit } from "unist-util-visit";
+
+import type { Root } from "hast";
+
+function rehypeExternalLinks() {
+  return (tree: Root) => {
+    visit(tree, "element", (node) => {
+      if (node.tagName === "a") {
+        const className = node.properties?.className;
+        const isHeadingAnchor =
+          Array.isArray(className) && className.includes("heading-anchor");
+        if (isHeadingAnchor) return;
+
+        node.properties = node.properties || {};
+        node.properties.target = "_blank";
+        node.properties.rel = "noopener noreferrer";
+      }
+    });
+  };
+}
 
 export async function addHeadingAnchors(html: string): Promise<string> {
   const result = await rehype()
@@ -18,6 +38,7 @@ export async function addHeadingAnchors(html: string): Promise<string> {
         children: [{ type: "text", value: "#" }],
       },
     })
+    .use(rehypeExternalLinks)
     .process(html);
 
   return String(result);
