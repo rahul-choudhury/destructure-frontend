@@ -512,8 +512,8 @@ export function RichTextEditor({
         <LinkPlugin />
         <RestrictHeadingsPlugin />
         <EditorRefPlugin editorRef={ref} />
-        <InitialContentPlugin initialContent={initialContent} />
         <CodeHighlightPlugin />
+        <InitialContentPlugin initialContent={initialContent} />
         <ImagePlugin />
         <VideoPlugin />
         <LinkClickPlugin onEditLink={handleEditLink} />
