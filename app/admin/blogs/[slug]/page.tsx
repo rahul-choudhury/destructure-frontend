@@ -8,7 +8,7 @@ import { Blog } from "@/lib/definitions";
 import { formatDate } from "@/lib/utils";
 import { getTokenFromCookie } from "@/lib/utils.server";
 import { TitleNav } from "@/components/title-nav";
-import { addHeadingAnchors } from "@/lib/add-heading-anchors";
+import { processHtml } from "@/lib/process-html";
 
 export default async function Page({
   params,
@@ -26,7 +26,7 @@ export default async function Page({
     },
   );
 
-  const contentWithAnchors = await addHeadingAnchors(blog.content);
+  const processedContent = await processHtml(blog.content);
 
   return (
     <>
@@ -49,7 +49,7 @@ export default async function Page({
       </div>
       <article
         className="blog-content min-w-0 pb-10"
-        dangerouslySetInnerHTML={{ __html: contentWithAnchors }}
+        dangerouslySetInnerHTML={{ __html: processedContent }}
       />
     </>
   );

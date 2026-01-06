@@ -22,7 +22,30 @@ function rehypeExternalLinks() {
   };
 }
 
-export async function addHeadingAnchors(html: string): Promise<string> {
+function rehypeImageDimensions() {
+  return (tree: Root) => {
+    visit(tree, "element", (node) => {
+      if (node.tagName === "img") {
+        const src = node.properties?.src;
+        if (typeof src !== "string") return;
+
+        try {
+          const url = new URL(src);
+          const width = url.searchParams.get("width");
+          const height = url.searchParams.get("height");
+
+          node.properties = node.properties || {};
+          if (width) node.properties.width = width;
+          if (height) node.properties.height = height;
+        } catch {
+          // skip invalid urls
+        }
+      }
+    });
+  };
+}
+
+export async function processHtml(html: string): Promise<string> {
   const result = await rehype()
     .use(rehypeSlug)
     .use(rehypeAutolinkHeadings, {
@@ -39,6 +62,7 @@ export async function addHeadingAnchors(html: string): Promise<string> {
       },
     })
     .use(rehypeExternalLinks)
+    .use(rehypeImageDimensions)
     .process(html);
 
   return String(result);

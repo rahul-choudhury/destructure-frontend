@@ -464,7 +464,10 @@ export function RichTextEditor({
       {
         replace: CodeHighlightNode,
         with: (node: CodeHighlightNode) =>
-          new CustomCodeHighlightNode(node.__text, node.__highlightType ?? undefined),
+          new CustomCodeHighlightNode(
+            node.__text,
+            node.__highlightType ?? undefined,
+          ),
         withKlass: CustomCodeHighlightNode,
       },
       ImageNode,

@@ -1,6 +1,6 @@
 import { PageTitle } from "@/components/page-title";
 import { TitleNav } from "@/components/title-nav";
-import { addHeadingAnchors } from "@/lib/add-heading-anchors";
+import { processHtml } from "@/lib/process-html";
 import { api } from "@/lib/api-client";
 import { Blog } from "@/lib/definitions";
 import { formatDate } from "@/lib/utils";
@@ -19,7 +19,7 @@ export default async function Page({
 }) {
   const { slug } = await params;
   const { data: blog } = await api.get<Blog>(`/api/blogs/details?slug=${slug}`);
-  const contentWithAnchors = await addHeadingAnchors(blog.content);
+  const processedContent = await processHtml(blog.content);
 
   return (
     <>
@@ -32,7 +32,7 @@ export default async function Page({
       </div>
       <article
         className="blog-content min-w-0 pb-10"
-        dangerouslySetInnerHTML={{ __html: contentWithAnchors }}
+        dangerouslySetInnerHTML={{ __html: processedContent }}
       />
     </>
   );
