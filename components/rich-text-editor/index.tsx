@@ -32,11 +32,18 @@ import {
   $isListNode,
 } from "@lexical/list";
 import { LinkNode } from "@lexical/link";
-import { CodeNode, CodeHighlightNode, $createCodeNode } from "@lexical/code";
+import {
+  CodeNode,
+  CodeHighlightNode,
+  $createCodeNode,
+  $isCodeNode,
+} from "@lexical/code";
+import { loadCodeLanguage } from "@lexical/code-shiki";
 import { CustomCodeHighlightNode } from "./nodes/custom-code-highlight-node";
 import { $setBlocksType } from "@lexical/selection";
 import {
   $createParagraphNode,
+  $getNodeByKey,
   $getRoot,
   $getSelection,
   $isRangeSelection,
@@ -46,8 +53,11 @@ import {
 } from "lexical";
 import { $getNearestNodeOfType } from "@lexical/utils";
 import { Toggle } from "@base-ui/react/toggle";
+import { Select } from "@base-ui/react/select";
 import {
   Bold,
+  Check,
+  ChevronDown,
   Code,
   CodeXml,
   Italic,
@@ -60,7 +70,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CodeHighlightPlugin } from "./plugins/code-highlight-plugin";
-import { CodeActionMenuPlugin } from "./plugins/code-action-menu-plugin";
 import { useCodeBlockState } from "./hooks/use-code-block-state";
 import { useLinkState } from "./hooks/use-link-state";
 import { LinkDialog } from "./components/link-dialog";
@@ -73,6 +82,7 @@ import { VideoNode } from "./nodes/video-node";
 import { ImagePlugin } from "./plugins/image-plugin";
 import { VideoPlugin } from "./plugins/video-plugin";
 import { MediaUploadDialog } from "./components/media-upload-dialog";
+import { CODE_LANGUAGE_OPTIONS } from "@/lib/config";
 
 const editorTheme = {
   paragraph: "text-foreground-70 mb-5",
@@ -127,9 +137,25 @@ function ToolbarPlugin({
   const [headingTag, setHeadingTag] = useState<string | null>(null);
   const [listType, setListType] = useState<string | null>(null);
   const [isQuote, setIsQuote] = useState(false);
-  const { isCodeBlock } = useCodeBlockState();
+  const { isCodeBlock, codeNodeKey, currentLanguage } = useCodeBlockState();
   const { isLink, linkUrl, linkText, linkNodeKey, selectedText } =
     useLinkState();
+
+  const handleLanguageChange = useCallback(
+    (language: string | null) => {
+      if (!codeNodeKey || !language) return;
+
+      loadCodeLanguage(language, editor, codeNodeKey);
+
+      editor.update(() => {
+        const node = $getNodeByKey(codeNodeKey);
+        if ($isCodeNode(node)) {
+          node.setLanguage(language);
+        }
+      });
+    },
+    [editor, codeNodeKey],
+  );
 
   useEffect(() => {
     return editor.registerCommand(
@@ -330,6 +356,44 @@ function ToolbarPlugin({
         <Link size={18} />
       </Toggle>
       <MediaUploadDialog toolbarButtonClass={toolbarButtonClass} />
+      {isCodeBlock && (
+        <Select.Root
+          value={currentLanguage}
+          onValueChange={handleLanguageChange}
+        >
+          <Select.Trigger className="ml-auto flex items-center gap-1 rounded bg-foreground-10 px-2 py-1 text-xs text-foreground-60 transition-colors hover:bg-foreground-20 hover:text-foreground focus:outline-none">
+            <Select.Value>
+              {(value) =>
+                CODE_LANGUAGE_OPTIONS.find((opt) => opt.value === value)
+                  ?.label ?? value
+              }
+            </Select.Value>
+            <ChevronDown size={12} />
+          </Select.Trigger>
+          <Select.Portal>
+            <Select.Positioner
+              sideOffset={4}
+              align="end"
+              alignItemWithTrigger={false}
+            >
+              <Select.Popup className="max-h-64 w-40 origin-(--transform-origin) overflow-y-auto rounded-md border border-foreground-20 bg-background shadow-lg transition-all duration-150 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
+                {CODE_LANGUAGE_OPTIONS.map((option) => (
+                  <Select.Item
+                    key={option.value}
+                    value={option.value}
+                    className="flex items-center justify-between px-3 py-1.5 text-sm text-foreground-70 transition-colors outline-none data-highlighted:bg-foreground-10 data-selected:text-accent"
+                  >
+                    <Select.ItemText>{option.label}</Select.ItemText>
+                    <Select.ItemIndicator>
+                      <Check size={14} />
+                    </Select.ItemIndicator>
+                  </Select.Item>
+                ))}
+              </Select.Popup>
+            </Select.Positioner>
+          </Select.Portal>
+        </Select.Root>
+      )}
       <LinkDialog
         open={linkDialogState.open}
         onOpenChange={(open) =>
@@ -424,8 +488,6 @@ export function RichTextEditor({
   ref,
   "aria-labelledby": ariaLabelledby,
 }: RichTextEditorProps) {
-  const [floatingAnchorElem, setFloatingAnchorElem] =
-    useState<HTMLDivElement | null>(null);
   const [linkDialogState, setLinkDialogState] = useState<LinkDialogState>({
     open: false,
     isEditing: false,
@@ -433,12 +495,6 @@ export function RichTextEditor({
     initialLabel: "",
     linkNodeKey: null,
   });
-
-  const onFloatingAnchorRef = useCallback((node: HTMLDivElement | null) => {
-    if (node !== null) {
-      setFloatingAnchorElem(node);
-    }
-  }, []);
 
   const handleEditLink = useCallback((data: LinkEditData) => {
     setLinkDialogState({
@@ -490,7 +546,7 @@ export function RichTextEditor({
           linkDialogState={linkDialogState}
           onLinkDialogChange={setLinkDialogState}
         />
-        <div className="relative" ref={onFloatingAnchorRef}>
+        <div className="relative">
           <RichTextPlugin
             contentEditable={
               <ContentEditable
@@ -517,9 +573,6 @@ export function RichTextEditor({
         <ImagePlugin />
         <VideoPlugin />
         <LinkClickPlugin onEditLink={handleEditLink} />
-        {floatingAnchorElem && (
-          <CodeActionMenuPlugin anchorElem={floatingAnchorElem} />
-        )}
       </LexicalComposer>
     </div>
   );

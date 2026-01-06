@@ -8,7 +8,6 @@ import { $getNearestNodeOfType } from "@lexical/utils";
 
 export type CodeBlockState = {
   isCodeBlock: boolean;
-  codeElement: HTMLElement | null;
   codeNodeKey: string | null;
   currentLanguage: string;
 };
@@ -17,7 +16,6 @@ export function useCodeBlockState(): CodeBlockState {
   const [editor] = useLexicalComposerContext();
   const [state, setState] = useState<CodeBlockState>({
     isCodeBlock: false,
-    codeElement: null,
     codeNodeKey: null,
     currentLanguage: "javascript",
   });
@@ -29,7 +27,6 @@ export function useCodeBlockState(): CodeBlockState {
         if (!$isRangeSelection(selection)) {
           setState({
             isCodeBlock: false,
-            codeElement: null,
             codeNodeKey: null,
             currentLanguage: "javascript",
           });
@@ -40,22 +37,16 @@ export function useCodeBlockState(): CodeBlockState {
         const codeNode = $getNearestNodeOfType(anchorNode, CodeNode);
 
         if ($isCodeNode(codeNode)) {
-          const key = codeNode.getKey();
-          const element = editor.getElementByKey(key);
-          if (element) {
-            setState({
-              isCodeBlock: true,
-              codeElement: element,
-              codeNodeKey: key,
-              currentLanguage: codeNode.getLanguage() || "javascript",
-            });
-            return;
-          }
+          setState({
+            isCodeBlock: true,
+            codeNodeKey: codeNode.getKey(),
+            currentLanguage: codeNode.getLanguage() || "javascript",
+          });
+          return;
         }
 
         setState({
           isCodeBlock: false,
-          codeElement: null,
           codeNodeKey: null,
           currentLanguage: "javascript",
         });
