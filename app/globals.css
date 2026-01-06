@@ -112,8 +112,7 @@ body {
     @apply text-foreground-70;
   }
 
-  .blog-content img,
-  .blog-content video {
+  .blog-content img {
     @apply my-6 rounded-lg;
   }
 }

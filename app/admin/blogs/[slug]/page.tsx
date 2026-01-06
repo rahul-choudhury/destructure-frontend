@@ -1,6 +1,7 @@
 import { Pencil } from "lucide-react";
 import Link from "next/link";
 
+import { BlogContent } from "@/components/blog-content";
 import { DeleteBlogButton } from "@/components/delete-blog-button";
 import { PageTitle } from "@/components/page-title";
 import { api } from "@/lib/api-client";
@@ -47,10 +48,7 @@ export default async function Page({
         </p>
         <p>~ {blog.author.name}</p>
       </div>
-      <article
-        className="blog-content min-w-0 pb-10"
-        dangerouslySetInnerHTML={{ __html: processedContent }}
-      />
+      <BlogContent html={processedContent} />
     </>
   );
 }

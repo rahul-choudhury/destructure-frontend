@@ -38,7 +38,7 @@ export function VideoPlayer({
   };
 
   return (
-    <div className="group relative overflow-hidden rounded-md border">
+    <div className="group relative my-6 overflow-hidden rounded-lg">
       <video
         ref={ref}
         muted

@@ -1,3 +1,4 @@
+import { BlogContent } from "@/components/blog-content";
 import { PageTitle } from "@/components/page-title";
 import { TitleNav } from "@/components/title-nav";
 import { processHtml } from "@/lib/process-html";
@@ -30,10 +31,7 @@ export default async function Page({
         <p>{formatDate(blog.createdAt)}</p>
         <p>~ {blog.author.name}</p>
       </div>
-      <article
-        className="blog-content min-w-0 pb-10"
-        dangerouslySetInnerHTML={{ __html: processedContent }}
-      />
+      <BlogContent html={processedContent} />
     </>
   );
 }

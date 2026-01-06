@@ -47,6 +47,7 @@ function rehypeImageDimensions() {
 
 export async function processHtml(html: string): Promise<string> {
   const result = await rehype()
+    .data("settings", { fragment: true })
     .use(rehypeSlug)
     .use(rehypeAutolinkHeadings, {
       behavior: "append",
