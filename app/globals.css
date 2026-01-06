@@ -111,4 +111,8 @@ body {
   .blog-content li {
     @apply text-foreground-70;
   }
+
+  .blog-content img {
+    @apply my-6 rounded-lg;
+  }
 }
