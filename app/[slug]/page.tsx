@@ -34,7 +34,7 @@ export default async function Page({
 }) {
   const { slug } = await params;
   const { data: blog } = await api.get<Blog>(`/api/blogs/details?slug=${slug}`);
-  const processedContent = await processHtml(blog.content);
+  const { html } = await processHtml(blog.content);
 
   return (
     <>
@@ -45,7 +45,7 @@ export default async function Page({
         <p>{formatDate(blog.createdAt)}</p>
         <p>~ {blog.author.name}</p>
       </div>
-      <BlogContent html={processedContent} />
+      <BlogContent html={html} />
     </>
   );
 }

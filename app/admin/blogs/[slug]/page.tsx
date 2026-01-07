@@ -27,7 +27,7 @@ export default async function Page({
     },
   );
 
-  const processedContent = await processHtml(blog.content);
+  const { html } = await processHtml(blog.content);
 
   return (
     <>
@@ -48,7 +48,7 @@ export default async function Page({
         </p>
         <p>~ {blog.author.name}</p>
       </div>
-      <BlogContent html={processedContent} />
+      <BlogContent html={html} />
     </>
   );
 }

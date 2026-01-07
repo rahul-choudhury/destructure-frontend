@@ -1,9 +1,17 @@
 import { rehype } from "rehype";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
+import { toString } from "hast-util-to-string";
 import { visit } from "unist-util-visit";
 
-import type { Root } from "hast";
+import type { Element, Root } from "hast";
+
+// Table of Contents
+export interface TocEntry {
+  id: string;
+  title: string;
+  level: number;
+}
 
 function rehypeExternalLinks() {
   return (tree: Root) => {
@@ -45,10 +53,29 @@ function rehypeImageDimensions() {
   };
 }
 
-export async function processHtml(html: string): Promise<string> {
+export interface ProcessHtmlResult {
+  html: string;
+  toc: TocEntry[];
+}
+
+export async function processHtml(html: string): Promise<ProcessHtmlResult> {
+  const toc: TocEntry[] = [];
+
   const result = await rehype()
     .data("settings", { fragment: true })
     .use(rehypeSlug)
+    .use(() => (tree: Root) => {
+      visit(tree, "element", (node: Element) => {
+        const match = node.tagName.match(/^h([1-6])$/);
+        if (match && node.properties?.id) {
+          toc.push({
+            id: String(node.properties.id),
+            title: toString(node),
+            level: parseInt(match[1], 10),
+          });
+        }
+      });
+    })
     .use(rehypeAutolinkHeadings, {
       behavior: "append",
       properties: {
@@ -66,5 +93,5 @@ export async function processHtml(html: string): Promise<string> {
     .use(rehypeImageDimensions)
     .process(html);
 
-  return String(result);
+  return { html: String(result), toc };
 }
