@@ -10,15 +10,15 @@ Destructure is a blog platform frontend built with Next.js 16 (App Router), Reac
 
 ```bash
 # Development
-bun dev              # Start dev server
-bun build            # Build for production
-bun start            # Start production server
+bun run dev              # Start dev server
+bun run build            # Build for production
+bun run start            # Start production server
 
 # Code Quality
-bun lint             # Run ESLint
-bun typecheck        # Run TypeScript type checking (tsc --noEmit)
-bun format:check     # Check formatting with Prettier
-bun format           # Format code with Prettier
+bun run lint             # Run ESLint
+bun run typecheck        # Run TypeScript type checking (tsc --noEmit)
+bun run format:check     # Check formatting with Prettier
+bun run format           # Format code with Prettier
 ```
 
 ## Environment Variables
