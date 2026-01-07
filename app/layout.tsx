@@ -19,7 +19,10 @@ const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://destructure.in"),
-  title: "Destructure",
+  title: {
+    template: "%s | Destructure",
+    default: "Destructure",
+  },
   description: "A blog by Rahul & Shakti",
 };
 

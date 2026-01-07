@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { BlogContent } from "@/components/blog-content";
 import { PageTitle } from "@/components/page-title";
 import { TitleNav } from "@/components/title-nav";
@@ -11,6 +12,19 @@ export async function generateStaticParams() {
   return blogs.data.map((blog) => ({
     slug: blog.slug,
   }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const { data: blog } = await api.get<Blog>(`/api/blogs/details?slug=${slug}`);
+
+  return {
+    title: blog.title,
+  };
 }
 
 export default async function Page({
