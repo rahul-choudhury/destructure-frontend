@@ -1,5 +1,6 @@
 "use client";
 
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion, Variants } from "motion/react";
 import { useRef, useState, VideoHTMLAttributes } from "react";
@@ -16,6 +17,7 @@ export function VideoPlayer({
 }: VideoHTMLAttributes<HTMLVideoElement>) {
   const [isPlaying, setIsPlaying] = useState(false);
   const ref = useRef<HTMLVideoElement>(null);
+  const notDesktop = useMediaQuery("(max-width: 1023px)");
 
   const handleVideoPlayback = () => {
     const video = ref.current;
@@ -62,50 +64,66 @@ export function VideoPlayer({
             !isPlaying && "opacity-100",
           )}
         >
-          <AnimatePresence mode="wait" initial={false}>
-            {!isPlaying ? (
-              <motion.svg
-                key="play"
-                variants={iconVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                xmlns="http://www.w3.org/2000/svg"
-                width="28"
-                height="28"
-                viewBox="0 0 24 24"
-                fill="none"
-              >
-                <path
-                  d="M7.65703 2.27884C6.49076 1.57201 5 2.41169 5 3.77543V20.2247C5 21.5884 6.49076 22.4281 7.65703 21.7213L21.2276 13.4966C22.3516 12.8155 22.3516 11.1846 21.2276 10.5035L7.65703 2.27884Z"
-                  fill="currentColor"
-                  strokeWidth="1"
-                ></path>
-              </motion.svg>
-            ) : (
-              <motion.svg
-                key="pause"
-                variants={iconVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
-                xmlns="http://www.w3.org/2000/svg"
-                width="28"
-                height="28"
-                viewBox="0 0 24 24"
-                fill="none"
-              >
-                <path
-                  d="M5.75 3C4.7835 3 4 3.7835 4 4.75V19.25C4 20.2165 4.7835 21 5.75 21H8.25C9.2165 21 10 20.2165 10 19.25V4.75C10 3.7835 9.2165 3 8.25 3H5.75Z"
-                  fill="currentColor"
-                ></path>
-                <path
-                  d="M15.75 3C14.7835 3 14 3.7835 14 4.75V19.25C14 20.2165 14.7835 21 15.75 21H18.25C19.2165 21 20 20.2165 20 19.25V4.75C20 3.7835 19.2165 3 18.25 3H15.75Z"
-                  fill="currentColor"
-                ></path>
-              </motion.svg>
-            )}
-          </AnimatePresence>
+          {notDesktop ? (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M7.65703 2.27884C6.49076 1.57201 5 2.41169 5 3.77543V20.2247C5 21.5884 6.49076 22.4281 7.65703 21.7213L21.2276 13.4966C22.3516 12.8155 22.3516 11.1846 21.2276 10.5035L7.65703 2.27884Z"
+                fill="currentColor"
+                strokeWidth="1"
+              />
+            </svg>
+          ) : (
+            <AnimatePresence mode="wait" initial={false}>
+              {!isPlaying ? (
+                <motion.svg
+                  key="play"
+                  variants={iconVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <path
+                    d="M7.65703 2.27884C6.49076 1.57201 5 2.41169 5 3.77543V20.2247C5 21.5884 6.49076 22.4281 7.65703 21.7213L21.2276 13.4966C22.3516 12.8155 22.3516 11.1846 21.2276 10.5035L7.65703 2.27884Z"
+                    fill="currentColor"
+                    strokeWidth="1"
+                  />
+                </motion.svg>
+              ) : (
+                <motion.svg
+                  key="pause"
+                  variants={iconVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="28"
+                  height="28"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                >
+                  <path
+                    d="M5.75 3C4.7835 3 4 3.7835 4 4.75V19.25C4 20.2165 4.7835 21 5.75 21H8.25C9.2165 21 10 20.2165 10 19.25V4.75C10 3.7835 9.2165 3 8.25 3H5.75Z"
+                    fill="currentColor"
+                  />
+                  <path
+                    d="M15.75 3C14.7835 3 14 3.7835 14 4.75V19.25C14 20.2165 14.7835 21 15.75 21H18.25C19.2165 21 20 20.2165 20 19.25V4.75C20 3.7835 19.2165 3 18.25 3H15.75Z"
+                    fill="currentColor"
+                  />
+                </motion.svg>
+              )}
+            </AnimatePresence>
+          )}
         </div>
       </button>
     </div>
