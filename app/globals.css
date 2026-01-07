@@ -64,11 +64,11 @@ body {
 
 @layer components {
   .blog-content h2 {
-    @apply mt-10 mb-4 text-3xl font-medium;
+    @apply mt-10 mb-4 scroll-mt-24 text-3xl font-medium;
   }
 
   .blog-content h3 {
-    @apply mt-8 mb-3 text-xl font-medium text-foreground;
+    @apply mt-8 mb-3 scroll-mt-24 text-xl font-medium text-foreground;
   }
 
   .blog-content .heading-anchor {
