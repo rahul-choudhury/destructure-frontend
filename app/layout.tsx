@@ -6,16 +6,14 @@ const instrumentSerif = Instrument_Serif({
   variable: "--font-serif",
   weight: "400",
   subsets: ["latin"],
-  display: "swap",
 });
 
 const firaCode = Fira_Code({
   variable: "--font-mono",
   subsets: ["latin"],
-  display: "swap",
 });
 
-const inter = Inter({ subsets: ["latin"], display: "swap" });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://destructure.in"),
