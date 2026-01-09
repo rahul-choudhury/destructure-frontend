@@ -3,7 +3,7 @@ import { API_URL } from "@/lib/config";
 
 export default function Page() {
   return (
-    <div className="grid min-h-screen place-items-center">
+    <div className="grid min-h-svh place-items-center">
       <Button
         variant="outline"
         size="lg"
