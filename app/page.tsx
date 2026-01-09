@@ -31,7 +31,7 @@ export default async function Home() {
             </h2>
             <div className="mt-2 flex items-center justify-between text-sm text-foreground-50">
               <span>
-                ~{blog.author.name} • {formatDate(blog.createdAt)}
+                ~ {blog.author.name} • {formatDate(blog.createdAt)}
               </span>
             </div>
           </Link>
