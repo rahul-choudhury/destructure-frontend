@@ -4,6 +4,7 @@ import Link from "next/link";
 import { BlogContent } from "@/components/blog-content";
 import { DeleteBlogButton } from "@/components/delete-blog-button";
 import { PageTitle } from "@/components/page-title";
+import { TableOfContents } from "@/components/table-of-contents";
 import { api } from "@/lib/api-client";
 import { Blog } from "@/lib/definitions";
 import { formatDate } from "@/lib/utils";
@@ -27,7 +28,7 @@ export default async function Page({
     },
   );
 
-  const { html } = await processHtml(blog.content);
+  const { html, toc } = await processHtml(blog.content);
 
   return (
     <>
@@ -48,6 +49,7 @@ export default async function Page({
         </p>
         <p>~ {blog.author.name}</p>
       </div>
+      <TableOfContents toc={toc} />
       <BlogContent html={html} />
     </>
   );

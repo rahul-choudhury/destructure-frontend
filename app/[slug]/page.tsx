@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { BlogContent } from "@/components/blog-content";
 import { PageTitle } from "@/components/page-title";
 import { TitleNav } from "@/components/title-nav";
+import { TableOfContents } from "@/components/table-of-contents";
 import { processHtml } from "@/lib/process-html";
 import { api } from "@/lib/api-client";
 import { Blog } from "@/lib/definitions";
@@ -34,7 +35,7 @@ export default async function Page({
 }) {
   const { slug } = await params;
   const { data: blog } = await api.get<Blog>(`/api/blogs/details?slug=${slug}`);
-  const { html } = await processHtml(blog.content);
+  const { html, toc } = await processHtml(blog.content);
 
   return (
     <>
@@ -45,6 +46,7 @@ export default async function Page({
         <p>{formatDate(blog.createdAt)}</p>
         <p>~ {blog.author.name}</p>
       </div>
+      <TableOfContents toc={toc} />
       <BlogContent html={html} />
     </>
   );
