@@ -1,7 +1,3 @@
-# CLAUDE.md
-
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## Project Overview
 
 Destructure is a blog platform frontend built with Next.js 16 (App Router), React 19, and TypeScript. It connects to a separate backend API for data persistence. The project uses Bun as the package manager.
@@ -9,24 +5,9 @@ Destructure is a blog platform frontend built with Next.js 16 (App Router), Reac
 ## Commands
 
 ```bash
-# Development
-bun run dev              # Start dev server
-bun run build            # Build for production
-bun run start            # Start production server
-
-# Code Quality
 bun run lint             # Run ESLint
 bun run typecheck        # Run TypeScript type checking (tsc --noEmit)
-bun run format:check     # Check formatting with Prettier
-bun run format           # Format code with Prettier
 ```
-
-## Environment Variables
-
-Copy `.env.sample` to `.env.local` and set:
-
-- `NEXT_PUBLIC_API_URL` - Backend API base URL
-- `JWT_EXPIRY` - JWT token expiry in days
 
 ## Architecture
 
@@ -59,18 +40,8 @@ Blog content is processed server-side (`lib/process-html.ts`) using rehype plugi
 
 - Auto-generates heading IDs and anchor links
 - Opens external links in new tabs
-- Extracts image dimensions from URL params
-
-### Styling
-
-- Tailwind CSS v4 with PostCSS
-- Global styles in `app/globals.css`
-- `cn()` utility combines clsx + tailwind-merge for conditional classes
-- Uses `@base-ui/react` for accessible primitive components
-
-### Path Aliases
-
-`@/*` maps to project root (configured in `tsconfig.json`)
+- Extracts media dimensions from URL params
 
 ### Component Library
+
 The project uses Base UI components. To browse their docs, use the `md` version of the link. For ex: use `https://base-ui.com/react/components/accordion.md` instead of `https://base-ui.com/react/components/accordion`.
