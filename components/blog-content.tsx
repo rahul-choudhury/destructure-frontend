@@ -1,5 +1,3 @@
-"use client";
-
 import parse, { DOMNode, Element } from "html-react-parser";
 import { VideoPlayer } from "./video-player";
 
