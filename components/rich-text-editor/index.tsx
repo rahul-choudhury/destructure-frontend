@@ -480,6 +480,36 @@ export type RichTextEditorProps = {
   "aria-labelledby"?: string;
 };
 
+function handleLexicalError(error: Error) {
+  console.error("Lexical error:", error);
+}
+
+const initialConfig = {
+  namespace: "BlogEditor",
+  theme: editorTheme,
+  nodes: [
+    HeadingNode,
+    QuoteNode,
+    ListNode,
+    ListItemNode,
+    LinkNode,
+    CodeNode,
+    CustomCodeHighlightNode,
+    {
+      replace: CodeHighlightNode,
+      with: (node: CodeHighlightNode) =>
+        new CustomCodeHighlightNode(
+          node.__text,
+          node.__highlightType ?? undefined,
+        ),
+      withKlass: CustomCodeHighlightNode,
+    },
+    ImageNode,
+    VideoNode,
+  ],
+  onError: handleLexicalError,
+};
+
 export function RichTextEditor({
   id,
   className,
@@ -505,34 +535,6 @@ export function RichTextEditor({
       linkNodeKey: data.nodeKey,
     });
   }, []);
-
-  const initialConfig = {
-    namespace: "BlogEditor",
-    theme: editorTheme,
-    nodes: [
-      HeadingNode,
-      QuoteNode,
-      ListNode,
-      ListItemNode,
-      LinkNode,
-      CodeNode,
-      CustomCodeHighlightNode,
-      {
-        replace: CodeHighlightNode,
-        with: (node: CodeHighlightNode) =>
-          new CustomCodeHighlightNode(
-            node.__text,
-            node.__highlightType ?? undefined,
-          ),
-        withKlass: CustomCodeHighlightNode,
-      },
-      ImageNode,
-      VideoNode,
-    ],
-    onError: (error: Error) => {
-      console.error("Lexical error:", error);
-    },
-  };
 
   return (
     <div
