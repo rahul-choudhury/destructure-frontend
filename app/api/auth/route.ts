@@ -10,6 +10,7 @@ const paramSchema = z.object({
   scope: z.string(),
   authuser: z.string(),
   prompt: z.string(),
+  state: z.string(),
 });
 
 export async function GET(request: NextRequest) {
@@ -51,5 +52,5 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  redirect("/");
+  redirect(parsedParams.data.state);
 }

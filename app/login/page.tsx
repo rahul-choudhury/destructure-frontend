@@ -2,13 +2,16 @@ import { Button } from "@/components/ui/button";
 import { API_URL } from "@/lib/config";
 
 export default function Page() {
+  const url = new URL("/api/auth/login", API_URL);
+  url.searchParams.append("state", "/admin");
+
   return (
     <div className="grid min-h-svh place-items-center">
       <Button
         variant="outline"
         size="lg"
         nativeButton={false}
-        render={<a href={`${API_URL}/api/auth/login`} />}
+        render={<a href={url.toString()} />}
       >
         <svg viewBox="0 0 24 24" className="h-5 w-5">
           <path
