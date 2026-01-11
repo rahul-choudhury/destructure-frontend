@@ -4,10 +4,14 @@ import { api } from "@/lib/api-client";
 import { Blog } from "@/lib/definitions";
 
 export async function generateStaticParams() {
-  const blogs = await api.get<Blog[]>("/api/blogs");
-  return blogs.data.map((blog) => ({
-    slug: blog.slug,
-  }));
+  try {
+    const blogs = await api.get<Blog[]>("/api/blogs");
+    return blogs.data.map((blog) => ({
+      slug: blog.slug,
+    }));
+  } catch {
+    return [];
+  }
 }
 
 export const alt = "Destructure";
@@ -24,49 +28,84 @@ export default async function Image({
 }) {
   const { slug } = await params;
 
-  const [{ data: blog }, instrumentSerifFont] = await Promise.all([
-    api.get<Blog>(`/api/blogs/details?slug=${slug}`),
-    fetch(
-      "https://fonts.gstatic.com/s/instrumentserif/v5/jizBRFtNs2ka5fXjeivQ4LroWlx-2zI.ttf",
-    ).then((res) => res.arrayBuffer()),
-  ]);
+  let title = "Destructure";
 
-  return new ImageResponse(
-    <div
-      style={{
-        background: "#222222",
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 80,
-      }}
-    >
+  try {
+    const [{ data: blog }, instrumentSerifFont] = await Promise.all([
+      api.get<Blog>(`/api/blogs/details?slug=${slug}`),
+      fetch(
+        "https://fonts.gstatic.com/s/instrumentserif/v5/jizBRFtNs2ka5fXjeivQ4LroWlx-2zI.ttf",
+      ).then((res) => res.arrayBuffer()),
+    ]);
+
+    title = blog.title;
+
+    return new ImageResponse(
       <div
         style={{
+          background: "#222222",
+          width: "100%",
+          height: "100%",
           display: "flex",
-          fontSize: 56,
-          fontFamily: "Instrument Serif",
-          color: "#faf3e1",
-          lineHeight: 1.2,
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 80,
         }}
       >
-        <span style={{ color: "#ff6d1f" }}>{"{"}</span>
-        {blog.title}
-        <span style={{ color: "#ff6d1f" }}>{"}"}</span>
-      </div>
-    </div>,
-    {
-      ...size,
-      fonts: [
-        {
-          name: "Instrument Serif",
-          data: instrumentSerifFont,
-          style: "normal",
-          weight: 400,
-        },
-      ],
-    },
-  );
+        <div
+          style={{
+            display: "flex",
+            fontSize: 56,
+            fontFamily: "Instrument Serif",
+            color: "#faf3e1",
+            lineHeight: 1.2,
+          }}
+        >
+          <span style={{ color: "#ff6d1f" }}>{"{"}</span>
+          {title}
+          <span style={{ color: "#ff6d1f" }}>{"}"}</span>
+        </div>
+      </div>,
+      {
+        ...size,
+        fonts: [
+          {
+            name: "Instrument Serif",
+            data: instrumentSerifFont,
+            style: "normal",
+            weight: 400,
+          },
+        ],
+      },
+    );
+  } catch {
+    // Fallback OG image without custom font when API is unreachable
+    return new ImageResponse(
+      <div
+        style={{
+          background: "#222222",
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 80,
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            fontSize: 56,
+            color: "#faf3e1",
+            lineHeight: 1.2,
+          }}
+        >
+          <span style={{ color: "#ff6d1f" }}>{"{"}</span>
+          {title}
+          <span style={{ color: "#ff6d1f" }}>{"}"}</span>
+        </div>
+      </div>,
+      { ...size },
+    );
+  }
 }
