@@ -1,9 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
 import { api } from "./api-client";
 import { getTokenFromCookie } from "./session";
+
+export async function logout() {
+  const cookieStore = await cookies();
+  cookieStore.delete("token");
+}
 
 export async function checkSlugUniqueness(slug: string) {
   const token = await getTokenFromCookie();
