@@ -15,7 +15,7 @@ bun run typecheck        # Run TypeScript type checking (tsc --noEmit)
 
 - **API Client** (`lib/api-client.ts`): Centralized fetch wrapper with typed responses. All API calls return `ApiResponse<T>` structure. GET requests that return 404 automatically call Next.js `notFound()`.
 - **Server Actions** (`lib/actions.ts`): All mutations (create/update/delete blog, upload media) use Next.js Server Actions with JWT auth from cookies.
-- **Auth**: Google OAuth callback at `/api/auth`. JWT stored in httpOnly cookie, accessed via `getTokenFromCookie()` from `lib/utils.server.ts`.
+- **Auth**: Google OAuth callback at `/api/auth`. JWT stored in httpOnly cookie, accessed via `getTokenFromCookie()` from `lib/session.ts`.
 
 ### Key Routes
 
