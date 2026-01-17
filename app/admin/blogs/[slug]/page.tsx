@@ -8,7 +8,7 @@ import { TableOfContents } from "@/components/table-of-contents";
 import { api } from "@/lib/api-client";
 import { Blog } from "@/lib/definitions";
 import { formatDate } from "@/lib/utils";
-import { getTokenFromCookie } from "@/lib/utils.server";
+import { getTokenFromCookie } from "@/lib/session";
 import { TitleNav } from "@/components/title-nav";
 import { processHtml } from "@/lib/process-html";
 

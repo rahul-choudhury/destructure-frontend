@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
-import { getTokenFromCookie } from "./lib/utils.server";
+import { getTokenFromCookie } from "./lib/session";
 
 export async function proxy(request: NextRequest) {
   const token = await getTokenFromCookie();

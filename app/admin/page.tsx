@@ -5,7 +5,7 @@ import { ToggleVisibilityButton } from "@/components/toggle-visibility-button";
 import { api } from "@/lib/api-client";
 import { Blog, User } from "@/lib/definitions";
 import { formatDate } from "@/lib/utils";
-import { getTokenFromCookie } from "@/lib/utils.server";
+import { getTokenFromCookie } from "@/lib/session";
 import { PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

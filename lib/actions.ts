@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect, RedirectType } from "next/navigation";
 import { api } from "./api-client";
-import { getTokenFromCookie } from "./utils.server";
+import { getTokenFromCookie } from "./session";
 
 export async function checkSlugUniqueness(slug: string) {
   const token = await getTokenFromCookie();

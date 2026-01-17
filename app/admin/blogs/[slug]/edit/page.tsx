@@ -3,7 +3,7 @@ import { PageTitle } from "@/components/page-title";
 import { TitleNav } from "@/components/title-nav";
 import { api } from "@/lib/api-client";
 import { Blog } from "@/lib/definitions";
-import { getTokenFromCookie } from "@/lib/utils.server";
+import { getTokenFromCookie } from "@/lib/session";
 
 export default async function Page({
   params,
