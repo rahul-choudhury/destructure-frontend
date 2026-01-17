@@ -26,6 +26,7 @@
     "clsx": "^2.1.1",
     "hast-util-to-string": "^3.0.1",
     "html-react-parser": "^5.2.11",
+    "jose": "^6.1.3",
     "lexical": "^0.39.0",
     "lucide-react": "^0.562.0",
     "motion": "^12.26.2",
