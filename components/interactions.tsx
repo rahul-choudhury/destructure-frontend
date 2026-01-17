@@ -272,6 +272,10 @@ export function Interactions({ slug }: InteractionsProps) {
 
   return (
     <div className="mt-12 border-t border-foreground-10 pt-8">
+      <p className="mb-4 text-sm text-foreground-50">
+        Made it this far? Drop a reaction or leave a comment below.
+      </p>
+
       {/* Reactions Section */}
       <div className="flex flex-wrap gap-2">
         {REACTIONS.map(({ type, emoji }) => (
