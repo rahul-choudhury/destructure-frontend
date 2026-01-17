@@ -19,7 +19,7 @@ export default async function Page() {
 
   const [{ data: profile }, { data: blogs }] = await Promise.all([
     api.get<User>("/api/auth/profile", authHeader),
-    api.get<Blog[]>("/api/admin/blog", authHeader),
+    api.get<Blog[]>("/api/admin/blogs", authHeader),
   ]);
 
   const firstName = profile.name.split(" ")[0];

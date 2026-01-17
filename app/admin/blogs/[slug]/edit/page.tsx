@@ -13,14 +13,11 @@ export default async function Page({
   const { slug } = await params;
   const token = await getTokenFromCookie();
 
-  const { data: blog } = await api.get<Blog>(
-    `/api/blogs/details?slug=${slug}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  const { data: blog } = await api.get<Blog>(`/api/blogs/${slug}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
-  );
+  });
 
   return (
     <>

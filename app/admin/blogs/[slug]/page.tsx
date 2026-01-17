@@ -19,14 +19,11 @@ export default async function Page({
 }) {
   const token = await getTokenFromCookie();
   const { slug } = await params;
-  const { data: blog } = await api.get<Blog>(
-    `/api/blogs/details?slug=${slug}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+  const { data: blog } = await api.get<Blog>(`/api/blogs/${slug}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
-  );
+  });
 
   const { html, toc } = await processHtml(blog.content);
 

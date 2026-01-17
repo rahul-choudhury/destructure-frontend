@@ -21,7 +21,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const { data: blog } = await api.get<Blog>(`/api/blogs/details?slug=${slug}`);
+  const { data: blog } = await api.get<Blog>(`/api/blogs/${slug}`);
 
   return {
     title: blog.title,
@@ -34,7 +34,7 @@ export default async function Page({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const { data: blog } = await api.get<Blog>(`/api/blogs/details?slug=${slug}`);
+  const { data: blog } = await api.get<Blog>(`/api/blogs/${slug}`);
   const { html, toc } = await processHtml(blog.content);
 
   return (

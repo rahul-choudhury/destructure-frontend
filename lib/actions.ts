@@ -45,7 +45,7 @@ export async function createBlog(state: unknown, data: unknown) {
   const token = await getTokenFromCookie();
 
   try {
-    await api.post("/api/admin/blog", data, {
+    await api.post("/api/admin/blogs", data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -65,7 +65,7 @@ export async function updateBlog(slug: string, state: unknown, data: unknown) {
   const token = await getTokenFromCookie();
 
   try {
-    await api.put(`/api/admin/blog/${slug}`, data, {
+    await api.put(`/api/admin/blogs/${slug}`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -86,7 +86,7 @@ export async function deleteBlog(slug: string) {
   const token = await getTokenFromCookie();
 
   try {
-    await api.delete(`/api/admin/blog/${slug}`, {
+    await api.delete(`/api/admin/blogs/${slug}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -108,7 +108,7 @@ export async function toggleBlogVisibility(slug: string, isPublic: boolean) {
 
   try {
     await api.put(
-      `/api/admin/blog/${slug}`,
+      `/api/admin/blogs/${slug}`,
       { isPublic },
       {
         headers: {

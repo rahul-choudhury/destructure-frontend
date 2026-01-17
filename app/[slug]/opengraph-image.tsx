@@ -32,7 +32,7 @@ export default async function Image({
 
   try {
     const [{ data: blog }, instrumentSerifFont] = await Promise.all([
-      api.get<Blog>(`/api/blogs/details?slug=${slug}`),
+      api.get<Blog>(`/api/blogs/${slug}`),
       fetch(
         "https://fonts.gstatic.com/s/instrumentserif/v5/jizBRFtNs2ka5fXjeivQ4LroWlx-2zI.ttf",
       ).then((res) => res.arrayBuffer()),
