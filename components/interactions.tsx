@@ -43,6 +43,8 @@ export function Interactions({ slug }: InteractionsProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    let ignore = false;
+
     async function fetchReactions() {
       try {
         const response = await fetch(`/api/blogs/${slug}/reactions`);
@@ -51,17 +53,24 @@ export function Interactions({ slug }: InteractionsProps) {
         }
         const data: ApiResponse<ReactionsData> & { isAuthenticated: boolean } =
           await response.json();
-        setCount(data.data.count);
-        setGivenStatus(data.data.givenStatus);
-        setIsAuthenticated(data.isAuthenticated);
+        if (!ignore) {
+          setCount(data.data.count);
+          setGivenStatus(data.data.givenStatus);
+          setIsAuthenticated(data.isAuthenticated);
+        }
       } catch (error) {
         console.error("Error fetching reactions:", error);
       } finally {
-        setIsLoading(false);
+        if (!ignore) {
+          setIsLoading(false);
+        }
       }
     }
 
     fetchReactions();
+    return () => {
+      ignore = true;
+    };
   }, [slug]);
 
   async function handleReaction(reaction: ReactionType) {
