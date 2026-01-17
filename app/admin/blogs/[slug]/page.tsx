@@ -11,6 +11,7 @@ import { formatDate } from "@/lib/utils";
 import { getTokenFromCookie } from "@/lib/session";
 import { TitleNav } from "@/components/title-nav";
 import { processHtml } from "@/lib/process-html";
+import { Interactions } from "@/components/interactions";
 
 export default async function Page({
   params,
@@ -48,6 +49,7 @@ export default async function Page({
       </div>
       <TableOfContents toc={toc} />
       <BlogContent html={html} />
+      <Interactions slug={slug} />
     </>
   );
 }

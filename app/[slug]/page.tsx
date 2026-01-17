@@ -7,6 +7,7 @@ import { processHtml } from "@/lib/process-html";
 import { api } from "@/lib/api-client";
 import { Blog } from "@/lib/definitions";
 import { formatDate } from "@/lib/utils";
+import { Interactions } from "@/components/interactions";
 
 export async function generateStaticParams() {
   const blogs = await api.get<Blog[]>("/api/blogs");
@@ -48,6 +49,7 @@ export default async function Page({
       </div>
       <TableOfContents toc={toc} />
       <BlogContent html={html} />
+      <Interactions slug={slug} />
     </>
   );
 }

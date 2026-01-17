@@ -26,3 +26,19 @@ export type Blog = {
   reactions: number;
   updatedAt: string;
 };
+
+export type ReactionType =
+  | "LIKE"
+  | "FIRE"
+  | "SMILE"
+  | "LAUGHING"
+  | "HEART"
+  | "THINKING"
+  | "DISLIKE";
+
+export type ReactionCount = Record<ReactionType, number>;
+
+export type ReactionsData = {
+  givenStatus: ReactionType | null;
+  count: ReactionCount;
+};
