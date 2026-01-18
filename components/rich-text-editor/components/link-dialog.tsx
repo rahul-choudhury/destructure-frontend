@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useRef } from "react";
 import { Dialog } from "@base-ui/react/dialog";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";

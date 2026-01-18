@@ -1,5 +1,3 @@
-"use client";
-
 import { CodeHighlightNode } from "@lexical/code";
 import type {
   DOMConversionMap,

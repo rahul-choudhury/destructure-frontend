@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { ApiResponse, Comment, ReactionType } from "@/lib/definitions";
 import { CommentItem } from "./comment-item";
