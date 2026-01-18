@@ -1,12 +1,11 @@
 // import { Kbd } from "@/components/kbd";
 import { PageTitle } from "@/components/page-title";
-import { api } from "@/lib/api-client";
-import { Blog } from "@/lib/definitions";
+import { getBlogs } from "@/lib/data";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
 
 export default async function Home() {
-  const { data: blogs } = await api.get<Blog[]>("/api/blogs");
+  const { data: blogs } = await getBlogs();
   return (
     <>
       <PageTitle className="mb-8">Destructure</PageTitle>

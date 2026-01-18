@@ -1,14 +1,24 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
+import { updateTag } from "next/cache";
+import { cookies, headers } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { api } from "./api-client";
 import { getTokenFromCookie } from "./session";
+import { CACHE_TAGS } from "./config";
+import { Comment, ReactionType } from "./definitions";
 
-export async function logout() {
+export async function logout(slug: string) {
   const cookieStore = await cookies();
   cookieStore.delete("token");
+
+  const headersList = await headers();
+  const referer = headersList.get("referer") || "";
+  const isAdminPage = referer.includes("/admin");
+
+  // NOTE: if on admin page, redirect to home; otherwise to the blog
+  redirect(isAdminPage ? "/" : `/${slug}`);
 }
 
 export async function checkSlugUniqueness(slug: string) {
@@ -63,7 +73,7 @@ export async function createBlog(state: unknown, data: unknown) {
     };
   }
 
-  revalidatePath("/");
+  updateTag(CACHE_TAGS.BLOG_LIST);
   redirect("/admin");
 }
 
@@ -83,8 +93,8 @@ export async function updateBlog(slug: string, state: unknown, data: unknown) {
     };
   }
 
-  revalidatePath("/");
-  revalidatePath(`/${slug}`);
+  updateTag(CACHE_TAGS.BLOG_LIST);
+  updateTag(slug);
   redirect(`/admin/blogs/${slug}`, RedirectType.replace);
 }
 
@@ -104,8 +114,8 @@ export async function deleteBlog(slug: string) {
     };
   }
 
-  revalidatePath("/");
-  revalidatePath(`/${slug}`);
+  updateTag(CACHE_TAGS.BLOG_LIST);
+  updateTag(slug);
   redirect("/admin");
 }
 
@@ -129,8 +139,8 @@ export async function toggleBlogVisibility(slug: string, isPublic: boolean) {
     };
   }
 
-  revalidatePath("/");
-  revalidatePath(`/${slug}`);
+  updateTag(CACHE_TAGS.BLOG_LIST);
+  updateTag(slug);
   redirect("/admin");
 }
 
@@ -149,6 +159,140 @@ export async function uploadMedia(formData: FormData) {
       isSuccess: false,
       message: e instanceof Error ? e.message : "Media upload failed.",
       data: [] as string[],
+    };
+  }
+}
+
+// ============================================================================
+// Interactions
+// ============================================================================
+
+export async function toggleReaction(slug: string, reaction: ReactionType) {
+  const token = await getTokenFromCookie();
+  if (!token) {
+    return { isSuccess: false, message: "Not authenticated" };
+  }
+
+  try {
+    await api.post(
+      "/api/reactions",
+      { identifier: slug, to: "BLOG", reaction },
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+    return { isSuccess: true };
+  } catch (e) {
+    return {
+      isSuccess: false,
+      message: e instanceof Error ? e.message : "Failed to toggle reaction",
+    };
+  }
+}
+
+export async function addComment(slug: string, content: string) {
+  const token = await getTokenFromCookie();
+  if (!token) {
+    return { isSuccess: false, message: "Not authenticated", data: null };
+  }
+
+  try {
+    const response = await api.post<Comment>(
+      `/api/blogs/${slug}/comments`,
+      { content },
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+    revalidatePath(`/${slug}`);
+    return { isSuccess: true, data: response.data };
+  } catch (e) {
+    return {
+      isSuccess: false,
+      message: e instanceof Error ? e.message : "Failed to add comment",
+      data: null,
+    };
+  }
+}
+
+export async function editComment(commentId: string, content: string) {
+  const token = await getTokenFromCookie();
+  if (!token) {
+    return { isSuccess: false, message: "Not authenticated" };
+  }
+
+  try {
+    await api.patch(
+      `/api/comments/${commentId}`,
+      { content },
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+    return { isSuccess: true };
+  } catch (e) {
+    return {
+      isSuccess: false,
+      message: e instanceof Error ? e.message : "Failed to edit comment",
+    };
+  }
+}
+
+export async function deleteComment(commentId: string) {
+  const token = await getTokenFromCookie();
+  if (!token) {
+    return { isSuccess: false, message: "Not authenticated" };
+  }
+
+  try {
+    await api.delete(`/api/comments/${commentId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return { isSuccess: true };
+  } catch (e) {
+    return {
+      isSuccess: false,
+      message: e instanceof Error ? e.message : "Failed to delete comment",
+    };
+  }
+}
+
+export async function addReply(parentId: string, content: string) {
+  const token = await getTokenFromCookie();
+  if (!token) {
+    return { isSuccess: false, message: "Not authenticated", data: null };
+  }
+
+  try {
+    const response = await api.post<Comment>(
+      `/api/comments/${parentId}/replies`,
+      { content },
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+    return { isSuccess: true, data: response.data };
+  } catch (e) {
+    return {
+      isSuccess: false,
+      message: e instanceof Error ? e.message : "Failed to add reply",
+      data: null,
+    };
+  }
+}
+
+export async function toggleCommentReaction(
+  commentId: string,
+  reaction: ReactionType,
+) {
+  const token = await getTokenFromCookie();
+  if (!token) {
+    return { isSuccess: false, message: "Not authenticated" };
+  }
+
+  try {
+    await api.post(
+      "/api/reactions",
+      { identifier: commentId, to: "COMMENT", reaction },
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+    return { isSuccess: true };
+  } catch (e) {
+    return {
+      isSuccess: false,
+      message: e instanceof Error ? e.message : "Failed to toggle reaction",
     };
   }
 }

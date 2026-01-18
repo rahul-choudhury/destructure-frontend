@@ -3,17 +3,6 @@ import { ImageResponse } from "next/og";
 import { api } from "@/lib/api-client";
 import { Blog } from "@/lib/definitions";
 
-export async function generateStaticParams() {
-  try {
-    const blogs = await api.get<Blog[]>("/api/blogs");
-    return blogs.data.map((blog) => ({
-      slug: blog.slug,
-    }));
-  } catch {
-    return [];
-  }
-}
-
 export const alt = "Destructure";
 export const size = {
   width: 1200,
@@ -33,6 +22,7 @@ export default async function Image({
   try {
     const [{ data: blog }, instrumentSerifFont] = await Promise.all([
       api.get<Blog>(`/api/blogs/${slug}`),
+
       fetch(
         "https://fonts.gstatic.com/s/instrumentserif/v5/jizBRFtNs2ka5fXjeivQ4LroWlx-2zI.ttf",
       ).then((res) => res.arrayBuffer()),

@@ -4,13 +4,12 @@ import { PageTitle } from "@/components/page-title";
 import { TitleNav } from "@/components/title-nav";
 import { TableOfContents } from "@/components/table-of-contents";
 import { processHtml } from "@/lib/process-html";
-import { api } from "@/lib/api-client";
-import { Blog } from "@/lib/definitions";
 import { formatDate } from "@/lib/utils";
 import { Interactions } from "@/components/interactions";
+import { getBlog, getBlogs } from "@/lib/data";
 
 export async function generateStaticParams() {
-  const blogs = await api.get<Blog[]>("/api/blogs");
+  const blogs = await getBlogs();
   return blogs.data.map((blog) => ({
     slug: blog.slug,
   }));
@@ -22,7 +21,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const { data: blog } = await api.get<Blog>(`/api/blogs/${slug}`);
+  const { data: blog } = await getBlog(slug);
 
   return {
     title: blog.title,
@@ -35,7 +34,7 @@ export default async function Page({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const { data: blog } = await api.get<Blog>(`/api/blogs/${slug}`);
+  const { data: blog } = await getBlog(slug);
   const { html, toc } = await processHtml(blog.content);
 
   return (

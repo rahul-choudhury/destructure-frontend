@@ -13,3 +13,7 @@ export const CODE_LANGUAGE_OPTIONS = [
   { value: "json", label: "JSON" },
   { value: "sql", label: "SQL" },
 ];
+
+export const CACHE_TAGS = {
+  BLOG_LIST: "blogs",
+};
