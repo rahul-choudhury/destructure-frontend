@@ -44,4 +44,4 @@ Blog content is processed server-side (`lib/process-html.ts`) using rehype plugi
 
 ### Component Library
 
-The project uses Base UI components. To browse their docs, use the `md` version of the link. For ex: use `https://base-ui.com/react/components/accordion.md` instead of `https://base-ui.com/react/components/accordion`.
+The project uses Base UI components. When browsing their docs, append `.md` to URLs. For example: access `https://base-ui.com/react/components/accordion.md` instead of `https://base-ui.com/react/components/accordion`.
