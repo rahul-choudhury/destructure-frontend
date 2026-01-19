@@ -27,7 +27,7 @@ export default async function Page() {
   return (
     <>
       <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
-        <PageTitle className="mb-0">Hello {firstName}!</PageTitle>
+        <PageTitle className="mb-0">Hi {firstName}!</PageTitle>
         <Button
           render={<Link href="/admin/blogs/create" />}
           nativeButton={false}
