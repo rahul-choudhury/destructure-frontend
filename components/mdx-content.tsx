@@ -53,7 +53,9 @@ const components: MDXComponents = {
   VideoPlayer,
 };
 
-export function MdxContent({ source }: { source: string }) {
+export async function MdxContent({ source }: { source: string }) {
+  "use cache";
+
   return (
     <article className="blog-content min-w-0">
       <MDXRemote
