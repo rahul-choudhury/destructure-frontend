@@ -8,10 +8,13 @@ export function PageTitle({
   className?: string;
 }) {
   return (
-    <h1 className={cn("mb-4 pt-20 font-serif text-6xl md:pt-40", className)}>
-      <span className="text-accent">{"{"}</span>
+    <h1
+      className={cn(
+        "mt-20 mb-4 border-l-4 border-accent pl-4 font-serif text-6xl md:mt-40",
+        className,
+      )}
+    >
       {children}
-      <span className="text-accent">{"}"}</span>
     </h1>
   );
 }

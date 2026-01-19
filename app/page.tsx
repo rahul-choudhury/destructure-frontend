@@ -8,7 +8,8 @@ export default async function Home() {
   const { data: blogs } = await getBlogs();
   return (
     <>
-      <PageTitle className="mb-8">Destructure</PageTitle>
+      <PageTitle className="mb-4">Destructure</PageTitle>
+      <p className="mb-8 text-foreground-50">A blog by Rahul &amp; Shakti</p>
       {/* <div className="md:flex items-center gap-2 hidden text-foreground/50 text-sm mb-8"> */}
       {/*   <p> */}
       {/*     press <Kbd>/</Kbd> to search */}
