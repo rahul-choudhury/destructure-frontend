@@ -22,8 +22,6 @@ export type Blog = {
   comments: number;
   createdAt: string;
   isPublic: boolean;
-  reactionStatus: null; // TODO
-  reactions: number;
   updatedAt: string;
 };
 

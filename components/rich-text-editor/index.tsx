@@ -15,7 +15,12 @@ import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $generateHtmlFromNodes, $generateNodesFromDOM } from "@lexical/html";
+import { $generateNodesFromDOM } from "@lexical/html";
+import {
+  $convertToMarkdownString,
+  $convertFromMarkdownString,
+} from "@lexical/markdown";
+import { BLOG_TRANSFORMERS } from "./transformers";
 import {
   HeadingNode,
   QuoteNode,
@@ -433,18 +438,25 @@ function EditorRefPlugin({
   useImperativeHandle(
     editorRef,
     () => ({
-      getHtml: () => {
-        let html = "";
+      getMarkdown: () => {
+        let markdown = "";
         editor.getEditorState().read(() => {
-          html = $generateHtmlFromNodes(editor);
+          markdown = $convertToMarkdownString(BLOG_TRANSFORMERS);
         });
-        return html.replace(/\s*class="[^"]*"/g, "");
+        return markdown;
       },
     }),
     [editor],
   );
 
   return null;
+}
+
+// Detect if content is HTML (legacy) or Markdown (new)
+function isHtmlContent(content: string): boolean {
+  const trimmed = content.trim();
+  // HTML content typically starts with an HTML tag
+  return trimmed.startsWith("<") && !trimmed.startsWith("<video");
 }
 
 function InitialContentPlugin({ initialContent }: { initialContent?: string }) {
@@ -455,11 +467,18 @@ function InitialContentPlugin({ initialContent }: { initialContent?: string }) {
     if (initialContent && !isInitialized.current) {
       isInitialized.current = true;
       editor.update(() => {
-        const parser = new DOMParser();
-        const dom = parser.parseFromString(initialContent, "text/html");
-        const nodes = $generateNodesFromDOM(editor, dom);
         $getRoot().clear();
-        $getRoot().append(...nodes);
+
+        if (isHtmlContent(initialContent)) {
+          // Legacy HTML content - parse as HTML
+          const parser = new DOMParser();
+          const dom = parser.parseFromString(initialContent, "text/html");
+          const nodes = $generateNodesFromDOM(editor, dom);
+          $getRoot().append(...nodes);
+        } else {
+          // Markdown content - parse as markdown
+          $convertFromMarkdownString(initialContent, BLOG_TRANSFORMERS);
+        }
       });
     }
   }, [editor, initialContent]);
@@ -468,7 +487,7 @@ function InitialContentPlugin({ initialContent }: { initialContent?: string }) {
 }
 
 export type RichTextEditorRef = {
-  getHtml: () => string;
+  getMarkdown: () => string;
 };
 
 export type RichTextEditorProps = {

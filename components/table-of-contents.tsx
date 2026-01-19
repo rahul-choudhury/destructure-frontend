@@ -4,7 +4,7 @@ import { Collapsible } from "@base-ui/react/collapsible";
 import { ChevronDown } from "lucide-react";
 import { motion } from "motion/react";
 import { useState } from "react";
-import { type TocEntry } from "@/lib/process-html";
+import { type TocEntry } from "@/lib/process-markdown";
 
 export function TableOfContents({ toc }: { toc: TocEntry[] }) {
   const [isOpen, setIsOpen] = useState(false);

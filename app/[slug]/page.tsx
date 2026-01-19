@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { BlogContent } from "@/components/blog-content";
+import { MdxContent } from "@/components/mdx-content";
 import { PageTitle } from "@/components/page-title";
 import { TitleNav } from "@/components/title-nav";
 import { TableOfContents } from "@/components/table-of-contents";
-import { processHtml } from "@/lib/process-html";
+import { extractToc } from "@/lib/process-markdown";
 import { formatDate } from "@/lib/utils";
 import { Interactions } from "@/components/interactions";
 import { getBlog, getBlogs } from "@/lib/data";
@@ -35,7 +35,8 @@ export default async function Page({
 }) {
   const { slug } = await params;
   const { data: blog } = await getBlog(slug);
-  const { html, toc } = await processHtml(blog.content);
+
+  const toc = await extractToc(blog.content);
 
   return (
     <>
@@ -47,7 +48,7 @@ export default async function Page({
         <p>~ {blog.author.name}</p>
       </div>
       <TableOfContents toc={toc} />
-      <BlogContent html={html} />
+      <MdxContent source={blog.content} />
       <Interactions slug={slug} />
     </>
   );

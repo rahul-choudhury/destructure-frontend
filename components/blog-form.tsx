@@ -88,7 +88,7 @@ export function BlogForm({ data }: BlogFormProps) {
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const content = editorRef.current?.getHtml();
+    const content = editorRef.current?.getMarkdown();
     if (!content) {
       return;
     }

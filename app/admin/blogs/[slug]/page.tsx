@@ -1,7 +1,7 @@
 import { Pencil } from "lucide-react";
 import Link from "next/link";
 
-import { BlogContent } from "@/components/blog-content";
+import { MdxContent } from "@/components/mdx-content";
 import { DeleteBlogButton } from "@/components/delete-blog-button";
 import { PageTitle } from "@/components/page-title";
 import { TableOfContents } from "@/components/table-of-contents";
@@ -10,7 +10,7 @@ import { Blog } from "@/lib/definitions";
 import { formatDate } from "@/lib/utils";
 import { getTokenFromCookie } from "@/lib/session";
 import { TitleNav } from "@/components/title-nav";
-import { processHtml } from "@/lib/process-html";
+import { extractToc } from "@/lib/process-markdown";
 import { Interactions } from "@/components/interactions";
 
 export default async function Page({
@@ -26,7 +26,7 @@ export default async function Page({
     },
   });
 
-  const { html, toc } = await processHtml(blog.content);
+  const toc = await extractToc(blog.content);
 
   return (
     <>
@@ -48,7 +48,7 @@ export default async function Page({
         <p>~ {blog.author.name}</p>
       </div>
       <TableOfContents toc={toc} />
-      <BlogContent html={html} />
+      <MdxContent source={blog.content} />
       <Interactions slug={slug} />
     </>
   );
