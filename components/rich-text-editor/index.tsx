@@ -15,7 +15,6 @@ import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $generateNodesFromDOM } from "@lexical/html";
 import {
   $convertToMarkdownString,
   $convertFromMarkdownString,
@@ -452,13 +451,6 @@ function EditorRefPlugin({
   return null;
 }
 
-// Detect if content is HTML (legacy) or Markdown (new)
-function isHtmlContent(content: string): boolean {
-  const trimmed = content.trim();
-  // HTML content typically starts with an HTML tag
-  return trimmed.startsWith("<") && !trimmed.startsWith("<video");
-}
-
 function InitialContentPlugin({ initialContent }: { initialContent?: string }) {
   const [editor] = useLexicalComposerContext();
   const isInitialized = useRef(false);
@@ -468,17 +460,7 @@ function InitialContentPlugin({ initialContent }: { initialContent?: string }) {
       isInitialized.current = true;
       editor.update(() => {
         $getRoot().clear();
-
-        if (isHtmlContent(initialContent)) {
-          // Legacy HTML content - parse as HTML
-          const parser = new DOMParser();
-          const dom = parser.parseFromString(initialContent, "text/html");
-          const nodes = $generateNodesFromDOM(editor, dom);
-          $getRoot().append(...nodes);
-        } else {
-          // Markdown content - parse as markdown
-          $convertFromMarkdownString(initialContent, BLOG_TRANSFORMERS);
-        }
+        $convertFromMarkdownString(initialContent, BLOG_TRANSFORMERS);
       });
     }
   }, [editor, initialContent]);

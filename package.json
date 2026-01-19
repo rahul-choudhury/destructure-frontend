@@ -16,7 +16,6 @@
     "@base-ui/react": "^1.1.0",
     "@lexical/code": "^0.39.0",
     "@lexical/code-shiki": "^0.39.0",
-    "@lexical/html": "^0.39.0",
     "@lexical/link": "^0.39.0",
     "@lexical/list": "^0.39.0",
     "@lexical/markdown": "^0.39.0",
