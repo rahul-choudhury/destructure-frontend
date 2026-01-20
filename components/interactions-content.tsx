@@ -185,21 +185,21 @@ export function InteractionsContent({
   async function handleCommentEdit(commentId: string, content: string) {
     startTransition(async () => {
       setOptimisticComment({ type: "edit", id: commentId, content });
-      await editComment(commentId, content);
+      await editComment(slug, commentId, content);
     });
   }
 
   async function handleCommentDelete(commentId: string) {
     startTransition(async () => {
       setOptimisticComment({ type: "delete", id: commentId });
-      await deleteComment(commentId);
+      await deleteComment(slug, commentId);
     });
   }
 
   async function handleReply(parentId: string, content: string) {
     startTransition(async () => {
       setOptimisticComment({ type: "incrementReplies", id: parentId });
-      await addReply(parentId, content);
+      await addReply(slug, parentId, content);
     });
   }
 

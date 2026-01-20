@@ -178,6 +178,7 @@ export async function toggleReaction(slug: string, reaction: ReactionType) {
       { identifier: slug, to: "BLOG", reaction },
       { headers: { Authorization: `Bearer ${token}` } },
     );
+    revalidatePath(`/${slug}`);
     return { isSuccess: true };
   } catch (e) {
     return {
@@ -210,7 +211,11 @@ export async function addComment(slug: string, content: string) {
   }
 }
 
-export async function editComment(commentId: string, content: string) {
+export async function editComment(
+  slug: string,
+  commentId: string,
+  content: string,
+) {
   const token = await getTokenFromCookie();
   if (!token) {
     return { isSuccess: false, message: "Not authenticated" };
@@ -222,6 +227,7 @@ export async function editComment(commentId: string, content: string) {
       { content },
       { headers: { Authorization: `Bearer ${token}` } },
     );
+    revalidatePath(`/${slug}`);
     return { isSuccess: true };
   } catch (e) {
     return {
@@ -231,7 +237,7 @@ export async function editComment(commentId: string, content: string) {
   }
 }
 
-export async function deleteComment(commentId: string) {
+export async function deleteComment(slug: string, commentId: string) {
   const token = await getTokenFromCookie();
   if (!token) {
     return { isSuccess: false, message: "Not authenticated" };
@@ -241,6 +247,7 @@ export async function deleteComment(commentId: string) {
     await api.delete(`/api/comments/${commentId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
+    revalidatePath(`/${slug}`);
     return { isSuccess: true };
   } catch (e) {
     return {
@@ -250,7 +257,11 @@ export async function deleteComment(commentId: string) {
   }
 }
 
-export async function addReply(parentId: string, content: string) {
+export async function addReply(
+  slug: string,
+  parentId: string,
+  content: string,
+) {
   const token = await getTokenFromCookie();
   if (!token) {
     return { isSuccess: false, message: "Not authenticated", data: null };
@@ -262,6 +273,7 @@ export async function addReply(parentId: string, content: string) {
       { content },
       { headers: { Authorization: `Bearer ${token}` } },
     );
+    revalidatePath(`/${slug}`);
     return { isSuccess: true, data: response.data };
   } catch (e) {
     return {
