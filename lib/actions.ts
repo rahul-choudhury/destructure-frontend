@@ -1,9 +1,8 @@
 "use server";
 
-import { updateTag } from "next/cache";
 import { cookies, headers } from "next/headers";
 import { redirect, RedirectType } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidateTag, revalidatePath } from "next/cache";
 import { api } from "./api-client";
 import { getTokenFromCookie } from "./session";
 import { CACHE_TAGS } from "./config";
@@ -73,7 +72,7 @@ export async function createBlog(state: unknown, data: unknown) {
     };
   }
 
-  updateTag(CACHE_TAGS.BLOG_LIST);
+  revalidateTag(CACHE_TAGS.BLOG_LIST, "max");
   redirect("/admin");
 }
 
@@ -93,8 +92,8 @@ export async function updateBlog(slug: string, state: unknown, data: unknown) {
     };
   }
 
-  updateTag(CACHE_TAGS.BLOG_LIST);
-  updateTag(slug);
+  revalidateTag(CACHE_TAGS.BLOG_LIST, "max");
+  revalidateTag(slug, "max");
   redirect(`/admin/blogs/${slug}`, RedirectType.replace);
 }
 
@@ -114,8 +113,8 @@ export async function deleteBlog(slug: string) {
     };
   }
 
-  updateTag(CACHE_TAGS.BLOG_LIST);
-  updateTag(slug);
+  revalidateTag(CACHE_TAGS.BLOG_LIST, "max");
+  revalidateTag(slug, "max");
   redirect("/admin");
 }
 
@@ -139,8 +138,8 @@ export async function toggleBlogVisibility(slug: string, isPublic: boolean) {
     };
   }
 
-  updateTag(CACHE_TAGS.BLOG_LIST);
-  updateTag(slug);
+  revalidateTag(CACHE_TAGS.BLOG_LIST, "max");
+  revalidateTag(slug, "max");
   redirect("/admin");
 }
 
