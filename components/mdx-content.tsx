@@ -7,6 +7,7 @@ import { VideoPlayer } from "./video-player";
 
 import type { Root } from "hast";
 import type { MDXComponents } from "mdx/types";
+import { cacheLife } from "next/cache";
 
 // add target="_blank" to external links
 function rehypeExternalLinks() {
@@ -55,6 +56,7 @@ const components: MDXComponents = {
 
 export async function MdxContent({ source }: { source: string }) {
   "use cache";
+  cacheLife("max");
 
   return (
     <article className="blog-content min-w-0">
