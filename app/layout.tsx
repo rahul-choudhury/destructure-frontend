@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fira_Code, Instrument_Serif, Inter } from "next/font/google";
 import "./globals.css";
+import { RedirectToAdmin } from "@/components/redirect-to-admin";
 
 const instrumentSerif = Instrument_Serif({
   variable: "--font-serif",
@@ -37,6 +38,7 @@ export default function RootLayout({
         <main className="grid grid-cols-[1fr_minmax(auto,700px)_1fr] gap-x-4 pb-10 *:col-start-2">
           {children}
         </main>
+        <RedirectToAdmin />
       </body>
     </html>
   );
