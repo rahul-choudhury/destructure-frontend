@@ -5,7 +5,9 @@ export async function proxy(request: NextRequest) {
   const token = await getTokenFromCookie();
 
   if (!token) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("redirect", request.nextUrl.pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();
