@@ -7,13 +7,11 @@ export function RedirectToAdmin() {
   const pathname = usePathname();
   const isLeaderPressed = useRef(false);
 
-  const isInAdminRoute = pathname.startsWith("/admin");
-
   useEffect(() => {
     let timeout: NodeJS.Timeout;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (isInAdminRoute) return;
+      if (pathname.startsWith("/admin")) return;
 
       if (e.metaKey && e.key === "k") {
         e.preventDefault();
@@ -22,7 +20,13 @@ export function RedirectToAdmin() {
       } else if (isLeaderPressed.current && e.key === "a") {
         e.preventDefault();
         isLeaderPressed.current = false;
-        redirect("/admin", RedirectType.push);
+
+        if (pathname === "/") {
+          redirect("/admin", RedirectType.push);
+        } else if (pathname.match(/^\/.+$/)) {
+          // the regex matches with any [slug] route
+          redirect(`/admin/blogs${pathname}`, RedirectType.push);
+        }
       }
     };
 
@@ -32,7 +36,7 @@ export function RedirectToAdmin() {
       window.removeEventListener("keydown", handleKeyDown);
       clearTimeout(timeout);
     };
-  }, [isInAdminRoute]);
+  }, [pathname]);
 
   return null;
 }
