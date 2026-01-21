@@ -1,5 +1,6 @@
 // import { Kbd } from "@/components/kbd";
 import { PageTitle } from "@/components/page-title";
+import { RedirectToAdmin } from "@/components/redirect-to-admin";
 import { getBlogs } from "@/lib/data";
 import { formatDate } from "@/lib/utils";
 import Link from "next/link";
@@ -37,6 +38,7 @@ export default async function Home() {
           </Link>
         ))}
       </div>
+      <RedirectToAdmin />
     </>
   );
 }

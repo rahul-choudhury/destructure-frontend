@@ -7,6 +7,7 @@ import { extractToc } from "@/lib/process-markdown";
 import { formatDate } from "@/lib/utils";
 import { Interactions } from "@/components/interactions";
 import { getBlog, getBlogs } from "@/lib/data";
+import { RedirectToAdmin } from "@/components/redirect-to-admin";
 
 export async function generateStaticParams() {
   const blogs = await getBlogs();
@@ -50,6 +51,7 @@ export default async function Page({
       <TableOfContents toc={toc} />
       <MdxContent source={blog.content} />
       <Interactions slug={slug} />
+      <RedirectToAdmin />
     </>
   );
 }
