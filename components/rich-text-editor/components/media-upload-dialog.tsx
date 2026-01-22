@@ -9,6 +9,7 @@ import { INSERT_VIDEO_COMMAND } from "../plugins/video-plugin";
 
 type MediaUploadDialogProps = {
   toolbarButtonClass: string;
+  children?: React.ReactNode;
 };
 
 const IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
@@ -24,6 +25,7 @@ function isVideoFile(file: File): boolean {
 
 export function MediaUploadDialog({
   toolbarButtonClass,
+  children,
 }: MediaUploadDialogProps) {
   const [editor] = useLexicalComposerContext();
   const [open, setOpen] = useState(false);
@@ -86,6 +88,7 @@ export function MediaUploadDialog({
     <Dialog.Root open={open} onOpenChange={handleOpenChange}>
       <Dialog.Trigger className={toolbarButtonClass}>
         <ImageIcon size={18} />
+        {children}
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Backdrop className="fixed inset-0 bg-black/50 transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0" />

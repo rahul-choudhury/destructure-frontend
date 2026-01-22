@@ -58,12 +58,14 @@ import {
 import { $getNearestNodeOfType } from "@lexical/utils";
 import { Toggle } from "@base-ui/react/toggle";
 import { Select } from "@base-ui/react/select";
+import { Menu } from "@base-ui/react/menu";
 import {
   Bold,
   Check,
   ChevronDown,
   Code,
   CodeXml,
+  Ellipsis,
   Italic,
   Heading2,
   Heading3,
@@ -116,6 +118,9 @@ const editorTheme = {
 
 export const toolbarButtonClass =
   "p-2 rounded text-foreground-60 hover:text-foreground hover:bg-foreground-10 focus:outline-2 focus:outline-accent focus:-outline-offset-1 data-[pressed]:text-accent data-[pressed]:bg-foreground-10";
+
+const menuItemClass =
+  "flex items-center gap-2 px-3 py-2 text-sm text-foreground-70 outline-none cursor-default rounded data-highlighted:bg-foreground-10 data-highlighted:text-foreground";
 
 type LinkDialogState = {
   open: boolean;
@@ -259,8 +264,19 @@ function ToolbarPlugin({
     });
   };
 
+  const openLinkDialog = () => {
+    onLinkDialogChange({
+      open: true,
+      isEditing: isLink,
+      initialUrl: isLink ? (linkUrl ?? "") : "",
+      initialLabel: isLink ? (linkText ?? "") : selectedText,
+      linkNodeKey: isLink ? linkNodeKey : null,
+    });
+  };
+
   return (
-    <div className="flex gap-1 border-b border-foreground-20 p-2">
+    <div className="flex flex-wrap gap-1 border-b border-foreground-20 p-2">
+      {/* Primary buttons - always visible */}
       <Toggle
         aria-label="Bold"
         className={toolbarButtonClass}
@@ -297,9 +313,11 @@ function ToolbarPlugin({
       >
         <Heading3 size={18} />
       </Toggle>
+
+      {/* Secondary buttons - visible on desktop only */}
       <Toggle
         aria-label="Bullet List"
-        className={toolbarButtonClass}
+        className={cn(toolbarButtonClass, "hidden md:flex")}
         pressed={listType === "bullet"}
         onPressedChange={() =>
           editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
@@ -309,7 +327,7 @@ function ToolbarPlugin({
       </Toggle>
       <Toggle
         aria-label="Numbered List"
-        className={toolbarButtonClass}
+        className={cn(toolbarButtonClass, "hidden md:flex")}
         pressed={listType === "number"}
         onPressedChange={() =>
           editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
@@ -319,7 +337,7 @@ function ToolbarPlugin({
       </Toggle>
       <Toggle
         aria-label="Inline Code"
-        className={toolbarButtonClass}
+        className={cn(toolbarButtonClass, "hidden md:flex")}
         pressed={isCode}
         onPressedChange={() =>
           editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code")
@@ -329,7 +347,7 @@ function ToolbarPlugin({
       </Toggle>
       <Toggle
         aria-label="Code Block"
-        className={toolbarButtonClass}
+        className={cn(toolbarButtonClass, "hidden md:flex")}
         pressed={isCodeBlock}
         onPressedChange={formatCodeBlock}
       >
@@ -337,7 +355,7 @@ function ToolbarPlugin({
       </Toggle>
       <Toggle
         aria-label="Blockquote"
-        className={toolbarButtonClass}
+        className={cn(toolbarButtonClass, "hidden md:flex")}
         pressed={isQuote}
         onPressedChange={formatQuote}
       >
@@ -345,21 +363,68 @@ function ToolbarPlugin({
       </Toggle>
       <Toggle
         aria-label="Link"
-        className={toolbarButtonClass}
+        className={cn(toolbarButtonClass, "hidden md:flex")}
         pressed={isLink}
-        onPressedChange={() =>
-          onLinkDialogChange({
-            open: true,
-            isEditing: isLink,
-            initialUrl: isLink ? (linkUrl ?? "") : "",
-            initialLabel: isLink ? (linkText ?? "") : selectedText,
-            linkNodeKey: isLink ? linkNodeKey : null,
-          })
-        }
+        onPressedChange={openLinkDialog}
       >
         <Link size={18} />
       </Toggle>
-      <MediaUploadDialog toolbarButtonClass={toolbarButtonClass} />
+      <div className="hidden md:block">
+        <MediaUploadDialog toolbarButtonClass={toolbarButtonClass} />
+      </div>
+
+      {/* Overflow menu - visible on mobile only */}
+      <Menu.Root>
+        <Menu.Trigger className={cn(toolbarButtonClass, "md:hidden")}>
+          <Ellipsis size={18} />
+        </Menu.Trigger>
+        <Menu.Portal>
+          <Menu.Positioner sideOffset={4}>
+            <Menu.Popup className="min-w-40 origin-(--transform-origin) rounded-md border border-foreground-20 bg-background p-1 shadow-lg transition-all duration-150 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
+              <Menu.Item
+                onClick={() =>
+                  editor.dispatchCommand(
+                    INSERT_UNORDERED_LIST_COMMAND,
+                    undefined,
+                  )
+                }
+                className={menuItemClass}
+              >
+                <List size={18} /> Bullet List
+              </Menu.Item>
+              <Menu.Item
+                onClick={() =>
+                  editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
+                }
+                className={menuItemClass}
+              >
+                <ListOrdered size={18} /> Numbered List
+              </Menu.Item>
+              <Menu.Item
+                onClick={() =>
+                  editor.dispatchCommand(FORMAT_TEXT_COMMAND, "code")
+                }
+                className={menuItemClass}
+              >
+                <CodeXml size={18} /> Inline Code
+              </Menu.Item>
+              <Menu.Item onClick={formatCodeBlock} className={menuItemClass}>
+                <Code size={18} /> Code Block
+              </Menu.Item>
+              <Menu.Item onClick={formatQuote} className={menuItemClass}>
+                <TextQuote size={18} /> Blockquote
+              </Menu.Item>
+              <Menu.Item onClick={openLinkDialog} className={menuItemClass}>
+                <Link size={18} /> Link
+              </Menu.Item>
+              <MediaUploadDialog toolbarButtonClass={menuItemClass}>
+                Media
+              </MediaUploadDialog>
+            </Menu.Popup>
+          </Menu.Positioner>
+        </Menu.Portal>
+      </Menu.Root>
+
       {isCodeBlock && (
         <Select.Root
           value={currentLanguage}
