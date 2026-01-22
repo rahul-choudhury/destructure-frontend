@@ -1,10 +1,10 @@
 "use client";
 
-import { useOptimistic, useTransition } from "react";
+import { startTransition, useOptimistic } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { API_URL } from "@/lib/config";
-import { cn } from "@/lib/utils";
+
 import {
   toggleReaction,
   addComment,
@@ -115,8 +115,6 @@ export function InteractionsContent({
   isAuthenticated,
   user,
 }: InteractionsContentProps) {
-  const [isPending, startTransition] = useTransition();
-
   // Optimistic reactions
   const [reactions, setOptimisticReaction] = useOptimistic(
     initialReactions,
@@ -215,23 +213,19 @@ export function InteractionsContent({
       {/* Reactions Section */}
       <div className="flex flex-wrap gap-2">
         {REACTIONS.map(({ type, emoji }) => (
-          <button
+          <Button
             key={type}
+            variant="reaction"
+            size="sm"
             onClick={() => handleReaction(type)}
-            disabled={!isAuthenticated || isPending}
-            className={cn(
-              "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors",
-              reactions.givenStatus === type
-                ? "border-accent bg-accent/10 text-accent"
-                : "border-foreground-10 hover:border-foreground-20",
-              !isAuthenticated && "cursor-not-allowed opacity-60",
-            )}
+            disabled={!isAuthenticated}
+            data-active={reactions.givenStatus === type || undefined}
           >
             <span>{emoji}</span>
             <span className="min-w-4 tabular-nums">
               {reactions.count[type]}
             </span>
-          </button>
+          </Button>
         ))}
       </div>
 

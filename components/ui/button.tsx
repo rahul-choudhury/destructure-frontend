@@ -16,6 +16,8 @@ const buttonVariants = cva(
         ghost:
           "text-foreground-60 hover:bg-foreground-10 hover:text-foreground",
         destructive: "bg-red-600 text-white hover:bg-red-700",
+        reaction:
+          "rounded-full border border-foreground-10 hover:border-foreground-20 data-[active]:border-accent data-[active]:bg-accent/10 data-[active]:text-accent",
       },
       size: {
         default: "px-4 py-2 text-sm",
