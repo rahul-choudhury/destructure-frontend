@@ -1,13 +1,21 @@
-import { MDXRemote } from "next-mdx-remote-client/rsc";
+import { evaluate } from "next-mdx-remote-client/rsc";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeShiki from "@shikijs/rehype";
 import { visit } from "unist-util-visit";
+import { toString } from "hast-util-to-string";
 import { VideoPlayer } from "./video-player";
+import { TableOfContents } from "./table-of-contents";
 
-import type { Root } from "hast";
+import type { Element, Root } from "hast";
 import type { MDXComponents } from "mdx/types";
 import { cacheLife } from "next/cache";
+
+export interface TocEntry {
+  id: string;
+  title: string;
+  level: number;
+}
 
 // add target="_blank" to external links
 function rehypeExternalLinks() {
@@ -58,38 +66,59 @@ export async function MdxContent({ source }: { source: string }) {
   "use cache";
   cacheLife("max");
 
+  const toc: TocEntry[] = [];
+
+  function rehypeExtractToc() {
+    return (tree: Root) => {
+      visit(tree, "element", (node: Element) => {
+        const match = node.tagName.match(/^h([1-6])$/);
+        if (match && node.properties?.id) {
+          toc.push({
+            id: String(node.properties.id),
+            title: toString(node),
+            level: parseInt(match[1], 10),
+          });
+        }
+      });
+    };
+  }
+
+  const { content } = await evaluate({
+    source,
+    options: {
+      mdxOptions: {
+        rehypePlugins: [
+          rehypeSlug,
+          rehypeExtractToc,
+          [
+            rehypeAutolinkHeadings,
+            {
+              behavior: "append",
+              properties: {
+                className: ["heading-anchor"],
+                ariaLabel: "Link to this section",
+              },
+              content: {
+                type: "element",
+                tagName: "span",
+                properties: { className: ["anchor-icon"] },
+                children: [{ type: "text", value: "#" }],
+              },
+            },
+          ],
+          [rehypeShiki, { theme: "ayu-dark" }],
+          rehypeExternalLinks,
+          rehypeImageDimensions,
+        ],
+      },
+    },
+    components,
+  });
+
   return (
-    <article className="blog-content min-w-0">
-      <MDXRemote
-        source={source}
-        options={{
-          mdxOptions: {
-            rehypePlugins: [
-              rehypeSlug,
-              [
-                rehypeAutolinkHeadings,
-                {
-                  behavior: "append",
-                  properties: {
-                    className: ["heading-anchor"],
-                    ariaLabel: "Link to this section",
-                  },
-                  content: {
-                    type: "element",
-                    tagName: "span",
-                    properties: { className: ["anchor-icon"] },
-                    children: [{ type: "text", value: "#" }],
-                  },
-                },
-              ],
-              [rehypeShiki, { theme: "ayu-dark" }],
-              rehypeExternalLinks,
-              rehypeImageDimensions,
-            ],
-          },
-        }}
-        components={components}
-      />
-    </article>
+    <>
+      <TableOfContents toc={toc} />
+      <article className="blog-content min-w-0">{content}</article>
+    </>
   );
 }

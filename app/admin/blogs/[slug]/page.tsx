@@ -4,13 +4,11 @@ import Link from "next/link";
 import { MdxContent } from "@/components/mdx-content";
 import { DeleteBlogButton } from "@/components/delete-blog-button";
 import { PageTitle } from "@/components/page-title";
-import { TableOfContents } from "@/components/table-of-contents";
 import { api } from "@/lib/api-client";
 import { Blog } from "@/lib/definitions";
 import { formatDate } from "@/lib/utils";
 import { getTokenFromCookie } from "@/lib/session";
 import { TitleNav } from "@/components/title-nav";
-import { extractToc } from "@/lib/process-markdown";
 import { Interactions } from "@/components/interactions";
 
 export default async function Page({
@@ -25,8 +23,6 @@ export default async function Page({
       Authorization: `Bearer ${token}`,
     },
   });
-
-  const toc = await extractToc(blog.content);
 
   return (
     <>
@@ -47,7 +43,6 @@ export default async function Page({
         </p>
         <p>~ {blog.author.name}</p>
       </div>
-      <TableOfContents toc={toc} />
       <MdxContent source={blog.content} />
       <Interactions slug={slug} />
     </>

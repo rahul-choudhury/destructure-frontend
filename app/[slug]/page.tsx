@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { MdxContent } from "@/components/mdx-content";
 import { PageTitle } from "@/components/page-title";
 import { TitleNav } from "@/components/title-nav";
-import { TableOfContents } from "@/components/table-of-contents";
-import { extractToc } from "@/lib/process-markdown";
 import { formatDate } from "@/lib/utils";
 import { Interactions } from "@/components/interactions";
 import { getBlog, getBlogs } from "@/lib/data";
@@ -36,8 +34,6 @@ export default async function Page({
   const { slug } = await params;
   const { data: blog } = await getBlog(slug);
 
-  const toc = await extractToc(blog.content);
-
   return (
     <>
       <TitleNav href="/">
@@ -47,7 +43,6 @@ export default async function Page({
         <p>{formatDate(blog.createdAt)}</p>
         <p>~ {blog.author.name}</p>
       </div>
-      <TableOfContents toc={toc} />
       <MdxContent source={blog.content} />
       <Interactions slug={slug} />
     </>
