@@ -1,10 +1,12 @@
 "use client";
 
-import { redirect, RedirectType, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 export function RedirectToAdmin() {
   const pathname = usePathname();
+  const router = useRouter();
+
   const isLeaderPressed = useRef(false);
 
   useEffect(() => {
@@ -22,10 +24,10 @@ export function RedirectToAdmin() {
         isLeaderPressed.current = false;
 
         if (pathname === "/") {
-          redirect("/admin", RedirectType.push);
+          router.push("/admin");
         } else if (pathname.match(/^\/.+$/)) {
           // the regex matches with any [slug] route
-          redirect(`/admin/blogs${pathname}`, RedirectType.push);
+          router.push(`/admin/blogs${pathname}`);
         }
       }
     };
@@ -36,7 +38,7 @@ export function RedirectToAdmin() {
       window.removeEventListener("keydown", handleKeyDown);
       clearTimeout(timeout);
     };
-  }, [pathname]);
+  }, [pathname, router]);
 
   return null;
 }
