@@ -72,6 +72,8 @@ import {
   Link,
   List,
   ListOrdered,
+  Maximize2,
+  Minimize2,
   TextQuote,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -133,11 +135,15 @@ type LinkDialogState = {
 type ToolbarPluginProps = {
   linkDialogState: LinkDialogState;
   onLinkDialogChange: (state: LinkDialogState) => void;
+  isFullscreen: boolean;
+  onFullscreenToggle: () => void;
 };
 
 function ToolbarPlugin({
   linkDialogState,
   onLinkDialogChange,
+  isFullscreen,
+  onFullscreenToggle,
 }: ToolbarPluginProps) {
   const [editor] = useLexicalComposerContext();
   const [isBold, setIsBold] = useState(false);
@@ -373,6 +379,16 @@ function ToolbarPlugin({
         <MediaUploadDialog toolbarButtonClass={toolbarButtonClass} />
       </div>
 
+      {/* Fullscreen toggle - right side */}
+      <Toggle
+        aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+        className={cn(toolbarButtonClass, "ml-auto hidden md:flex")}
+        pressed={isFullscreen}
+        onPressedChange={onFullscreenToggle}
+      >
+        {isFullscreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+      </Toggle>
+
       {/* Overflow menu - visible on mobile only */}
       <Menu.Root>
         <Menu.Trigger className={cn(toolbarButtonClass, "md:hidden")}>
@@ -420,6 +436,14 @@ function ToolbarPlugin({
               <MediaUploadDialog toolbarButtonClass={menuItemClass}>
                 Media
               </MediaUploadDialog>
+              <Menu.Item onClick={onFullscreenToggle} className={menuItemClass}>
+                {isFullscreen ? (
+                  <Minimize2 size={18} />
+                ) : (
+                  <Maximize2 size={18} />
+                )}
+                {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+              </Menu.Item>
             </Menu.Popup>
           </Menu.Positioner>
         </Menu.Portal>
@@ -430,7 +454,7 @@ function ToolbarPlugin({
           value={currentLanguage}
           onValueChange={handleLanguageChange}
         >
-          <Select.Trigger className="ml-auto flex items-center gap-1 rounded bg-foreground-10 px-2 py-1 text-xs text-foreground-60 transition-colors hover:bg-foreground-20 hover:text-foreground focus:outline-none">
+          <Select.Trigger className="flex items-center gap-1 rounded bg-foreground-10 px-2 py-1 text-xs text-foreground-60 transition-colors hover:bg-foreground-20 hover:text-foreground focus:outline-none">
             <Select.Value>
               {(value) =>
                 CODE_LANGUAGE_OPTIONS.find((opt) => opt.value === value)
@@ -591,6 +615,7 @@ export function RichTextEditor({
     initialLabel: "",
     linkNodeKey: null,
   });
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   const handleEditLink = useCallback((data: LinkEditData) => {
     setLinkDialogState({
@@ -602,10 +627,29 @@ export function RichTextEditor({
     });
   }, []);
 
+  const handleFullscreenToggle = useCallback(() => {
+    setIsFullscreen((prev) => !prev);
+  }, []);
+
+  useEffect(() => {
+    if (!isFullscreen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsFullscreen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isFullscreen]);
+
   return (
     <div
       className={cn(
         "w-full rounded-md border border-foreground-20 bg-transparent text-sm text-foreground focus-within:outline-2 focus-within:-outline-offset-1 focus-within:outline-accent",
+        isFullscreen &&
+          "fixed inset-4 z-50 flex w-auto flex-col bg-background shadow-2xl md:inset-8",
         className,
       )}
     >
@@ -613,14 +657,24 @@ export function RichTextEditor({
         <ToolbarPlugin
           linkDialogState={linkDialogState}
           onLinkDialogChange={setLinkDialogState}
+          isFullscreen={isFullscreen}
+          onFullscreenToggle={handleFullscreenToggle}
         />
-        <div className="relative">
+        <div
+          className={cn(
+            "relative",
+            isFullscreen && "min-h-0 flex-1 overflow-hidden",
+          )}
+        >
           <RichTextPlugin
             contentEditable={
               <ContentEditable
                 id={id}
                 aria-labelledby={ariaLabelledby}
-                className="h-64 overflow-y-auto px-3 py-2 outline-none"
+                className={cn(
+                  "overflow-y-auto px-3 py-2 outline-none",
+                  isFullscreen ? "absolute inset-0" : "h-64",
+                )}
               />
             }
             placeholder={
