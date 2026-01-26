@@ -10,15 +10,15 @@ export default async function Home() {
     <>
       <PageTitle className="mb-4">Destructure</PageTitle>
       <p className="mb-8 text-foreground-50">A blog by Rahul &amp; Shakti</p>
-      {/* <div className="md:flex items-center gap-2 hidden text-foreground/50 text-sm mb-8"> */}
-      {/*   <p> */}
-      {/*     press <Kbd>/</Kbd> to search */}
-      {/*   </p> */}
-      {/*   <span>•</span> */}
-      {/*   <p> */}
-      {/*     use <Kbd>j</Kbd> and <Kbd>k</Kbd> to navigate */}
-      {/*   </p> */}
-      {/* </div> */}
+      {/*<div className="md:flex items-center gap-2 hidden text-foreground/50 text-sm mb-8">
+         <p>
+           press <Kbd>/</Kbd> to search
+         </p>
+         <span>•</span>
+         <p>
+           use <Kbd>j</Kbd> and <Kbd>k</Kbd> to navigate
+         </p>
+       </div> */}
       <div className="space-y-4">
         {blogs.map((blog) => (
           <Link

@@ -5,7 +5,6 @@ import { Tooltip } from "@base-ui/react/tooltip";
 import {
   useRef,
   useState,
-  useMemo,
   useTransition,
   FormEvent,
   useActionState,
@@ -46,23 +45,19 @@ export function BlogForm({ data }: BlogFormProps) {
     undefined,
   );
 
-  const checkSlug = useMemo(
-    () =>
-      debounce(async (value: string) => {
-        if (!value) {
-          setSlugError("");
-          return;
-        }
+  const checkSlug = debounce(async (value: string) => {
+    if (!value) {
+      setSlugError("");
+      return;
+    }
 
-        const isUnique = await checkSlugUniqueness(value);
-        if (!isUnique) {
-          setSlugError("This slug is already in use");
-        } else {
-          setSlugError("");
-        }
-      }),
-    [],
-  );
+    const isUnique = await checkSlugUniqueness(value);
+    if (!isUnique) {
+      setSlugError("This slug is already in use");
+    } else {
+      setSlugError("");
+    }
+  });
 
   const generateSlug = () => {
     startSlugGenTransition(async () => {

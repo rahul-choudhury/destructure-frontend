@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Dialog } from "@base-ui/react/dialog";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ImageIcon, X, Upload, Loader2, Film } from "lucide-react";
@@ -55,7 +55,7 @@ export function MediaUploadDialog({
 
   const mediaList = mediaCache[mediaFilter];
 
-  const fetchMediaList = useCallback(async (filter: MediaFilter) => {
+  const fetchMediaList = async (filter: MediaFilter) => {
     setIsLoadingMedia(true);
     try {
       const res = await fetch(`/api/admin/media?type=${filter}`);
@@ -69,7 +69,7 @@ export function MediaUploadDialog({
     } finally {
       setIsLoadingMedia(false);
     }
-  }, []);
+  };
 
   useEffect(() => {
     if (open && !fetchedFilters.has(mediaFilter)) {

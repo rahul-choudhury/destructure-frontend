@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -156,21 +155,18 @@ function ToolbarPlugin({
   const { isLink, linkUrl, linkText, linkNodeKey, selectedText } =
     useLinkState();
 
-  const handleLanguageChange = useCallback(
-    (language: string | null) => {
-      if (!codeNodeKey || !language) return;
+  const handleLanguageChange = (language: string | null) => {
+    if (!codeNodeKey || !language) return;
 
-      loadCodeLanguage(language, editor, codeNodeKey);
+    loadCodeLanguage(language, editor, codeNodeKey);
 
-      editor.update(() => {
-        const node = $getNodeByKey(codeNodeKey);
-        if ($isCodeNode(node)) {
-          node.setLanguage(language);
-        }
-      });
-    },
-    [editor, codeNodeKey],
-  );
+    editor.update(() => {
+      const node = $getNodeByKey(codeNodeKey);
+      if ($isCodeNode(node)) {
+        node.setLanguage(language);
+      }
+    });
+  };
 
   useEffect(() => {
     return editor.registerCommand(
@@ -617,7 +613,7 @@ export function RichTextEditor({
   });
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const handleEditLink = useCallback((data: LinkEditData) => {
+  const handleEditLink = (data: LinkEditData) => {
     setLinkDialogState({
       open: true,
       isEditing: true,
@@ -625,11 +621,11 @@ export function RichTextEditor({
       initialLabel: data.text,
       linkNodeKey: data.nodeKey,
     });
-  }, []);
+  };
 
-  const handleFullscreenToggle = useCallback(() => {
+  const handleFullscreenToggle = () => {
     setIsFullscreen((prev) => !prev);
-  }, []);
+  };
 
   useEffect(() => {
     if (!isFullscreen) return;
