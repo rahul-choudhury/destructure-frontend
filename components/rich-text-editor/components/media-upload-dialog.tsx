@@ -55,27 +55,27 @@ export function MediaUploadDialog({
 
   const mediaList = mediaCache[mediaFilter];
 
-  const fetchMediaList = async (filter: MediaFilter) => {
-    setIsLoadingMedia(true);
-    try {
-      const res = await fetch(`/api/admin/media?type=${filter}`);
-      const data = await res.json();
-      if (data.isSuccess) {
-        setMediaCache((prev) => ({ ...prev, [filter]: data.data }));
-      }
-      setFetchedFilters((prev) => new Set(prev).add(filter));
-    } catch {
-      setFetchedFilters((prev) => new Set(prev).add(filter));
-    } finally {
-      setIsLoadingMedia(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchMediaList = async (filter: MediaFilter) => {
+      setIsLoadingMedia(true);
+      try {
+        const res = await fetch(`/api/admin/media?type=${filter}`);
+        const data = await res.json();
+        if (data.isSuccess) {
+          setMediaCache((prev) => ({ ...prev, [filter]: data.data }));
+        }
+        setFetchedFilters((prev) => new Set(prev).add(filter));
+      } catch {
+        setFetchedFilters((prev) => new Set(prev).add(filter));
+      } finally {
+        setIsLoadingMedia(false);
+      }
+    };
+
     if (open && !fetchedFilters.has(mediaFilter)) {
       fetchMediaList(mediaFilter);
     }
-  }, [open, mediaFilter, fetchedFilters, fetchMediaList]);
+  }, [open, mediaFilter, fetchedFilters]);
 
   const handleMediaSelect = (url: string) => {
     if (isVideoUrl(url)) {
