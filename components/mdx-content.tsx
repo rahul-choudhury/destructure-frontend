@@ -106,7 +106,13 @@ export async function MdxContent({ source }: { source: string }) {
               },
             },
           ],
-          [rehypeShiki, { theme: "ayu-dark" }],
+          [
+            rehypeShiki,
+            {
+              themes: { light: "vitesse-light", dark: "vitesse-dark" },
+              defaultColor: "light-dark()",
+            },
+          ],
           rehypeExternalLinks,
           rehypeImageDimensions,
         ],

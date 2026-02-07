@@ -5,6 +5,7 @@
 }
 
 :root {
+  color-scheme: dark;
   --background: #222222;
   --foreground: #faf3e1;
   --accent: #ff6d1f;
@@ -24,6 +25,31 @@
   --accent-10: #382a25;
   --accent-50: #914821;
   --accent-80: #d35b1f;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --background: #f8f5ef;
+    --foreground: #2a2a27;
+    --accent: #c2470e;
+
+    /* Foreground solid colors (calculated from opacity over background) */
+    --foreground-5: #ece9e3;
+    --foreground-10: #e0ddd7;
+    --foreground-20: #c9c5be;
+    --foreground-40: #9c978f;
+    --foreground-50: #867f76;
+    --foreground-60: #70685e;
+    --foreground-70: #5b5349;
+    --foreground-80: #463d34;
+    --foreground-90: #312820;
+
+    /* Accent solid colors */
+    --accent-10: #f1e3da;
+    --accent-50: #e1a680;
+    --accent-80: #cb5a1c;
+  }
 }
 
 @theme inline {

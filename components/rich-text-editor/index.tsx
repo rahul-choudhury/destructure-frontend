@@ -113,7 +113,7 @@ const editorTheme = {
       listitem: "list-none",
     },
   },
-  code: "PlaygroundEditorTheme__code relative bg-[#0b0e14] p-4 rounded-lg overflow-x-auto mb-6 font-mono text-sm block",
+  code: "PlaygroundEditorTheme__code relative bg-foreground-5 p-4 rounded-lg overflow-x-auto mb-6 font-mono text-sm block",
   quote: "border-l-4 border-foreground-20 pl-4 italic text-foreground-60 mb-5",
 };
 
