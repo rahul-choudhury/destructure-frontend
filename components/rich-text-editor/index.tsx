@@ -25,8 +25,6 @@ import {
   QuoteNode,
   $createHeadingNode,
   $createQuoteNode,
-  $isHeadingNode,
-  $isQuoteNode,
 } from "@lexical/rich-text";
 import {
   ListNode,
@@ -34,7 +32,6 @@ import {
   INSERT_UNORDERED_LIST_COMMAND,
   INSERT_ORDERED_LIST_COMMAND,
   REMOVE_LIST_COMMAND,
-  $isListNode,
 } from "@lexical/list";
 import { LinkNode, $isLinkNode } from "@lexical/link";
 import {
@@ -59,7 +56,6 @@ import {
   KEY_DOWN_COMMAND,
   SKIP_SELECTION_FOCUS_TAG,
 } from "lexical";
-import { $getNearestNodeOfType } from "@lexical/utils";
 import { Toggle } from "@base-ui/react/toggle";
 import { Select } from "@base-ui/react/select";
 import { Menu } from "@base-ui/react/menu";
@@ -82,8 +78,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CodeHighlightPlugin } from "./plugins/code-highlight-plugin";
-import { useCodeBlockState } from "./hooks/use-code-block-state";
-import { useLinkState } from "./hooks/use-link-state";
+import { useToolbarState } from "./hooks/use-toolbar-state";
 import { LinkDialog } from "./components/link-dialog";
 import {
   LinkClickPlugin,
@@ -150,15 +145,22 @@ function ToolbarPlugin({
   onFullscreenToggle,
 }: ToolbarPluginProps) {
   const [editor] = useLexicalComposerContext();
-  const [isBold, setIsBold] = useState(false);
-  const [isItalic, setIsItalic] = useState(false);
-  const [isCode, setIsCode] = useState(false);
-  const [headingTag, setHeadingTag] = useState<string | null>(null);
-  const [listType, setListType] = useState<string | null>(null);
-  const [isQuote, setIsQuote] = useState(false);
-  const { isCodeBlock, codeNodeKey, currentLanguage } = useCodeBlockState();
-  const { isLink, linkUrl, linkText, linkNodeKey, selectedText } =
-    useLinkState();
+  const {
+    isBold,
+    isItalic,
+    isCode,
+    headingTag,
+    listType,
+    isQuote,
+    isCodeBlock,
+    codeNodeKey,
+    currentLanguage,
+    isLink,
+    linkUrl,
+    linkText,
+    linkNodeKey,
+    selectedText,
+  } = useToolbarState();
 
   const handleLanguageChange = (language: string | null) => {
     if (!codeNodeKey || !language) return;
@@ -206,40 +208,6 @@ function ToolbarPlugin({
       COMMAND_PRIORITY_HIGH,
     );
   }, [editor, onLinkDialogChange]);
-
-  useEffect(() => {
-    return editor.registerUpdateListener(({ editorState }) => {
-      editorState.read(() => {
-        const selection = $getSelection();
-        if (!$isRangeSelection(selection)) return;
-
-        setIsBold(selection.hasFormat("bold"));
-        setIsItalic(selection.hasFormat("italic"));
-        setIsCode(selection.hasFormat("code"));
-
-        const anchorNode = selection.anchor.getNode();
-        const element =
-          anchorNode.getKey() === "root"
-            ? anchorNode
-            : anchorNode.getTopLevelElementOrThrow();
-
-        if ($isHeadingNode(element)) {
-          setHeadingTag(element.getTag());
-        } else {
-          setHeadingTag(null);
-        }
-
-        const listNode = $getNearestNodeOfType(anchorNode, ListNode);
-        if ($isListNode(listNode)) {
-          setListType(listNode.getListType());
-        } else {
-          setListType(null);
-        }
-
-        setIsQuote($isQuoteNode(element));
-      });
-    });
-  }, [editor]);
 
   const formatHeading = (tag: "h2" | "h3", pressed: boolean) => {
     editor.update(() => {
