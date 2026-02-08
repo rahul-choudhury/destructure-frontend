@@ -40,13 +40,11 @@ export function VideoPlayer({
     const video = ref.current
     if (!video) return
 
-    if (isPlaying) {
-      video.pause()
-    } else {
+    if (video.paused) {
       video.play()
+    } else {
+      video.pause()
     }
-
-    setIsPlaying((prev) => !prev)
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {

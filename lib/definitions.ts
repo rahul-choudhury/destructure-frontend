@@ -41,24 +41,13 @@ export type ReactionsData = {
   count: ReactionCount
 }
 
-export type CommentUser = {
-  _id: string
-  name: string
-  picture: string
-}
-
-export type CommentReactions = {
-  givenStatus: ReactionType | null
-  count: ReactionCount
-}
-
 export type Comment = {
   _id: string
-  user: CommentUser
+  user: User
   content: string
   createdAt: string
   updatedAt: string
-  reactions: CommentReactions
+  reactions: ReactionsData
   replies: number
   isCommentOwner: boolean
 }

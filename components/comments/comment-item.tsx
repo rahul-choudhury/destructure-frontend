@@ -48,7 +48,6 @@ export function CommentItem({
   onReply,
   isReply = false,
 }: CommentItemProps) {
-  // woah
   const [isEditing, setIsEditing] = useState(false)
   const [editContent, setEditContent] = useState(comment.content)
   const [isEditSubmitting, setIsEditSubmitting] = useState(false)
@@ -261,7 +260,10 @@ export function CommentItem({
                 {comment.isCommentOwner && (
                   <>
                     <button
-                      onClick={() => setIsEditing(true)}
+                      onClick={() => {
+                        setEditContent(comment.content)
+                        setIsEditing(true)
+                      }}
                       className="px-2 py-0.5 text-foreground-50 transition-colors hover:text-foreground"
                     >
                       Edit

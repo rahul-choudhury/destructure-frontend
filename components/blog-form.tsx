@@ -3,7 +3,6 @@
 import { Loader2, RefreshCcw } from "lucide-react"
 import { Tooltip } from "@base-ui/react/tooltip"
 import {
-  useEffect,
   useRef,
   useState,
   useTransition,
@@ -92,12 +91,6 @@ export function BlogForm({ data }: BlogFormProps) {
     const formData = { ...values, content }
     startTransition(() => formAction(formData))
   }
-
-  useEffect(() => {
-    if (!isEditMode) {
-      editorRef.current?.setMarkdown("")
-    }
-  }, [isEditMode])
 
   return (
     <Tooltip.Provider>

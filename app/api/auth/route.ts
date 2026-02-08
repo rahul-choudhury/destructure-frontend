@@ -1,5 +1,5 @@
 import { api } from "@/lib/api-client"
-import { JWT_EXPIRY } from "@/lib/config"
+import { JWT_EXPIRY } from "@/lib/config.server"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { NextRequest } from "next/server"

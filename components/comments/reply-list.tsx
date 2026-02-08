@@ -25,6 +25,8 @@ export function ReplyList({
 
   useEffect(() => {
     let ignore = false
+    setIsLoading(true)
+    setError(null)
 
     async function fetchReplies() {
       try {
