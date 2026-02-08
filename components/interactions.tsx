@@ -1,22 +1,22 @@
-import { Suspense } from "react";
+import { Suspense } from "react"
 import {
   getBlogComments,
   getBlogReactions,
   getCurrentUser,
-} from "@/lib/data.dynamic";
-import { InteractionsContent } from "./interactions-content";
-import { InteractionsSkeleton } from "./interactions-skeleton";
+} from "@/lib/data.dynamic"
+import { InteractionsContent } from "./interactions-content"
+import { InteractionsSkeleton } from "./interactions-skeleton"
 
 type InteractionsProps = {
-  slug: string;
-};
+  slug: string
+}
 
 async function InteractionsLoader({ slug }: InteractionsProps) {
   const [reactionsData, comments, user] = await Promise.all([
     getBlogReactions(slug),
     getBlogComments(slug),
     getCurrentUser(),
-  ]);
+  ])
 
   return (
     <InteractionsContent
@@ -26,7 +26,7 @@ async function InteractionsLoader({ slug }: InteractionsProps) {
       isAuthenticated={reactionsData.isAuthenticated}
       user={user}
     />
-  );
+  )
 }
 
 export function Interactions({ slug }: InteractionsProps) {
@@ -34,5 +34,5 @@ export function Interactions({ slug }: InteractionsProps) {
     <Suspense fallback={<InteractionsSkeleton />}>
       <InteractionsLoader slug={slug} />
     </Suspense>
-  );
+  )
 }

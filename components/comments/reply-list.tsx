@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { ApiResponse, Comment, ReactionType } from "@/lib/definitions";
-import { CommentItem } from "./comment-item";
+import { useEffect, useState } from "react"
+import { ApiResponse, Comment, ReactionType } from "@/lib/definitions"
+import { CommentItem } from "./comment-item"
 
 type ReplyListProps = {
-  parentId: string;
-  isAuthenticated: boolean;
-  onReact: (commentId: string, reaction: ReactionType) => Promise<void>;
-  onEdit: (commentId: string, content: string) => Promise<void>;
-  onDelete: (commentId: string) => Promise<void>;
-  onReply: (parentId: string, content: string) => Promise<void>;
-};
+  parentId: string
+  isAuthenticated: boolean
+  onReact: (commentId: string, reaction: ReactionType) => Promise<void>
+  onEdit: (commentId: string, content: string) => Promise<void>
+  onDelete: (commentId: string) => Promise<void>
+  onReply: (parentId: string, content: string) => Promise<void>
+}
 
 export function ReplyList({
   parentId,
@@ -19,55 +19,55 @@ export function ReplyList({
   onDelete,
   onReply,
 }: ReplyListProps) {
-  const [replies, setReplies] = useState<Comment[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [replies, setReplies] = useState<Comment[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    let ignore = false;
+    let ignore = false
 
     async function fetchReplies() {
       try {
-        const response = await fetch(`/api/comments/${parentId}/replies`);
+        const response = await fetch(`/api/comments/${parentId}/replies`)
         if (!response.ok) {
-          throw new Error("Failed to fetch replies");
+          throw new Error("Failed to fetch replies")
         }
-        const data: ApiResponse<Comment[]> = await response.json();
+        const data: ApiResponse<Comment[]> = await response.json()
         if (!ignore) {
-          setReplies(data.data);
+          setReplies(data.data)
         }
       } catch (err) {
-        console.error("Error fetching replies:", err);
+        console.error("Error fetching replies:", err)
         if (!ignore) {
-          setError("Failed to load replies");
+          setError("Failed to load replies")
         }
       } finally {
         if (!ignore) {
-          setIsLoading(false);
+          setIsLoading(false)
         }
       }
     }
 
-    fetchReplies();
+    fetchReplies()
     return () => {
-      ignore = true;
-    };
-  }, [parentId]);
+      ignore = true
+    }
+  }, [parentId])
 
   async function handleEdit(replyId: string, content: string) {
-    await onEdit(replyId, content);
+    await onEdit(replyId, content)
     setReplies((prev) =>
       prev.map((reply) =>
         reply._id === replyId
           ? { ...reply, content, updatedAt: new Date().toISOString() }
           : reply,
       ),
-    );
+    )
   }
 
   async function handleDelete(replyId: string) {
-    await onDelete(replyId);
-    setReplies((prev) => prev.filter((reply) => reply._id !== replyId));
+    await onDelete(replyId)
+    setReplies((prev) => prev.filter((reply) => reply._id !== replyId))
   }
 
   if (isLoading) {
@@ -88,7 +88,7 @@ export function ReplyList({
           </div>
         ))}
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -96,11 +96,11 @@ export function ReplyList({
       <p className="mt-3 ml-10 border-l border-foreground-10 pl-4 text-sm text-red-500">
         {error}
       </p>
-    );
+    )
   }
 
   if (replies.length === 0) {
-    return null;
+    return null
   }
 
   return (
@@ -118,5 +118,5 @@ export function ReplyList({
         />
       ))}
     </div>
-  );
+  )
 }

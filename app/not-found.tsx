@@ -1,5 +1,5 @@
-import { PageTitle } from "@/components/page-title";
-import Link from "next/link";
+import { PageTitle } from "@/components/page-title"
+import Link from "next/link"
 
 export default function NotFound() {
   return (
@@ -25,5 +25,5 @@ export default function NotFound() {
         Return home
       </Link>
     </>
-  );
+  )
 }

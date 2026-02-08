@@ -1,9 +1,9 @@
-"use client";
+"use client"
 
-import { Button as BaseButton } from "@base-ui/react/button";
-import { cva, type VariantProps } from "class-variance-authority";
+import { Button as BaseButton } from "@base-ui/react/button"
+import { cva, type VariantProps } from "class-variance-authority"
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
   "inline-flex active:scale-[0.97] items-center justify-center gap-1 rounded-md font-medium transition-[colors,transform] data-disabled:opacity-50 data-disabled:pointer-events-none",
@@ -31,10 +31,10 @@ const buttonVariants = cva(
       size: "default",
     },
   },
-);
+)
 
 type ButtonProps = React.ComponentPropsWithoutRef<typeof BaseButton> &
-  VariantProps<typeof buttonVariants>;
+  VariantProps<typeof buttonVariants>
 
 function Button({ className, variant, size, ...props }: ButtonProps) {
   return (
@@ -42,7 +42,7 @@ function Button({ className, variant, size, ...props }: ButtonProps) {
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
-  );
+  )
 }
 
-export { Button, buttonVariants };
+export { Button, buttonVariants }

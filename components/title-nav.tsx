@@ -1,12 +1,12 @@
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
+import { ArrowLeft } from "lucide-react"
+import Link from "next/link"
 
 export function TitleNav({
   href,
   children,
 }: {
-  href: string;
-  children: React.ReactNode;
+  href: string
+  children: React.ReactNode
 }) {
   return (
     <div className="relative">
@@ -19,5 +19,5 @@ export function TitleNav({
       </Link>
       {children}
     </div>
-  );
+  )
 }

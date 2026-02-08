@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { API_URL } from "@/lib/config";
+import { Button } from "@/components/ui/button"
+import { API_URL } from "@/lib/config"
 
 export default function Loading() {
-  const url = new URL("/api/auth/login", API_URL);
-  url.searchParams.append("state", "/admin");
+  const url = new URL("/api/auth/login", API_URL)
+  url.searchParams.append("state", "/admin")
 
   return (
     <div className="grid min-h-svh place-items-center">
@@ -34,5 +34,5 @@ export default function Loading() {
         Login with Google
       </Button>
     </div>
-  );
+  )
 }

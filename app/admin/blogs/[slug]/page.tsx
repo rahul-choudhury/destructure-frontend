@@ -1,28 +1,28 @@
-import { Pencil } from "lucide-react";
-import Link from "next/link";
+import { Pencil } from "lucide-react"
+import Link from "next/link"
 
-import { MdxContent } from "@/components/mdx-content";
-import { DeleteBlogButton } from "@/components/delete-blog-button";
-import { PageTitle } from "@/components/page-title";
-import { api } from "@/lib/api-client";
-import { Blog } from "@/lib/definitions";
-import { formatDate } from "@/lib/utils";
-import { getTokenFromCookie } from "@/lib/session";
-import { TitleNav } from "@/components/title-nav";
-import { Interactions } from "@/components/interactions";
+import { MdxContent } from "@/components/mdx-content"
+import { DeleteBlogButton } from "@/components/delete-blog-button"
+import { PageTitle } from "@/components/page-title"
+import { api } from "@/lib/api-client"
+import { Blog } from "@/lib/definitions"
+import { formatDate } from "@/lib/utils"
+import { getTokenFromCookie } from "@/lib/session"
+import { TitleNav } from "@/components/title-nav"
+import { Interactions } from "@/components/interactions"
 
 export default async function Page({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string }>
 }) {
-  const token = await getTokenFromCookie();
-  const { slug } = await params;
+  const token = await getTokenFromCookie()
+  const { slug } = await params
   const { data: blog } = await api.get<Blog>(`/api/blogs/${slug}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-  });
+  })
 
   return (
     <>
@@ -46,5 +46,5 @@ export default async function Page({
       <MdxContent source={blog.content} />
       <Interactions slug={slug} />
     </>
-  );
+  )
 }

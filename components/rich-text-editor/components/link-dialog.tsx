@@ -1,34 +1,34 @@
-import { useState, useRef } from "react";
-import { Dialog } from "@base-ui/react/dialog";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $isLinkNode, $toggleLink } from "@lexical/link";
+import { useState, useRef } from "react"
+import { Dialog } from "@base-ui/react/dialog"
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
+import { $isLinkNode, $toggleLink } from "@lexical/link"
 import {
   $getSelection,
   $isRangeSelection,
   $getNodeByKey,
   $isTextNode,
-} from "lexical";
-import { X } from "lucide-react";
+} from "lexical"
+import { X } from "lucide-react"
 
-import { Field } from "@/components/ui/field";
-import { Button } from "@/components/ui/button";
+import { Field } from "@/components/ui/field"
+import { Button } from "@/components/ui/button"
 
 function normalizeUrl(url: string): string {
-  const trimmed = url.trim();
-  if (!trimmed) return "";
+  const trimmed = url.trim()
+  if (!trimmed) return ""
   if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
-    return trimmed;
+    return trimmed
   }
-  return `https://${trimmed}`;
+  return `https://${trimmed}`
 }
 
 type LinkDialogContentProps = {
-  initialUrl: string;
-  initialLabel: string;
-  isEditing: boolean;
-  linkNodeKey: string | null;
-  onClose: () => void;
-};
+  initialUrl: string
+  initialLabel: string
+  isEditing: boolean
+  linkNodeKey: string | null
+  onClose: () => void
+}
 
 function LinkDialogContent({
   initialUrl,
@@ -37,69 +37,69 @@ function LinkDialogContent({
   linkNodeKey,
   onClose,
 }: LinkDialogContentProps) {
-  const [editor] = useLexicalComposerContext();
-  const [url, setUrl] = useState(initialUrl);
-  const [label, setLabel] = useState(initialLabel);
-  const [error, setError] = useState<string | null>(null);
-  const urlInputRef = useRef<HTMLInputElement>(null);
+  const [editor] = useLexicalComposerContext()
+  const [url, setUrl] = useState(initialUrl)
+  const [label, setLabel] = useState(initialLabel)
+  const [error, setError] = useState<string | null>(null)
+  const urlInputRef = useRef<HTMLInputElement>(null)
 
   const handleSave = () => {
     if (!url.trim()) {
-      setError("URL is required");
-      return;
+      setError("URL is required")
+      return
     }
 
-    const normalizedUrl = normalizeUrl(url);
+    const normalizedUrl = normalizeUrl(url)
 
     editor.update(() => {
       if (isEditing && linkNodeKey) {
-        const node = $getNodeByKey(linkNodeKey);
+        const node = $getNodeByKey(linkNodeKey)
         if ($isLinkNode(node)) {
-          node.setURL(normalizedUrl);
-          const textNode = node.getFirstChild();
+          node.setURL(normalizedUrl)
+          const textNode = node.getFirstChild()
           if ($isTextNode(textNode) && label !== textNode.getTextContent()) {
-            textNode.setTextContent(label);
+            textNode.setTextContent(label)
           }
         }
       } else {
-        const selection = $getSelection();
+        const selection = $getSelection()
         if ($isRangeSelection(selection)) {
-          const currentText = selection.getTextContent();
+          const currentText = selection.getTextContent()
           if (!selection.isCollapsed() && label && label !== currentText) {
-            selection.removeText();
-            selection.insertText(label);
+            selection.removeText()
+            selection.insertText(label)
           } else if (selection.isCollapsed() && label) {
-            selection.insertText(label);
+            selection.insertText(label)
           }
-          $toggleLink(normalizedUrl);
+          $toggleLink(normalizedUrl)
         }
       }
-    });
+    })
 
-    onClose();
-  };
+    onClose()
+  }
 
   const handleRemove = () => {
     editor.update(() => {
       if (linkNodeKey) {
-        const node = $getNodeByKey(linkNodeKey);
+        const node = $getNodeByKey(linkNodeKey)
         if ($isLinkNode(node)) {
-          const children = node.getChildren();
+          const children = node.getChildren()
           for (const child of children) {
-            node.insertBefore(child);
+            node.insertBefore(child)
           }
-          node.remove();
+          node.remove()
         }
       }
-    });
-    onClose();
-  };
+    })
+    onClose()
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    handleSave();
-  };
+    e.preventDefault()
+    e.stopPropagation()
+    handleSave()
+  }
 
   return (
     <>
@@ -122,8 +122,8 @@ function LinkDialogContent({
             placeholder="https://example.com"
             value={url}
             onChange={(e) => {
-              setUrl(e.target.value);
-              setError(null);
+              setUrl(e.target.value)
+              setError(null)
             }}
             autoFocus
             aria-invalid={!!error}
@@ -153,17 +153,17 @@ function LinkDialogContent({
         </div>
       </form>
     </>
-  );
+  )
 }
 
 type LinkDialogProps = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  isEditing: boolean;
-  initialUrl: string;
-  initialLabel: string;
-  linkNodeKey: string | null;
-};
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  isEditing: boolean
+  initialUrl: string
+  initialLabel: string
+  linkNodeKey: string | null
+}
 
 export function LinkDialog({
   open,
@@ -191,5 +191,5 @@ export function LinkDialog({
         </Dialog.Popup>
       </Dialog.Portal>
     </Dialog.Root>
-  );
+  )
 }

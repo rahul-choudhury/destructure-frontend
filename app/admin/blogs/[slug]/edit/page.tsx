@@ -1,23 +1,23 @@
-import { BlogForm } from "@/components/blog-form";
-import { PageTitle } from "@/components/page-title";
-import { TitleNav } from "@/components/title-nav";
-import { api } from "@/lib/api-client";
-import { Blog } from "@/lib/definitions";
-import { getTokenFromCookie } from "@/lib/session";
+import { BlogForm } from "@/components/blog-form"
+import { PageTitle } from "@/components/page-title"
+import { TitleNav } from "@/components/title-nav"
+import { api } from "@/lib/api-client"
+import { Blog } from "@/lib/definitions"
+import { getTokenFromCookie } from "@/lib/session"
 
 export default async function Page({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string }>
 }) {
-  const { slug } = await params;
-  const token = await getTokenFromCookie();
+  const { slug } = await params
+  const token = await getTokenFromCookie()
 
   const { data: blog } = await api.get<Blog>(`/api/blogs/${slug}`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-  });
+  })
 
   return (
     <>
@@ -26,5 +26,5 @@ export default async function Page({
       </TitleNav>
       <BlogForm data={blog} />
     </>
-  );
+  )
 }

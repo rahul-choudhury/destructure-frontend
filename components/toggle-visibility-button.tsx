@@ -1,35 +1,35 @@
-"use client";
+"use client"
 
-import { AlertDialog } from "@base-ui/react/alert-dialog";
-import { Loader2 } from "lucide-react";
-import { useTransition } from "react";
+import { AlertDialog } from "@base-ui/react/alert-dialog"
+import { Loader2 } from "lucide-react"
+import { useTransition } from "react"
 
-import { Button } from "@/components/ui/button";
-import { toggleBlogVisibility } from "@/lib/actions";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button"
+import { toggleBlogVisibility } from "@/lib/actions"
+import { cn } from "@/lib/utils"
 
 type ToggleVisibilityButtonProps = {
-  slug: string;
-  isPublic: boolean;
-};
+  slug: string
+  isPublic: boolean
+}
 
 export function ToggleVisibilityButton({
   slug,
   isPublic,
 }: ToggleVisibilityButtonProps) {
-  const [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition()
 
   const handleToggle = () => {
     startTransition(async () => {
-      await toggleBlogVisibility(slug, !isPublic);
-    });
-  };
+      await toggleBlogVisibility(slug, !isPublic)
+    })
+  }
 
   return (
     <span
       onClick={(e) => {
-        e.stopPropagation();
-        e.preventDefault();
+        e.stopPropagation()
+        e.preventDefault()
       }}
       onMouseDown={(e) => e.stopPropagation()}
     >
@@ -76,5 +76,5 @@ export function ToggleVisibilityButton({
         </AlertDialog.Portal>
       </AlertDialog.Root>
     </span>
-  );
+  )
 }

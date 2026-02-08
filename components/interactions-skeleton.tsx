@@ -38,5 +38,5 @@ export function InteractionsSkeleton() {
         </div>
       </div>
     </div>
-  );
+  )
 }

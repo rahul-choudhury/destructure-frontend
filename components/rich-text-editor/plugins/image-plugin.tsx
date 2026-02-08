@@ -1,40 +1,40 @@
-import { useEffect } from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useEffect } from "react"
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import {
   $insertNodes,
   COMMAND_PRIORITY_EDITOR,
   createCommand,
   type LexicalCommand,
-} from "lexical";
+} from "lexical"
 
-import { $createImageNode, ImageNode } from "../nodes/image-node";
+import { $createImageNode, ImageNode } from "../nodes/image-node"
 
 export type InsertImagePayload = {
-  src: string;
-  alt?: string;
-};
+  src: string
+  alt?: string
+}
 
 export const INSERT_IMAGE_COMMAND: LexicalCommand<InsertImagePayload> =
-  createCommand("INSERT_IMAGE_COMMAND");
+  createCommand("INSERT_IMAGE_COMMAND")
 
 export function ImagePlugin(): null {
-  const [editor] = useLexicalComposerContext();
+  const [editor] = useLexicalComposerContext()
 
   useEffect(() => {
     if (!editor.hasNodes([ImageNode])) {
-      throw new Error("ImagePlugin: ImageNode not registered in editor config");
+      throw new Error("ImagePlugin: ImageNode not registered in editor config")
     }
 
     return editor.registerCommand(
       INSERT_IMAGE_COMMAND,
       (payload) => {
-        const imageNode = $createImageNode(payload.src, payload.alt || "");
-        $insertNodes([imageNode]);
-        return true;
+        const imageNode = $createImageNode(payload.src, payload.alt || "")
+        $insertNodes([imageNode])
+        return true
       },
       COMMAND_PRIORITY_EDITOR,
-    );
-  }, [editor]);
+    )
+  }, [editor])
 
-  return null;
+  return null
 }

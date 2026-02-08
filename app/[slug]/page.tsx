@@ -1,38 +1,38 @@
-import type { Metadata } from "next";
-import { MdxContent } from "@/components/mdx-content";
-import { PageTitle } from "@/components/page-title";
-import { TitleNav } from "@/components/title-nav";
-import { formatDate } from "@/lib/utils";
-import { Interactions } from "@/components/interactions";
-import { getBlog, getBlogs } from "@/lib/data";
+import type { Metadata } from "next"
+import { MdxContent } from "@/components/mdx-content"
+import { PageTitle } from "@/components/page-title"
+import { TitleNav } from "@/components/title-nav"
+import { formatDate } from "@/lib/utils"
+import { Interactions } from "@/components/interactions"
+import { getBlog, getBlogs } from "@/lib/data"
 
 export async function generateStaticParams() {
-  const blogs = await getBlogs();
+  const blogs = await getBlogs()
   return blogs.data.map((blog) => ({
     slug: blog.slug,
-  }));
+  }))
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string }>
 }): Promise<Metadata> {
-  const { slug } = await params;
-  const { data: blog } = await getBlog(slug);
+  const { slug } = await params
+  const { data: blog } = await getBlog(slug)
 
   return {
     title: blog.title,
-  };
+  }
 }
 
 export default async function Page({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string }>
 }) {
-  const { slug } = await params;
-  const { data: blog } = await getBlog(slug);
+  const { slug } = await params
+  const { data: blog } = await getBlog(slug)
 
   return (
     <>
@@ -46,5 +46,5 @@ export default async function Page({
       <MdxContent source={blog.content} />
       <Interactions slug={slug} />
     </>
-  );
+  )
 }

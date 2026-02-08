@@ -1,47 +1,43 @@
-"use client";
+"use client"
 
-import {
-  useEffect,
-  useImperativeHandle,
-  useState,
-} from "react";
-import { usePathname } from "next/navigation";
-import { LexicalComposer } from "@lexical/react/LexicalComposer";
-import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import { ContentEditable } from "@lexical/react/LexicalContentEditable";
-import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
-import { ListPlugin } from "@lexical/react/LexicalListPlugin";
-import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
-import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useEffect, useImperativeHandle, useState } from "react"
+import { usePathname } from "next/navigation"
+import { LexicalComposer } from "@lexical/react/LexicalComposer"
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin"
+import { ContentEditable } from "@lexical/react/LexicalContentEditable"
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin"
+import { ListPlugin } from "@lexical/react/LexicalListPlugin"
+import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin"
+import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary"
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import {
   $convertToMarkdownString,
   $convertFromMarkdownString,
-} from "@lexical/markdown";
-import { BLOG_TRANSFORMERS } from "./transformers";
+} from "@lexical/markdown"
+import { BLOG_TRANSFORMERS } from "./transformers"
 import {
   HeadingNode,
   QuoteNode,
   $createHeadingNode,
   $createQuoteNode,
-} from "@lexical/rich-text";
+} from "@lexical/rich-text"
 import {
   ListNode,
   ListItemNode,
   INSERT_UNORDERED_LIST_COMMAND,
   INSERT_ORDERED_LIST_COMMAND,
   REMOVE_LIST_COMMAND,
-} from "@lexical/list";
-import { LinkNode, $isLinkNode } from "@lexical/link";
+} from "@lexical/list"
+import { LinkNode, $isLinkNode } from "@lexical/link"
 import {
   CodeNode,
   CodeHighlightNode,
   $createCodeNode,
   $isCodeNode,
-} from "@lexical/code";
-import { loadCodeLanguage } from "@lexical/code-shiki";
-import { CustomCodeHighlightNode } from "./nodes/custom-code-highlight-node";
-import { $setBlocksType } from "@lexical/selection";
+} from "@lexical/code"
+import { loadCodeLanguage } from "@lexical/code-shiki"
+import { CustomCodeHighlightNode } from "./nodes/custom-code-highlight-node"
+import { $setBlocksType } from "@lexical/selection"
 import {
   $createParagraphNode,
   $addUpdateTag,
@@ -54,10 +50,10 @@ import {
   FORMAT_TEXT_COMMAND,
   KEY_DOWN_COMMAND,
   SKIP_SELECTION_FOCUS_TAG,
-} from "lexical";
-import { Toggle } from "@base-ui/react/toggle";
-import { Select } from "@base-ui/react/select";
-import { Menu } from "@base-ui/react/menu";
+} from "lexical"
+import { Toggle } from "@base-ui/react/toggle"
+import { Select } from "@base-ui/react/select"
+import { Menu } from "@base-ui/react/menu"
 import {
   Bold,
   Check,
@@ -74,21 +70,18 @@ import {
   Maximize2,
   Minimize2,
   TextQuote,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { CodeHighlightPlugin } from "./plugins/code-highlight-plugin";
-import { useToolbarState } from "./hooks/use-toolbar-state";
-import { LinkDialog } from "./components/link-dialog";
-import {
-  LinkClickPlugin,
-  type LinkEditData,
-} from "./plugins/link-click-plugin";
-import { ImageNode } from "./nodes/image-node";
-import { VideoNode } from "./nodes/video-node";
-import { ImagePlugin } from "./plugins/image-plugin";
-import { VideoPlugin } from "./plugins/video-plugin";
-import { MediaUploadDialog } from "./components/media-upload-dialog";
-import { CODE_LANGUAGE_OPTIONS } from "@/lib/config";
+} from "lucide-react"
+import { cn } from "@/lib/utils"
+import { CodeHighlightPlugin } from "./plugins/code-highlight-plugin"
+import { useToolbarState } from "./hooks/use-toolbar-state"
+import { LinkDialog } from "./components/link-dialog"
+import { LinkClickPlugin, type LinkEditData } from "./plugins/link-click-plugin"
+import { ImageNode } from "./nodes/image-node"
+import { VideoNode } from "./nodes/video-node"
+import { ImagePlugin } from "./plugins/image-plugin"
+import { VideoPlugin } from "./plugins/video-plugin"
+import { MediaUploadDialog } from "./components/media-upload-dialog"
+import { CODE_LANGUAGE_OPTIONS } from "@/lib/config"
 
 const editorTheme = {
   paragraph: "text-foreground-70 mb-5",
@@ -114,28 +107,28 @@ const editorTheme = {
   },
   code: "PlaygroundEditorTheme__code relative bg-foreground-5 p-4 rounded-lg overflow-x-auto mb-6 font-mono text-sm block",
   quote: "border-l-4 border-foreground-20 pl-4 italic text-foreground-60 mb-5",
-};
+}
 
 export const toolbarButtonClass =
-  "p-2 rounded text-foreground-60 hover:text-foreground hover:bg-foreground-10 focus:outline-2 focus:outline-accent focus:-outline-offset-1 data-[pressed]:text-accent data-[pressed]:bg-foreground-10";
+  "p-2 rounded text-foreground-60 hover:text-foreground hover:bg-foreground-10 focus:outline-2 focus:outline-accent focus:-outline-offset-1 data-[pressed]:text-accent data-[pressed]:bg-foreground-10"
 
 const menuItemClass =
-  "flex items-center gap-2 px-3 py-2 text-sm text-foreground-70 outline-none cursor-default rounded data-highlighted:bg-foreground-10 data-highlighted:text-foreground";
+  "flex items-center gap-2 px-3 py-2 text-sm text-foreground-70 outline-none cursor-default rounded data-highlighted:bg-foreground-10 data-highlighted:text-foreground"
 
 type LinkDialogState = {
-  open: boolean;
-  isEditing: boolean;
-  initialUrl: string;
-  initialLabel: string;
-  linkNodeKey: string | null;
-};
+  open: boolean
+  isEditing: boolean
+  initialUrl: string
+  initialLabel: string
+  linkNodeKey: string | null
+}
 
 type ToolbarPluginProps = {
-  linkDialogState: LinkDialogState;
-  onLinkDialogChange: (state: LinkDialogState) => void;
-  isFullscreen: boolean;
-  onFullscreenToggle: () => void;
-};
+  linkDialogState: LinkDialogState
+  onLinkDialogChange: (state: LinkDialogState) => void
+  isFullscreen: boolean
+  onFullscreenToggle: () => void
+}
 
 function ToolbarPlugin({
   linkDialogState,
@@ -143,7 +136,7 @@ function ToolbarPlugin({
   isFullscreen,
   onFullscreenToggle,
 }: ToolbarPluginProps) {
-  const [editor] = useLexicalComposerContext();
+  const [editor] = useLexicalComposerContext()
   const {
     isBold,
     isItalic,
@@ -159,35 +152,35 @@ function ToolbarPlugin({
     linkText,
     linkNodeKey,
     selectedText,
-  } = useToolbarState();
+  } = useToolbarState()
 
   const handleLanguageChange = (language: string | null) => {
-    if (!codeNodeKey || !language) return;
+    if (!codeNodeKey || !language) return
 
-    loadCodeLanguage(language, editor, codeNodeKey);
+    loadCodeLanguage(language, editor, codeNodeKey)
 
     editor.update(() => {
-      const node = $getNodeByKey(codeNodeKey);
+      const node = $getNodeByKey(codeNodeKey)
       if ($isCodeNode(node)) {
-        node.setLanguage(language);
+        node.setLanguage(language)
       }
-    });
-  };
+    })
+  }
 
   useEffect(() => {
     return editor.registerCommand(
       KEY_DOWN_COMMAND,
       (event: KeyboardEvent) => {
         if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
-          event.preventDefault();
+          event.preventDefault()
 
           editor.getEditorState().read(() => {
-            const selection = $getSelection();
-            if (!$isRangeSelection(selection)) return;
+            const selection = $getSelection()
+            if (!$isRangeSelection(selection)) return
 
-            const anchorNode = selection.anchor.getNode();
-            const parent = anchorNode.getParent();
-            const isLinkNow = $isLinkNode(parent);
+            const anchorNode = selection.anchor.getNode()
+            const parent = anchorNode.getParent()
+            const isLinkNow = $isLinkNode(parent)
 
             onLinkDialogChange({
               open: true,
@@ -197,55 +190,55 @@ function ToolbarPlugin({
                 ? parent.getTextContent()
                 : selection.getTextContent(),
               linkNodeKey: isLinkNow ? parent.getKey() : null,
-            });
-          });
+            })
+          })
 
-          return true;
+          return true
         }
-        return false;
+        return false
       },
       COMMAND_PRIORITY_HIGH,
-    );
-  }, [editor, onLinkDialogChange]);
+    )
+  }, [editor, onLinkDialogChange])
 
   const formatHeading = (tag: "h2" | "h3", pressed: boolean) => {
     editor.update(() => {
-      const selection = $getSelection();
+      const selection = $getSelection()
       if ($isRangeSelection(selection)) {
         if (pressed) {
-          $setBlocksType(selection, () => $createHeadingNode(tag));
+          $setBlocksType(selection, () => $createHeadingNode(tag))
         } else {
-          $setBlocksType(selection, () => $createParagraphNode());
+          $setBlocksType(selection, () => $createParagraphNode())
         }
       }
-    });
-  };
+    })
+  }
 
   const formatCodeBlock = () => {
     editor.update(() => {
-      const selection = $getSelection();
+      const selection = $getSelection()
       if ($isRangeSelection(selection)) {
         if (isCodeBlock) {
-          $setBlocksType(selection, () => $createParagraphNode());
+          $setBlocksType(selection, () => $createParagraphNode())
         } else {
-          $setBlocksType(selection, () => $createCodeNode("javascript"));
+          $setBlocksType(selection, () => $createCodeNode("javascript"))
         }
       }
-    });
-  };
+    })
+  }
 
   const formatQuote = () => {
     editor.update(() => {
-      const selection = $getSelection();
+      const selection = $getSelection()
       if ($isRangeSelection(selection)) {
         if (isQuote) {
-          $setBlocksType(selection, () => $createParagraphNode());
+          $setBlocksType(selection, () => $createParagraphNode())
         } else {
-          $setBlocksType(selection, () => $createQuoteNode());
+          $setBlocksType(selection, () => $createQuoteNode())
         }
       }
-    });
-  };
+    })
+  }
 
   const openLinkDialog = () => {
     onLinkDialogChange({
@@ -254,8 +247,8 @@ function ToolbarPlugin({
       initialUrl: isLink ? (linkUrl ?? "") : "",
       initialLabel: isLink ? (linkText ?? "") : selectedText,
       linkNodeKey: isLink ? linkNodeKey : null,
-    });
-  };
+    })
+  }
 
   return (
     <div className="flex flex-wrap gap-1 border-b border-foreground-20 p-2">
@@ -488,97 +481,96 @@ function ToolbarPlugin({
         linkNodeKey={linkDialogState.linkNodeKey}
       />
     </div>
-  );
+  )
 }
 
 function RestrictHeadingsPlugin() {
-  const [editor] = useLexicalComposerContext();
+  const [editor] = useLexicalComposerContext()
 
   useEffect(() => {
     return editor.registerNodeTransform(HeadingNode, (node) => {
-      const tag = node.getTag();
+      const tag = node.getTag()
       if (tag !== "h2" && tag !== "h3") {
-        node.replace($createHeadingNode("h2"));
+        node.replace($createHeadingNode("h2"))
       }
-    });
-  }, [editor]);
+    })
+  }, [editor])
 
-  return null;
+  return null
 }
 
 function FocusResetPlugin() {
-  const [editor] = useLexicalComposerContext();
-  const pathname = usePathname();
+  const [editor] = useLexicalComposerContext()
+  const pathname = usePathname()
 
   useEffect(() => {
     editor.update(() => {
-      $addUpdateTag(SKIP_SELECTION_FOCUS_TAG);
-      $setSelection(null);
-    });
-    editor.blur();
-  }, [editor, pathname]);
+      $addUpdateTag(SKIP_SELECTION_FOCUS_TAG)
+      $setSelection(null)
+    })
+    editor.blur()
+  }, [editor, pathname])
 
-  return null;
+  return null
 }
 
 function EditorRefPlugin({
   editorRef,
 }: {
-  editorRef?: React.Ref<RichTextEditorRef>;
+  editorRef?: React.Ref<RichTextEditorRef>
 }) {
-  const [editor] = useLexicalComposerContext();
+  const [editor] = useLexicalComposerContext()
 
   useImperativeHandle(
     editorRef,
     () => ({
       getMarkdown: () => {
-        let markdown = "";
+        let markdown = ""
         editor.getEditorState().read(() => {
-          markdown = $convertToMarkdownString(BLOG_TRANSFORMERS);
-        });
-        return markdown;
+          markdown = $convertToMarkdownString(BLOG_TRANSFORMERS)
+        })
+        return markdown
       },
       setMarkdown: (markdown: string) => {
         editor.update(() => {
-          $getRoot().clear();
+          $getRoot().clear()
           if (markdown) {
-            $convertFromMarkdownString(markdown, BLOG_TRANSFORMERS);
+            $convertFromMarkdownString(markdown, BLOG_TRANSFORMERS)
           } else {
-            $getRoot().append($createParagraphNode());
+            $getRoot().append($createParagraphNode())
           }
-        });
+        })
 
         if (!markdown) {
-          const rootElement = editor.getRootElement();
+          const rootElement = editor.getRootElement()
           if (rootElement instanceof HTMLElement) {
-            rootElement.blur();
+            rootElement.blur()
           }
         }
       },
     }),
     [editor],
-  );
+  )
 
-  return null;
+  return null
 }
 
-
 export type RichTextEditorRef = {
-  getMarkdown: () => string;
-  setMarkdown: (markdown: string) => void;
-};
+  getMarkdown: () => string
+  setMarkdown: (markdown: string) => void
+}
 
 export type RichTextEditorProps = {
-  id?: string;
-  className?: string;
-  placeholder?: string;
-  initialContent?: string;
-  ref?: React.Ref<RichTextEditorRef>;
-  "aria-labelledby"?: string;
-};
+  id?: string
+  className?: string
+  placeholder?: string
+  initialContent?: string
+  ref?: React.Ref<RichTextEditorRef>
+  "aria-labelledby"?: string
+}
 
 function handleLexicalError(error: Error) {
-  console.error("Lexical error:", error);
+  console.error("Lexical error:", error)
 }
 
 const editorNodes = [
@@ -600,7 +592,7 @@ const editorNodes = [
   },
   ImageNode,
   VideoNode,
-];
+]
 
 export function RichTextEditor({
   id,
@@ -618,15 +610,15 @@ export function RichTextEditor({
     editorState: initialContent
       ? () => $convertFromMarkdownString(initialContent, BLOG_TRANSFORMERS)
       : undefined,
-  };
+  }
   const [linkDialogState, setLinkDialogState] = useState<LinkDialogState>({
     open: false,
     isEditing: false,
     initialUrl: "",
     initialLabel: "",
     linkNodeKey: null,
-  });
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  })
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   const handleEditLink = (data: LinkEditData) => {
     setLinkDialogState({
@@ -635,25 +627,25 @@ export function RichTextEditor({
       initialUrl: data.url,
       initialLabel: data.text,
       linkNodeKey: data.nodeKey,
-    });
-  };
+    })
+  }
 
   const handleFullscreenToggle = () => {
-    setIsFullscreen((prev) => !prev);
-  };
+    setIsFullscreen((prev) => !prev)
+  }
 
   useEffect(() => {
-    if (!isFullscreen) return;
+    if (!isFullscreen) return
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setIsFullscreen(false);
+        setIsFullscreen(false)
       }
-    };
+    }
 
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isFullscreen]);
+    document.addEventListener("keydown", handleKeyDown)
+    return () => document.removeEventListener("keydown", handleKeyDown)
+  }, [isFullscreen])
 
   return (
     <div
@@ -708,5 +700,5 @@ export function RichTextEditor({
         <LinkClickPlugin onEditLink={handleEditLink} />
       </LexicalComposer>
     </div>
-  );
+  )
 }

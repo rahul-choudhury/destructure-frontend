@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
-export type ErrorProps = React.HTMLAttributes<HTMLParagraphElement>;
+export type ErrorProps = React.HTMLAttributes<HTMLParagraphElement>
 
 export function Error({ className, id, ...props }: ErrorProps) {
   return (
@@ -10,5 +10,5 @@ export function Error({ className, id, ...props }: ErrorProps) {
       aria-live="polite"
       {...props}
     />
-  );
+  )
 }

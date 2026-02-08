@@ -1,155 +1,155 @@
-import { useState, useRef, useEffect } from "react";
-import { Dialog } from "@base-ui/react/dialog";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { ImageIcon, X, Upload, Loader2, Film } from "lucide-react";
+import { useState, useRef, useEffect } from "react"
+import { Dialog } from "@base-ui/react/dialog"
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
+import { ImageIcon, X, Upload, Loader2, Film } from "lucide-react"
 
-import { uploadMedia } from "@/lib/actions";
-import { cn } from "@/lib/utils";
-import { INSERT_IMAGE_COMMAND } from "../plugins/image-plugin";
-import { INSERT_VIDEO_COMMAND } from "../plugins/video-plugin";
+import { uploadMedia } from "@/lib/actions"
+import { cn } from "@/lib/utils"
+import { INSERT_IMAGE_COMMAND } from "../plugins/image-plugin"
+import { INSERT_VIDEO_COMMAND } from "../plugins/video-plugin"
 
 type MediaUploadDialogProps = {
-  toolbarButtonClass: string;
-  children?: React.ReactNode;
-};
+  toolbarButtonClass: string
+  children?: React.ReactNode
+}
 
-type MediaFilter = "ALL" | "IMAGE" | "VIDEO";
+type MediaFilter = "ALL" | "IMAGE" | "VIDEO"
 
-const IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-const VIDEO_TYPES = ["video/mp4", "video/webm", "video/ogg"];
-const VIDEO_EXTENSIONS = [".mp4", ".webm", ".ogg"];
+const IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"]
+const VIDEO_TYPES = ["video/mp4", "video/webm", "video/ogg"]
+const VIDEO_EXTENSIONS = [".mp4", ".webm", ".ogg"]
 
 function isVideoUrl(url: string): boolean {
-  const urlWithoutQuery = url.split("?")[0].toLowerCase();
-  return VIDEO_EXTENSIONS.some((ext) => urlWithoutQuery.endsWith(ext));
+  const urlWithoutQuery = url.split("?")[0].toLowerCase()
+  return VIDEO_EXTENSIONS.some((ext) => urlWithoutQuery.endsWith(ext))
 }
 
 function isImageFile(file: File): boolean {
-  return IMAGE_TYPES.includes(file.type);
+  return IMAGE_TYPES.includes(file.type)
 }
 
 function isVideoFile(file: File): boolean {
-  return VIDEO_TYPES.includes(file.type);
+  return VIDEO_TYPES.includes(file.type)
 }
 
 export function MediaUploadDialog({
   toolbarButtonClass,
   children,
 }: MediaUploadDialogProps) {
-  const [editor] = useLexicalComposerContext();
-  const [open, setOpen] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [editor] = useLexicalComposerContext()
+  const [open, setOpen] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const [mediaFilter, setMediaFilter] = useState<MediaFilter>("ALL");
-  const [isLoadingMedia, setIsLoadingMedia] = useState(false);
+  const [mediaFilter, setMediaFilter] = useState<MediaFilter>("ALL")
+  const [isLoadingMedia, setIsLoadingMedia] = useState(false)
   const [mediaCache, setMediaCache] = useState<Record<MediaFilter, string[]>>({
     ALL: [],
     IMAGE: [],
     VIDEO: [],
-  });
+  })
   const fetchedFiltersRef = useRef<Record<MediaFilter, boolean>>({
     ALL: false,
     IMAGE: false,
     VIDEO: false,
-  });
+  })
 
-  const mediaList = mediaCache[mediaFilter];
+  const mediaList = mediaCache[mediaFilter]
 
   useEffect(() => {
-    if (!open || fetchedFiltersRef.current[mediaFilter]) return;
+    if (!open || fetchedFiltersRef.current[mediaFilter]) return
 
-    const controller = new AbortController();
+    const controller = new AbortController()
 
     const fetchMediaList = async (filter: MediaFilter) => {
-      setIsLoadingMedia(true);
+      setIsLoadingMedia(true)
       try {
         const res = await fetch(`/api/admin/media?type=${filter}`, {
           signal: controller.signal,
-        });
-        const data = await res.json();
+        })
+        const data = await res.json()
         if (data.isSuccess) {
-          setMediaCache((prev) => ({ ...prev, [filter]: data.data }));
+          setMediaCache((prev) => ({ ...prev, [filter]: data.data }))
         }
-        fetchedFiltersRef.current[filter] = true;
+        fetchedFiltersRef.current[filter] = true
       } catch (err) {
-        if (err instanceof DOMException && err.name === "AbortError") return;
-        fetchedFiltersRef.current[filter] = true;
+        if (err instanceof DOMException && err.name === "AbortError") return
+        fetchedFiltersRef.current[filter] = true
       } finally {
         if (!controller.signal.aborted) {
-          setIsLoadingMedia(false);
+          setIsLoadingMedia(false)
         }
       }
-    };
+    }
 
-    fetchMediaList(mediaFilter);
+    fetchMediaList(mediaFilter)
 
-    return () => controller.abort();
-  }, [open, mediaFilter]);
+    return () => controller.abort()
+  }, [open, mediaFilter])
 
   const handleMediaSelect = (url: string) => {
     if (isVideoUrl(url)) {
-      editor.dispatchCommand(INSERT_VIDEO_COMMAND, { src: url });
+      editor.dispatchCommand(INSERT_VIDEO_COMMAND, { src: url })
     } else {
-      editor.dispatchCommand(INSERT_IMAGE_COMMAND, { src: url });
+      editor.dispatchCommand(INSERT_IMAGE_COMMAND, { src: url })
     }
-    setOpen(false);
-  };
+    setOpen(false)
+  }
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const file = e.target.files?.[0]
+    if (!file) return
 
     if (!isImageFile(file) && !isVideoFile(file)) {
-      setError("Unsupported file type");
-      return;
+      setError("Unsupported file type")
+      return
     }
 
-    setError(null);
-    setIsUploading(true);
+    setError(null)
+    setIsUploading(true)
 
     try {
-      const formData = new FormData();
-      formData.append("media", file);
+      const formData = new FormData()
+      formData.append("media", file)
 
-      const result = await uploadMedia(formData);
+      const result = await uploadMedia(formData)
 
       if (result.isSuccess && result.data.length > 0) {
-        const mediaUrl = result.data[0];
+        const mediaUrl = result.data[0]
 
         if (isImageFile(file)) {
-          editor.dispatchCommand(INSERT_IMAGE_COMMAND, { src: mediaUrl });
+          editor.dispatchCommand(INSERT_IMAGE_COMMAND, { src: mediaUrl })
         } else {
-          editor.dispatchCommand(INSERT_VIDEO_COMMAND, { src: mediaUrl });
+          editor.dispatchCommand(INSERT_VIDEO_COMMAND, { src: mediaUrl })
         }
 
-        setOpen(false);
+        setOpen(false)
       } else {
-        setError(result.message || "Upload failed");
+        setError(result.message || "Upload failed")
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed");
+      setError(err instanceof Error ? err.message : "Upload failed")
     } finally {
-      setIsUploading(false);
+      setIsUploading(false)
       if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+        fileInputRef.current.value = ""
       }
     }
-  };
+  }
 
   const handleOpenChange = (nextOpen: boolean) => {
-    setOpen(nextOpen);
+    setOpen(nextOpen)
     if (!nextOpen) {
-      setError(null);
-      setMediaFilter("ALL");
-      setMediaCache({ ALL: [], IMAGE: [], VIDEO: [] });
-      fetchedFiltersRef.current = { ALL: false, IMAGE: false, VIDEO: false };
+      setError(null)
+      setMediaFilter("ALL")
+      setMediaCache({ ALL: [], IMAGE: [], VIDEO: [] })
+      fetchedFiltersRef.current = { ALL: false, IMAGE: false, VIDEO: false }
       if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+        fileInputRef.current.value = ""
       }
     }
-  };
+  }
 
   return (
     <Dialog.Root open={open} onOpenChange={handleOpenChange}>
@@ -287,5 +287,5 @@ export function MediaUploadDialog({
         </Dialog.Popup>
       </Dialog.Portal>
     </Dialog.Root>
-  );
+  )
 }

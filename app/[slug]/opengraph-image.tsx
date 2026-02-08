@@ -1,23 +1,23 @@
-import { ImageResponse } from "next/og";
+import { ImageResponse } from "next/og"
 
-import { api } from "@/lib/api-client";
-import { Blog } from "@/lib/definitions";
+import { api } from "@/lib/api-client"
+import { Blog } from "@/lib/definitions"
 
-export const alt = "Destructure";
+export const alt = "Destructure"
 export const size = {
   width: 1200,
   height: 630,
-};
-export const contentType = "image/png";
+}
+export const contentType = "image/png"
 
 export default async function Image({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string }>
 }) {
-  const { slug } = await params;
+  const { slug } = await params
 
-  let title = "Destructure";
+  let title = "Destructure"
 
   try {
     const [{ data: blog }, instrumentSerifFont] = await Promise.all([
@@ -26,9 +26,9 @@ export default async function Image({
       fetch(
         "https://fonts.gstatic.com/s/instrumentserif/v5/jizBRFtNs2ka5fXjeivQ4LroWlx-2zI.ttf",
       ).then((res) => res.arrayBuffer()),
-    ]);
+    ])
 
-    title = blog.title;
+    title = blog.title
 
     return new ImageResponse(
       <div
@@ -67,7 +67,7 @@ export default async function Image({
           },
         ],
       },
-    );
+    )
   } catch {
     // Fallback OG image without custom font when API is unreachable
     return new ImageResponse(
@@ -96,6 +96,6 @@ export default async function Image({
         </div>
       </div>,
       { ...size },
-    );
+    )
   }
 }

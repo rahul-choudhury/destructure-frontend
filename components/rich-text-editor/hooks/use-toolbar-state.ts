@@ -1,29 +1,29 @@
-import { useEffect, useState } from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getSelection, $isRangeSelection } from "lexical";
-import { $isHeadingNode } from "@lexical/rich-text";
-import { $isListNode, ListNode } from "@lexical/list";
-import { $isQuoteNode } from "@lexical/rich-text";
-import { $isCodeNode, CodeNode } from "@lexical/code";
-import { $isLinkNode } from "@lexical/link";
-import { $getNearestNodeOfType } from "@lexical/utils";
+import { useEffect, useState } from "react"
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
+import { $getSelection, $isRangeSelection } from "lexical"
+import { $isHeadingNode } from "@lexical/rich-text"
+import { $isListNode, ListNode } from "@lexical/list"
+import { $isQuoteNode } from "@lexical/rich-text"
+import { $isCodeNode, CodeNode } from "@lexical/code"
+import { $isLinkNode } from "@lexical/link"
+import { $getNearestNodeOfType } from "@lexical/utils"
 
 export type ToolbarState = {
-  isBold: boolean;
-  isItalic: boolean;
-  isCode: boolean;
-  headingTag: string | null;
-  listType: string | null;
-  isQuote: boolean;
-  isCodeBlock: boolean;
-  codeNodeKey: string | null;
-  currentLanguage: string;
-  isLink: boolean;
-  linkUrl: string | null;
-  linkText: string | null;
-  selectedText: string;
-  linkNodeKey: string | null;
-};
+  isBold: boolean
+  isItalic: boolean
+  isCode: boolean
+  headingTag: string | null
+  listType: string | null
+  isQuote: boolean
+  isCodeBlock: boolean
+  codeNodeKey: string | null
+  currentLanguage: string
+  isLink: boolean
+  linkUrl: string | null
+  linkText: string | null
+  selectedText: string
+  linkNodeKey: string | null
+}
 
 const DEFAULT_STATE: ToolbarState = {
   isBold: false,
@@ -40,31 +40,31 @@ const DEFAULT_STATE: ToolbarState = {
   linkText: null,
   selectedText: "",
   linkNodeKey: null,
-};
+}
 
 export function useToolbarState(): ToolbarState {
-  const [editor] = useLexicalComposerContext();
-  const [state, setState] = useState<ToolbarState>(DEFAULT_STATE);
+  const [editor] = useLexicalComposerContext()
+  const [state, setState] = useState<ToolbarState>(DEFAULT_STATE)
 
   useEffect(() => {
     return editor.registerUpdateListener(({ editorState }) => {
       editorState.read(() => {
-        const selection = $getSelection();
+        const selection = $getSelection()
         if (!$isRangeSelection(selection)) {
-          setState((prev) => (prev === DEFAULT_STATE ? prev : DEFAULT_STATE));
-          return;
+          setState((prev) => (prev === DEFAULT_STATE ? prev : DEFAULT_STATE))
+          return
         }
 
-        const anchorNode = selection.anchor.getNode();
+        const anchorNode = selection.anchor.getNode()
         const element =
           anchorNode.getKey() === "root"
             ? anchorNode
-            : anchorNode.getTopLevelElementOrThrow();
+            : anchorNode.getTopLevelElementOrThrow()
 
-        const codeNode = $getNearestNodeOfType(anchorNode, CodeNode);
-        const listNode = $getNearestNodeOfType(anchorNode, ListNode);
-        const parent = anchorNode.getParent();
-        const isLinkNode = $isLinkNode(parent);
+        const codeNode = $getNearestNodeOfType(anchorNode, CodeNode)
+        const listNode = $getNearestNodeOfType(anchorNode, ListNode)
+        const parent = anchorNode.getParent()
+        const isLinkNode = $isLinkNode(parent)
 
         const next: ToolbarState = {
           isBold: selection.hasFormat("bold"),
@@ -83,19 +83,22 @@ export function useToolbarState(): ToolbarState {
           linkText: isLinkNode ? parent.getTextContent() : null,
           selectedText: selection.getTextContent(),
           linkNodeKey: isLinkNode ? parent.getKey() : null,
-        };
+        }
 
         setState((prev) => {
           for (const key in next) {
-            if (prev[key as keyof ToolbarState] !== next[key as keyof ToolbarState]) {
-              return next;
+            if (
+              prev[key as keyof ToolbarState] !==
+              next[key as keyof ToolbarState]
+            ) {
+              return next
             }
           }
-          return prev;
-        });
-      });
-    });
-  }, [editor]);
+          return prev
+        })
+      })
+    })
+  }, [editor])
 
-  return state;
+  return state
 }

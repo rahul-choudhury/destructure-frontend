@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils"
 
-export type LabelProps = React.LabelHTMLAttributes<HTMLLabelElement>;
+export type LabelProps = React.LabelHTMLAttributes<HTMLLabelElement>
 
 export function Label({ className, ...props }: LabelProps) {
   return (
@@ -8,5 +8,5 @@ export function Label({ className, ...props }: LabelProps) {
       className={cn("text-sm font-medium text-foreground", className)}
       {...props}
     />
-  );
+  )
 }
