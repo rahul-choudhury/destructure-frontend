@@ -49,33 +49,44 @@ export function MediaUploadDialog({
     IMAGE: [],
     VIDEO: [],
   });
-  const [fetchedFilters, setFetchedFilters] = useState<Set<MediaFilter>>(
-    new Set(),
-  );
+  const fetchedFiltersRef = useRef<Record<MediaFilter, boolean>>({
+    ALL: false,
+    IMAGE: false,
+    VIDEO: false,
+  });
 
   const mediaList = mediaCache[mediaFilter];
 
   useEffect(() => {
+    if (!open || fetchedFiltersRef.current[mediaFilter]) return;
+
+    const controller = new AbortController();
+
     const fetchMediaList = async (filter: MediaFilter) => {
       setIsLoadingMedia(true);
       try {
-        const res = await fetch(`/api/admin/media?type=${filter}`);
+        const res = await fetch(`/api/admin/media?type=${filter}`, {
+          signal: controller.signal,
+        });
         const data = await res.json();
         if (data.isSuccess) {
           setMediaCache((prev) => ({ ...prev, [filter]: data.data }));
         }
-        setFetchedFilters((prev) => new Set(prev).add(filter));
-      } catch {
-        setFetchedFilters((prev) => new Set(prev).add(filter));
+        fetchedFiltersRef.current[filter] = true;
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") return;
+        fetchedFiltersRef.current[filter] = true;
       } finally {
-        setIsLoadingMedia(false);
+        if (!controller.signal.aborted) {
+          setIsLoadingMedia(false);
+        }
       }
     };
 
-    if (open && !fetchedFilters.has(mediaFilter)) {
-      fetchMediaList(mediaFilter);
-    }
-  }, [open, mediaFilter, fetchedFilters]);
+    fetchMediaList(mediaFilter);
+
+    return () => controller.abort();
+  }, [open, mediaFilter]);
 
   const handleMediaSelect = (url: string) => {
     if (isVideoUrl(url)) {
@@ -133,7 +144,7 @@ export function MediaUploadDialog({
       setError(null);
       setMediaFilter("ALL");
       setMediaCache({ ALL: [], IMAGE: [], VIDEO: [] });
-      setFetchedFilters(new Set());
+      fetchedFiltersRef.current = { ALL: false, IMAGE: false, VIDEO: false };
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
