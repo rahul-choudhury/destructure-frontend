@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { usePathname } from "next/navigation";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -47,13 +48,16 @@ import { CustomCodeHighlightNode } from "./nodes/custom-code-highlight-node";
 import { $setBlocksType } from "@lexical/selection";
 import {
   $createParagraphNode,
+  $addUpdateTag,
   $getNodeByKey,
   $getRoot,
   $getSelection,
+  $setSelection,
   $isRangeSelection,
   COMMAND_PRIORITY_HIGH,
   FORMAT_TEXT_COMMAND,
   KEY_DOWN_COMMAND,
+  SKIP_SELECTION_FOCUS_TAG,
 } from "lexical";
 import { $getNearestNodeOfType } from "@lexical/utils";
 import { Toggle } from "@base-ui/react/toggle";
@@ -530,6 +534,21 @@ function RestrictHeadingsPlugin() {
   return null;
 }
 
+function FocusResetPlugin() {
+  const [editor] = useLexicalComposerContext();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    editor.update(() => {
+      $addUpdateTag(SKIP_SELECTION_FOCUS_TAG);
+      $setSelection(null);
+    });
+    editor.blur();
+  }, [editor, pathname]);
+
+  return null;
+}
+
 function EditorRefPlugin({
   editorRef,
 }: {
@@ -556,6 +575,13 @@ function EditorRefPlugin({
             $getRoot().append($createParagraphNode());
           }
         });
+
+        if (!markdown) {
+          const rootElement = editor.getRootElement();
+          if (rootElement instanceof HTMLElement) {
+            rootElement.blur();
+          }
+        }
       },
     }),
     [editor],
@@ -714,6 +740,7 @@ export function RichTextEditor({
         <ListPlugin />
         <LinkPlugin />
         <RestrictHeadingsPlugin />
+        <FocusResetPlugin />
         <EditorRefPlugin editorRef={ref} />
         <CodeHighlightPlugin />
         <InitialContentPlugin initialContent={initialContent} />
