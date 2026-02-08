@@ -1,96 +1,95 @@
-"use client"
+"use client";
 
-import { Loader2, RefreshCcw } from "lucide-react"
-import { Tooltip } from "@base-ui/react/tooltip"
+import { Tooltip } from "@base-ui/react/tooltip";
+import { Loader2, RefreshCcw } from "lucide-react";
 import {
+  type FormEvent,
+  startTransition,
+  useActionState,
   useRef,
   useState,
   useTransition,
-  FormEvent,
-  useActionState,
-  startTransition,
-} from "react"
-
+} from "react";
+import {
+  RichTextEditor,
+  type RichTextEditorRef,
+} from "@/components/rich-text-editor";
+import { Button } from "@/components/ui/button";
+import { Field } from "@/components/ui/field";
 import {
   checkSlugUniqueness,
   createBlog,
   generateUniqueSlug,
   updateBlog,
-} from "@/lib/actions"
-import { cn, debounce } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Field } from "@/components/ui/field"
-import {
-  RichTextEditor,
-  type RichTextEditorRef,
-} from "@/components/rich-text-editor"
-import { Blog } from "@/lib/definitions"
+} from "@/lib/actions";
+import type { Blog } from "@/lib/definitions";
+import { cn, debounce } from "@/lib/utils";
 
 export type BlogFormProps = {
-  data?: Blog
-}
+  data?: Blog;
+};
 
 export function BlogForm({ data }: BlogFormProps) {
-  const isEditMode = !!data
-  const editorRef = useRef<RichTextEditorRef>(null)
+  const isEditMode = !!data;
+  const editorRef = useRef<RichTextEditorRef>(null);
   const [values, setValues] = useState({
     title: data?.title ?? "",
     slug: data?.slug ?? "",
-  })
-  const [slugError, setSlugError] = useState("")
-  const [isPendingSlugGen, startSlugGenTransition] = useTransition()
+  });
+  const [slugError, setSlugError] = useState("");
+  const [isPendingSlugGen, startSlugGenTransition] = useTransition();
 
   const [, formAction, isPendingSubmit] = useActionState(
     isEditMode ? updateBlog.bind(null, data.slug) : createBlog,
     undefined,
-  )
+  );
 
   const checkSlug = debounce(async (value: string) => {
     if (!value) {
-      setSlugError("")
-      return
+      setSlugError("");
+      return;
     }
 
-    const isUnique = await checkSlugUniqueness(value)
+    const isUnique = await checkSlugUniqueness(value);
     if (!isUnique) {
-      setSlugError("This slug is already in use")
+      setSlugError("This slug is already in use");
     } else {
-      setSlugError("")
+      setSlugError("");
     }
-  })
+  });
 
   const generateSlug = () => {
     startSlugGenTransition(async () => {
-      const slug = await generateUniqueSlug(values.title)
+      const slug = await generateUniqueSlug(values.title);
       if (slug) {
-        setValues((prev) => ({ ...prev, slug }))
-        setSlugError("")
+        setValues((prev) => ({ ...prev, slug }));
+        setSlugError("");
       }
-    })
-  }
+    });
+  };
 
   const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setValues((prev) => ({ ...prev, slug: value }))
-    setSlugError("")
-    checkSlug(value)
-  }
+    const value = e.target.value;
+    setValues((prev) => ({ ...prev, slug: value }));
+    setSlugError("");
+    checkSlug(value);
+  };
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValues((prev) => ({ ...prev, title: e.target.value }))
-  }
+    setValues((prev) => ({ ...prev, title: e.target.value }));
+  };
 
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    const content = editorRef.current?.getMarkdown()
+    const content = editorRef.current?.getMarkdown();
     if (!content) {
-      return
+      return;
     }
 
-    const formData = { ...values, content }
-    startTransition(() => formAction(formData))
-  }
+    const formData = { ...values, content };
+    startTransition(() => formAction(formData));
+  };
 
   return (
     <Tooltip.Provider>
@@ -157,13 +156,14 @@ export function BlogForm({ data }: BlogFormProps) {
         </Field>
 
         <Field>
-          <span
+          <button
             id="content-label"
-            className="cursor-default text-sm font-medium text-foreground"
+            type="button"
+            className="cursor-default text-sm font-medium text-foreground bg-transparent border-0 p-0"
             onClick={() => document.getElementById("content-editor")?.focus()}
           >
             Content
-          </span>
+          </button>
           <RichTextEditor
             ref={editorRef}
             id="content-editor"
@@ -181,5 +181,5 @@ export function BlogForm({ data }: BlogFormProps) {
         </Button>
       </form>
     </Tooltip.Provider>
-  )
+  );
 }

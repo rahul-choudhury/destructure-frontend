@@ -5,7 +5,8 @@ Blog platform frontend built with Next.js 16 (App Router), React 19, and TypeScr
 ## Commands
 
 ```bash
-bun run lint        # ESLint
+bun run lint        # Biome
+bun run format      # Biome
 bun run typecheck   # TypeScript (tsc --noEmit)
 ```
 

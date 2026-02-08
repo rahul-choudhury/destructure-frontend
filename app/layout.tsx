@@ -1,18 +1,18 @@
-import type { Metadata } from "next"
-import { Fira_Code, Instrument_Serif, Inter } from "next/font/google"
-import "./globals.css"
+import type { Metadata } from "next";
+import { Fira_Code, Instrument_Serif, Inter } from "next/font/google";
+import "./globals.css";
 const instrumentSerif = Instrument_Serif({
   variable: "--font-serif",
   weight: "400",
   subsets: ["latin"],
-})
+});
 
 const firaCode = Fira_Code({
   variable: "--font-mono",
   subsets: ["latin"],
-})
+});
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://destructure.in"),
@@ -21,12 +21,12 @@ export const metadata: Metadata = {
     default: "Destructure",
   },
   description: "A blog by Rahul & Shakti",
-}
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en" data-scroll-behavior="smooth">
@@ -38,5 +38,5 @@ export default function RootLayout({
         </main>
       </body>
     </html>
-  )
+  );
 }

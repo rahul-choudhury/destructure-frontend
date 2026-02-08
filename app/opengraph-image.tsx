@@ -1,16 +1,16 @@
-import { ImageResponse } from "next/og"
+import { ImageResponse } from "next/og";
 
-export const alt = "Destructure"
+export const alt = "Destructure";
 export const size = {
   width: 1200,
   height: 630,
-}
-export const contentType = "image/png"
+};
+export const contentType = "image/png";
 
 export default async function Image() {
   const instrumentSerifFont = await fetch(
     "https://fonts.gstatic.com/s/instrumentserif/v5/jizBRFtNs2ka5fXjeivQ4LroWlx-2zI.ttf",
-  ).then((res) => res.arrayBuffer())
+  ).then((res) => res.arrayBuffer());
 
   return new ImageResponse(
     <div
@@ -47,5 +47,5 @@ export default async function Image() {
         },
       ],
     },
-  )
+  );
 }

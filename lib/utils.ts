@@ -1,8 +1,8 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function formatDate(date: string) {
@@ -11,17 +11,17 @@ export function formatDate(date: string) {
     month: "short",
     day: "numeric",
     timeZone: "Asia/Kolkata",
-  }).format(new Date(date))
+  }).format(new Date(date));
 }
 
 export function debounce<T extends unknown[]>(
   fn: (...args: T) => void,
   limit = 500,
 ) {
-  let timer: ReturnType<typeof setTimeout> | undefined
+  let timer: ReturnType<typeof setTimeout> | undefined;
 
   return (...args: T) => {
-    if (timer) clearTimeout(timer)
-    timer = setTimeout(() => fn(...args), limit)
-  }
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), limit);
+  };
 }

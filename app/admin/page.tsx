@@ -1,28 +1,27 @@
-import Link from "next/link"
-
-import { PageTitle } from "@/components/page-title"
-import { ToggleVisibilityButton } from "@/components/toggle-visibility-button"
-import { api } from "@/lib/api-client"
-import { Blog, User } from "@/lib/definitions"
-import { formatDate } from "@/lib/utils"
-import { getTokenFromCookie } from "@/lib/session"
-import { PlusIcon } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { PlusIcon } from "lucide-react";
+import Link from "next/link";
+import { PageTitle } from "@/components/page-title";
+import { ToggleVisibilityButton } from "@/components/toggle-visibility-button";
+import { Button } from "@/components/ui/button";
+import { api } from "@/lib/api-client";
+import type { Blog, User } from "@/lib/definitions";
+import { getTokenFromCookie } from "@/lib/session";
+import { formatDate } from "@/lib/utils";
 
 export default async function Page() {
-  const token = await getTokenFromCookie()
+  const token = await getTokenFromCookie();
   const authHeader = {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-  }
+  };
 
   const [{ data: profile }, { data: blogs }] = await Promise.all([
     api.get<User>("/api/auth/profile", authHeader),
     api.get<Blog[]>("/api/admin/blogs", authHeader),
-  ])
+  ]);
 
-  const firstName = profile.name.split(" ")[0]
+  const firstName = profile.name.split(" ")[0];
 
   return (
     <>
@@ -68,5 +67,5 @@ export default async function Page() {
         <PlusIcon size={20} />
       </Button>
     </>
-  )
+  );
 }

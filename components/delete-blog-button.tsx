@@ -1,24 +1,24 @@
-"use client"
+"use client";
 
-import { AlertDialog } from "@base-ui/react/alert-dialog"
-import { Loader2, Trash2 } from "lucide-react"
-import { useTransition } from "react"
+import { AlertDialog } from "@base-ui/react/alert-dialog";
+import { Loader2, Trash2 } from "lucide-react";
+import { useTransition } from "react";
 
-import { Button } from "@/components/ui/button"
-import { deleteBlog } from "@/lib/actions"
+import { Button } from "@/components/ui/button";
+import { deleteBlog } from "@/lib/actions";
 
 type DeleteBlogButtonProps = {
-  slug: string
-}
+  slug: string;
+};
 
 export function DeleteBlogButton({ slug }: DeleteBlogButtonProps) {
-  const [isPending, startTransition] = useTransition()
+  const [isPending, startTransition] = useTransition();
 
   const handleDelete = () => {
     startTransition(async () => {
-      await deleteBlog(slug)
-    })
-  }
+      await deleteBlog(slug);
+    });
+  };
 
   return (
     <AlertDialog.Root>
@@ -57,5 +57,5 @@ export function DeleteBlogButton({ slug }: DeleteBlogButtonProps) {
         </AlertDialog.Popup>
       </AlertDialog.Portal>
     </AlertDialog.Root>
-  )
+  );
 }

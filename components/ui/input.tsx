@@ -1,7 +1,7 @@
-import { Input as BaseInput } from "@base-ui/react/input"
-import { cn } from "@/lib/utils"
+import { Input as BaseInput } from "@base-ui/react/input";
+import { cn } from "@/lib/utils";
 
-export type InputProps = React.ComponentProps<typeof BaseInput>
+export type InputProps = React.ComponentProps<typeof BaseInput>;
 
 export function Input({
   className,
@@ -18,5 +18,5 @@ export function Input({
       aria-invalid={invalid}
       {...props}
     />
-  )
+  );
 }

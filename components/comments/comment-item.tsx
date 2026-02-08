@@ -1,42 +1,43 @@
-import { useState } from "react"
-import Image from "next/image"
-import { AlertDialog } from "@base-ui/react/alert-dialog"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import { Comment, ReactionType } from "@/lib/definitions"
-import { CommentForm } from "./comment-form"
-import { ReplyList } from "./reply-list"
+import { AlertDialog } from "@base-ui/react/alert-dialog";
+import Image from "next/image";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import type { Comment, ReactionType } from "@/lib/definitions";
+import { cn } from "@/lib/utils";
+import { CommentForm } from "./comment-form";
+import { ReplyList } from "./reply-list";
 
 type CommentItemProps = {
-  comment: Comment
-  isAuthenticated: boolean
-  onReact: (commentId: string, reaction: ReactionType) => Promise<void>
-  onEdit: (commentId: string, content: string) => Promise<void>
-  onDelete: (commentId: string) => Promise<void>
-  onReply: (parentId: string, content: string) => Promise<void>
-  isReply?: boolean
-}
+  comment: Comment;
+  isAuthenticated: boolean;
+  onReact: (commentId: string, reaction: ReactionType) => Promise<void>;
+  onEdit: (commentId: string, content: string) => Promise<void>;
+  onDelete: (commentId: string) => Promise<void>;
+  onReply: (parentId: string, content: string) => Promise<void>;
+  isReply?: boolean;
+};
 
 const REACTIONS: { type: ReactionType; emoji: string }[] = [
   { type: "LIKE", emoji: "\u{1F44D}" },
   { type: "DISLIKE", emoji: "\u{1F44E}" },
-]
+];
 
 function formatRelativeTime(dateString: string): string {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-  if (diffInSeconds < 60) return "just now"
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`
-  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`
+  if (diffInSeconds < 60) return "just now";
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+  if (diffInSeconds < 604800)
+    return `${Math.floor(diffInSeconds / 86400)}d ago`;
 
   return date.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
     year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
-  })
+  });
 }
 
 export function CommentItem({
@@ -48,23 +49,23 @@ export function CommentItem({
   onReply,
   isReply = false,
 }: CommentItemProps) {
-  const [isEditing, setIsEditing] = useState(false)
-  const [editContent, setEditContent] = useState(comment.content)
-  const [isEditSubmitting, setIsEditSubmitting] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
-  const [showReplyForm, setShowReplyForm] = useState(false)
-  const [isReacting, setIsReacting] = useState(false)
-  const [localReactions, setLocalReactions] = useState(comment.reactions)
-  const [showReplies, setShowReplies] = useState(false)
-  const [localReplyCount, setLocalReplyCount] = useState(comment.replies)
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState(comment.content);
+  const [isEditSubmitting, setIsEditSubmitting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showReplyForm, setShowReplyForm] = useState(false);
+  const [isReacting, setIsReacting] = useState(false);
+  const [localReactions, setLocalReactions] = useState(comment.reactions);
+  const [showReplies, setShowReplies] = useState(false);
+  const [localReplyCount, setLocalReplyCount] = useState(comment.replies);
 
-  const isEdited = comment.createdAt !== comment.updatedAt
+  const isEdited = comment.createdAt !== comment.updatedAt;
 
   async function handleReact(reaction: ReactionType) {
-    if (!isAuthenticated || isReacting) return
+    if (!isAuthenticated || isReacting) return;
 
-    setIsReacting(true)
-    const previousReactions = { ...localReactions }
+    setIsReacting(true);
+    const previousReactions = { ...localReactions };
 
     // optimistic update
     if (localReactions.givenStatus === reaction) {
@@ -74,69 +75,69 @@ export function CommentItem({
           ...localReactions.count,
           [reaction]: Math.max(0, localReactions.count[reaction] - 1),
         },
-      })
+      });
     } else {
-      const newCount = { ...localReactions.count }
+      const newCount = { ...localReactions.count };
       if (localReactions.givenStatus) {
         newCount[localReactions.givenStatus] = Math.max(
           0,
           newCount[localReactions.givenStatus] - 1,
-        )
+        );
       }
-      newCount[reaction] = newCount[reaction] + 1
+      newCount[reaction] = newCount[reaction] + 1;
       setLocalReactions({
         givenStatus: reaction,
         count: newCount,
-      })
+      });
     }
 
     try {
-      await onReact(comment._id, reaction)
+      await onReact(comment._id, reaction);
     } catch {
-      setLocalReactions(previousReactions)
+      setLocalReactions(previousReactions);
     } finally {
-      setIsReacting(false)
+      setIsReacting(false);
     }
   }
 
   async function handleEditSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!editContent.trim() || isEditSubmitting) return
+    e.preventDefault();
+    if (!editContent.trim() || isEditSubmitting) return;
 
-    setIsEditSubmitting(true)
+    setIsEditSubmitting(true);
     try {
-      await onEdit(comment._id, editContent.trim())
-      setIsEditing(false)
+      await onEdit(comment._id, editContent.trim());
+      setIsEditing(false);
     } finally {
-      setIsEditSubmitting(false)
+      setIsEditSubmitting(false);
     }
   }
 
   async function handleDelete() {
-    if (isDeleting) return
+    if (isDeleting) return;
 
-    setIsDeleting(true)
+    setIsDeleting(true);
     try {
-      await onDelete(comment._id)
+      await onDelete(comment._id);
     } finally {
-      setIsDeleting(false)
+      setIsDeleting(false);
     }
   }
 
   async function handleReply(content: string) {
-    await onReply(comment._id, content)
-    setShowReplyForm(false)
-    setLocalReplyCount((prev) => prev + 1)
-    setShowReplies(true)
+    await onReply(comment._id, content);
+    setShowReplyForm(false);
+    setLocalReplyCount((prev) => prev + 1);
+    setShowReplies(true);
   }
 
   function handleReplyDeleted() {
-    setLocalReplyCount((prev) => Math.max(0, prev - 1))
+    setLocalReplyCount((prev) => Math.max(0, prev - 1));
   }
 
   const hasReactions = Object.values(localReactions.count).some(
     (count) => count > 0,
-  )
+  );
 
   return (
     <div className={cn(isReply && "ml-10 border-l border-foreground-10 pl-4")}>
@@ -168,7 +169,6 @@ export function CommentItem({
                 value={editContent}
                 onChange={(e) => setEditContent(e.target.value)}
                 rows={3}
-                autoFocus
                 className={cn(
                   "w-full resize-none rounded-lg border border-foreground-10 bg-transparent px-3 py-2 text-sm",
                   "focus:border-accent focus:outline-none",
@@ -180,8 +180,8 @@ export function CommentItem({
                   variant="ghost"
                   size="sm"
                   onClick={() => {
-                    setIsEditing(false)
-                    setEditContent(comment.content)
+                    setIsEditing(false);
+                    setEditContent(comment.content);
                   }}
                   disabled={isEditSubmitting}
                 >
@@ -210,11 +210,12 @@ export function CommentItem({
                   ({ type }) =>
                     hasReactions || localReactions.givenStatus === type,
                 ).map(({ type, emoji }) => {
-                  const count = localReactions.count[type] || 0
+                  const count = localReactions.count[type] || 0;
                   if (count === 0 && localReactions.givenStatus !== type)
-                    return null
+                    return null;
                   return (
                     <button
+                      type="button"
                       key={type}
                       onClick={() => handleReact(type)}
                       disabled={!isAuthenticated || isReacting}
@@ -229,12 +230,13 @@ export function CommentItem({
                       <span>{emoji}</span>
                       <span className="tabular-nums">{count}</span>
                     </button>
-                  )
+                  );
                 })}
                 {isAuthenticated && !hasReactions && (
                   <div className="flex gap-1">
                     {REACTIONS.map(({ type, emoji }) => (
                       <button
+                        type="button"
                         key={type}
                         onClick={() => handleReact(type)}
                         disabled={isReacting}
@@ -251,6 +253,7 @@ export function CommentItem({
               <div className="flex items-center gap-1 text-xs">
                 {isAuthenticated && !isReply && (
                   <button
+                    type="button"
                     onClick={() => setShowReplyForm(!showReplyForm)}
                     className="px-2 py-0.5 text-foreground-50 transition-colors hover:text-foreground"
                   >
@@ -260,9 +263,10 @@ export function CommentItem({
                 {comment.isCommentOwner && (
                   <>
                     <button
+                      type="button"
                       onClick={() => {
-                        setEditContent(comment.content)
-                        setIsEditing(true)
+                        setEditContent(comment.content);
+                        setIsEditing(true);
                       }}
                       className="px-2 py-0.5 text-foreground-50 transition-colors hover:text-foreground"
                     >
@@ -324,6 +328,7 @@ export function CommentItem({
           {!isReply && localReplyCount > 0 && (
             <div className="mt-3">
               <button
+                type="button"
                 onClick={() => setShowReplies(!showReplies)}
                 className="flex items-center gap-1 text-sm text-accent hover:opacity-80"
               >
@@ -344,8 +349,8 @@ export function CommentItem({
                   onReact={onReact}
                   onEdit={onEdit}
                   onDelete={async (replyId) => {
-                    await onDelete(replyId)
-                    handleReplyDeleted()
+                    await onDelete(replyId);
+                    handleReplyDeleted();
                   }}
                   onReply={onReply}
                 />
@@ -355,5 +360,5 @@ export function CommentItem({
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { Collapsible } from "@base-ui/react/collapsible"
-import { ChevronDown } from "lucide-react"
-import { motion } from "motion/react"
-import { useState } from "react"
-import { type TocEntry } from "@/components/mdx-content"
+import { Collapsible } from "@base-ui/react/collapsible";
+import { ChevronDown } from "lucide-react";
+import { motion } from "motion/react";
+import { useState } from "react";
+import type { TocEntry } from "@/components/mdx-content";
 
 export function TableOfContents({ toc }: { toc: TocEntry[] }) {
-  const [isOpen, setIsOpen] = useState(false)
-  if (toc.length === 0) return null
+  const [isOpen, setIsOpen] = useState(false);
+  if (toc.length === 0) return null;
 
   return (
     <nav aria-label="Table of Contents" className="mb-8">
@@ -51,5 +51,5 @@ export function TableOfContents({ toc }: { toc: TocEntry[] }) {
         </Collapsible.Panel>
       </Collapsible.Root>
     </nav>
-  )
+  );
 }

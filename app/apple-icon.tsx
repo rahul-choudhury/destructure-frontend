@@ -1,10 +1,10 @@
-import { ImageResponse } from "next/og"
+import { ImageResponse } from "next/og";
 
 export const size = {
   width: 180,
   height: 180,
-}
-export const contentType = "image/png"
+};
+export const contentType = "image/png";
 
 export default function AppleIcon() {
   return new ImageResponse(
@@ -29,6 +29,7 @@ export default function AppleIcon() {
         strokeLinecap="round"
         strokeLinejoin="round"
       >
+        <title>Destructure</title>
         <path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1" />
         <path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1" />
       </svg>
@@ -36,5 +37,5 @@ export default function AppleIcon() {
     {
       ...size,
     },
-  )
+  );
 }

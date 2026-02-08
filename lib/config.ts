@@ -1,4 +1,4 @@
-export const API_URL = process.env.NEXT_PUBLIC_API_URL as string
+export const API_URL = process.env.NEXT_PUBLIC_API_URL as string;
 
 export const CODE_LANGUAGE_OPTIONS = [
   { value: "html", label: "HTML" },
@@ -11,8 +11,8 @@ export const CODE_LANGUAGE_OPTIONS = [
   { value: "java", label: "Java" },
   { value: "json", label: "JSON" },
   { value: "sql", label: "SQL" },
-]
+];
 
 export const CACHE_TAGS = {
   BLOG_LIST: "blogs",
-}
+};

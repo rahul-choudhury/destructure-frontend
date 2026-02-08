@@ -1,14 +1,14 @@
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type CommentFormProps = {
-  onSubmit: (content: string) => Promise<void>
-  placeholder?: string
-  submitLabel?: string
-  autoFocus?: boolean
-  onCancel?: () => void
-}
+  onSubmit: (content: string) => Promise<void>;
+  placeholder?: string;
+  submitLabel?: string;
+  autoFocus?: boolean;
+  onCancel?: () => void;
+};
 
 export function CommentForm({
   onSubmit,
@@ -17,29 +17,33 @@ export function CommentForm({
   autoFocus = false,
   onCancel,
 }: CommentFormProps) {
-  const [content, setContent] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [content, setContent] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!content.trim() || isSubmitting) return
+    e.preventDefault();
+    if (!content.trim() || isSubmitting) return;
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      await onSubmit(content.trim())
-      setContent("")
+      await onSubmit(content.trim());
+      setContent("");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <textarea
+        ref={(el) => {
+          if (autoFocus && el) {
+            el.focus();
+          }
+        }}
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder={placeholder}
-        autoFocus={autoFocus}
         rows={3}
         className={cn(
           "w-full resize-none rounded-lg border border-foreground-10 bg-transparent px-3 py-2 text-sm",
@@ -68,5 +72,5 @@ export function CommentForm({
         </Button>
       </div>
     </form>
-  )
+  );
 }

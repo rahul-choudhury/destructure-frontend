@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { useMediaQuery } from "@/hooks/use-media-query"
-import { cn } from "@/lib/utils"
-import { AnimatePresence, motion, Variants } from "motion/react"
-import { useRef, useState, VideoHTMLAttributes } from "react"
+import { AnimatePresence, motion, type Variants } from "motion/react";
+import { useRef, useState, type VideoHTMLAttributes } from "react";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { cn } from "@/lib/utils";
 
 function extractVideoDimensions(src: string) {
   try {
-    const url = new URL(src)
-    const width = url.searchParams.get("width")
-    const height = url.searchParams.get("height")
+    const url = new URL(src);
+    const width = url.searchParams.get("width");
+    const height = url.searchParams.get("height");
     return {
       width: width ? Number(width) : undefined,
       height: height ? Number(height) : undefined,
-    }
+    };
   } catch {
-    return {}
+    return {};
   }
 }
 
@@ -23,36 +23,36 @@ const iconVariants: Variants = {
   initial: { scale: 0.8, opacity: 0 },
   animate: { scale: 1, opacity: 1, transition: { duration: 0.15 } },
   exit: { scale: 0.8, opacity: 0, transition: { duration: 0.15 } },
-}
+};
 
 export function VideoPlayer({
   className,
   src,
   ...props
 }: VideoHTMLAttributes<HTMLVideoElement>) {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const ref = useRef<HTMLVideoElement>(null)
-  const notDesktop = useMediaQuery("(max-width: 1023px)")
+  const [isPlaying, setIsPlaying] = useState(false);
+  const ref = useRef<HTMLVideoElement>(null);
+  const notDesktop = useMediaQuery("(max-width: 1023px)");
   const { width, height } =
-    typeof src === "string" ? extractVideoDimensions(src) : {}
+    typeof src === "string" ? extractVideoDimensions(src) : {};
 
   const handleVideoPlayback = () => {
-    const video = ref.current
-    if (!video) return
+    const video = ref.current;
+    if (!video) return;
 
     if (video.paused) {
-      video.play()
+      video.play();
     } else {
-      video.pause()
+      video.pause();
     }
-  }
+  };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
     if (event.key === " " || event.key === "Enter") {
-      event.preventDefault()
-      handleVideoPlayback()
+      event.preventDefault();
+      handleVideoPlayback();
     }
-  }
+  };
 
   return (
     <div className="group relative my-6 overflow-hidden rounded-lg">
@@ -71,6 +71,7 @@ export function VideoPlayer({
         onPause={() => setIsPlaying(false)}
       />
       <button
+        type="button"
         aria-label={isPlaying ? "Pause Video" : "Play Video"}
         className="focus-visible:ring-ring absolute inset-0 cursor-pointer border-none focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
         onClick={handleVideoPlayback}
@@ -84,6 +85,7 @@ export function VideoPlayer({
         >
           {notDesktop ? (
             <svg
+              aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               width="28"
               height="28"
@@ -100,6 +102,7 @@ export function VideoPlayer({
             <AnimatePresence mode="wait" initial={false}>
               {!isPlaying ? (
                 <motion.svg
+                  aria-hidden="true"
                   key="play"
                   variants={iconVariants}
                   initial="initial"
@@ -119,6 +122,7 @@ export function VideoPlayer({
                 </motion.svg>
               ) : (
                 <motion.svg
+                  aria-hidden="true"
                   key="pause"
                   variants={iconVariants}
                   initial="initial"
@@ -145,5 +149,5 @@ export function VideoPlayer({
         </div>
       </button>
     </div>
-  )
+  );
 }

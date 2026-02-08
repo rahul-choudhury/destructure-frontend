@@ -1,11 +1,12 @@
 // import { Kbd } from "@/components/kbd";
-import { PageTitle } from "@/components/page-title"
-import { getBlogs } from "@/lib/data"
-import { formatDate } from "@/lib/utils"
-import Link from "next/link"
+
+import Link from "next/link";
+import { PageTitle } from "@/components/page-title";
+import { getBlogs } from "@/lib/data";
+import { formatDate } from "@/lib/utils";
 
 export default async function Home() {
-  const { data: blogs } = await getBlogs()
+  const { data: blogs } = await getBlogs();
   return (
     <>
       <PageTitle className="mb-4">Destructure</PageTitle>
@@ -38,5 +39,5 @@ export default async function Home() {
         ))}
       </div>
     </>
-  )
+  );
 }

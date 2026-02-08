@@ -1,37 +1,36 @@
-"use client"
+"use client";
 
-import { startTransition, useOptimistic } from "react"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { API_URL } from "@/lib/config"
-
+import Image from "next/image";
+import { startTransition, useOptimistic } from "react";
+import { Button } from "@/components/ui/button";
 import {
-  toggleReaction,
   addComment,
-  editComment,
-  deleteComment,
   addReply,
-  toggleCommentReaction,
+  deleteComment,
+  editComment,
   logout,
-} from "@/lib/actions"
-import {
+  toggleCommentReaction,
+  toggleReaction,
+} from "@/lib/actions";
+import { API_URL } from "@/lib/config";
+import type {
   Comment,
+  ReactionCount,
   ReactionsData,
   ReactionType,
   User,
-  ReactionCount,
-} from "@/lib/definitions"
-import { GoogleIcon } from "./google-icon"
-import { CommentForm } from "./comments/comment-form"
-import { CommentList } from "./comments/comment-list"
+} from "@/lib/definitions";
+import { CommentForm } from "./comments/comment-form";
+import { CommentList } from "./comments/comment-list";
+import { GoogleIcon } from "./google-icon";
 
 type InteractionsContentProps = {
-  slug: string
-  initialReactions: ReactionsData
-  initialComments: Comment[]
-  isAuthenticated: boolean
-  user: User | null
-}
+  slug: string;
+  initialReactions: ReactionsData;
+  initialComments: Comment[];
+  isAuthenticated: boolean;
+  user: User | null;
+};
 
 const REACTIONS: { type: ReactionType; emoji: string }[] = [
   { type: "LIKE", emoji: "\u{1F44D}" },
@@ -41,40 +40,40 @@ const REACTIONS: { type: ReactionType; emoji: string }[] = [
   { type: "HEART", emoji: "\u{2764}\u{FE0F}" },
   { type: "THINKING", emoji: "\u{1F914}" },
   { type: "DISLIKE", emoji: "\u{1F44E}" },
-]
+];
 
 type ReactionAction = {
-  type: "toggle"
-  reaction: ReactionType
-  previousStatus: ReactionType | null
-}
+  type: "toggle";
+  reaction: ReactionType;
+  previousStatus: ReactionType | null;
+};
 
 function reactionReducer(
   state: ReactionsData,
   action: ReactionAction,
 ): ReactionsData {
-  const { reaction, previousStatus } = action
-  const isRemoving = previousStatus === reaction
+  const { reaction, previousStatus } = action;
+  const isRemoving = previousStatus === reaction;
 
-  const newCount: ReactionCount = { ...state.count }
+  const newCount: ReactionCount = { ...state.count };
 
   if (isRemoving) {
     // Removing existing reaction
-    newCount[reaction] = Math.max(0, newCount[reaction] - 1)
+    newCount[reaction] = Math.max(0, newCount[reaction] - 1);
     return {
       givenStatus: null,
       count: newCount,
-    }
+    };
   } else {
     // Adding new reaction (possibly replacing old one)
     if (previousStatus) {
-      newCount[previousStatus] = Math.max(0, newCount[previousStatus] - 1)
+      newCount[previousStatus] = Math.max(0, newCount[previousStatus] - 1);
     }
-    newCount[reaction] = newCount[reaction] + 1
+    newCount[reaction] = newCount[reaction] + 1;
     return {
       givenStatus: reaction,
       count: newCount,
-    }
+    };
   }
 }
 
@@ -82,12 +81,12 @@ type CommentAction =
   | { type: "add"; comment: Comment }
   | { type: "edit"; id: string; content: string }
   | { type: "delete"; id: string }
-  | { type: "incrementReplies"; id: string }
+  | { type: "incrementReplies"; id: string };
 
 function commentReducer(state: Comment[], action: CommentAction): Comment[] {
   switch (action.type) {
     case "add":
-      return [action.comment, ...state]
+      return [action.comment, ...state];
     case "edit":
       return state.map((c) =>
         c._id === action.id
@@ -97,15 +96,15 @@ function commentReducer(state: Comment[], action: CommentAction): Comment[] {
               updatedAt: new Date().toISOString(),
             }
           : c,
-      )
+      );
     case "delete":
-      return state.filter((c) => c._id !== action.id)
+      return state.filter((c) => c._id !== action.id);
     case "incrementReplies":
       return state.map((c) =>
         c._id === action.id ? { ...c, replies: c.replies + 1 } : c,
-      )
+      );
     default:
-      return state
+      return state;
   }
 }
 
@@ -120,29 +119,29 @@ export function InteractionsContent({
   const [reactions, setOptimisticReaction] = useOptimistic(
     initialReactions,
     reactionReducer,
-  )
+  );
 
   // Optimistic comments
   const [comments, setOptimisticComment] = useOptimistic(
     initialComments,
     commentReducer,
-  )
+  );
 
   function handleReaction(reaction: ReactionType) {
-    if (!isAuthenticated) return
+    if (!isAuthenticated) return;
 
     startTransition(async () => {
       setOptimisticReaction({
         type: "toggle",
         reaction,
         previousStatus: reactions.givenStatus,
-      })
-      await toggleReaction(slug, reaction)
-    })
+      });
+      await toggleReaction(slug, reaction);
+    });
   }
 
   async function handleAddComment(content: string) {
-    if (!user) return
+    if (!user) return;
 
     // Create optimistic comment
     const optimisticComment: Comment = {
@@ -169,41 +168,41 @@ export function InteractionsContent({
       },
       replies: 0,
       isCommentOwner: true,
-    }
+    };
 
     startTransition(async () => {
-      setOptimisticComment({ type: "add", comment: optimisticComment })
-      await addComment(slug, content)
-    })
+      setOptimisticComment({ type: "add", comment: optimisticComment });
+      await addComment(slug, content);
+    });
   }
 
   async function handleCommentReact(commentId: string, reaction: ReactionType) {
-    await toggleCommentReaction(commentId, reaction)
+    await toggleCommentReaction(commentId, reaction);
   }
 
   async function handleCommentEdit(commentId: string, content: string) {
     startTransition(async () => {
-      setOptimisticComment({ type: "edit", id: commentId, content })
-      await editComment(slug, commentId, content)
-    })
+      setOptimisticComment({ type: "edit", id: commentId, content });
+      await editComment(slug, commentId, content);
+    });
   }
 
   async function handleCommentDelete(commentId: string) {
     startTransition(async () => {
-      setOptimisticComment({ type: "delete", id: commentId })
-      await deleteComment(slug, commentId)
-    })
+      setOptimisticComment({ type: "delete", id: commentId });
+      await deleteComment(slug, commentId);
+    });
   }
 
   async function handleReply(parentId: string, content: string) {
     startTransition(async () => {
-      setOptimisticComment({ type: "incrementReplies", id: parentId })
-      await addReply(slug, parentId, content)
-    })
+      setOptimisticComment({ type: "incrementReplies", id: parentId });
+      await addReply(slug, parentId, content);
+    });
   }
 
-  const loginUrl = new URL("/api/auth/login", API_URL)
-  loginUrl.searchParams.append("state", `/${slug}`)
+  const loginUrl = new URL("/api/auth/login", API_URL);
+  loginUrl.searchParams.append("state", `/${slug}`);
 
   return (
     <div className="mt-12 border-t border-foreground-10 pt-8">
@@ -239,7 +238,7 @@ export function InteractionsContent({
               variant="outline"
               size="sm"
               nativeButton={false}
-              render={<a href={loginUrl.toString()} />}
+              render={<a href={loginUrl.toString()}>Login to interact</a>}
             >
               <GoogleIcon className="h-4 w-4" />
               Login to interact
@@ -286,5 +285,5 @@ export function InteractionsContent({
         </div>
       </div>
     </div>
-  )
+  );
 }

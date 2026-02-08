@@ -1,45 +1,45 @@
-"use server"
+"use server";
 
-import { cookies, headers } from "next/headers"
-import { redirect, RedirectType } from "next/navigation"
-import { revalidateTag, revalidatePath } from "next/cache"
-import { api } from "./api-client"
-import { getTokenFromCookie } from "./session"
-import { CACHE_TAGS } from "./config"
-import { Comment, ReactionType } from "./definitions"
+import { revalidatePath, revalidateTag } from "next/cache";
+import { cookies, headers } from "next/headers";
+import { RedirectType, redirect } from "next/navigation";
+import { api } from "./api-client";
+import { CACHE_TAGS } from "./config";
+import type { Comment, ReactionType } from "./definitions";
+import { getTokenFromCookie } from "./session";
 
 export async function logout(slug: string) {
-  const cookieStore = await cookies()
-  cookieStore.delete("token")
+  const cookieStore = await cookies();
+  cookieStore.delete("token");
 
-  const headersList = await headers()
-  const referer = headersList.get("referer") || ""
-  const isAdminPage = referer.includes("/admin")
+  const headersList = await headers();
+  const referer = headersList.get("referer") || "";
+  const isAdminPage = referer.includes("/admin");
 
   // NOTE: if on admin page, redirect to home; otherwise to the blog
-  redirect(isAdminPage ? "/" : `/${slug}`)
+  redirect(isAdminPage ? "/" : `/${slug}`);
 }
 
 export async function checkSlugUniqueness(slug: string) {
-  const token = await getTokenFromCookie()
+  const token = await getTokenFromCookie();
 
   try {
     await api.get(`/api/admin/slug/check?slug=${slug}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
-    return true
+    });
+    return true;
   } catch {
-    return false
+    return false;
   }
 }
 
 export async function generateUniqueSlug(title: string) {
-  const token = await getTokenFromCookie()
+  const token = await getTokenFromCookie();
 
   // NOTE: manual delay to actually let the spinner spin
-  await new Promise((resolve) => setTimeout(resolve, 300))
+  await new Promise((resolve) => setTimeout(resolve, 300));
 
   try {
     const res = await api.get<{ slug: string }>(
@@ -49,77 +49,77 @@ export async function generateUniqueSlug(title: string) {
           Authorization: `Bearer ${token}`,
         },
       },
-    )
-    return res.data.slug
+    );
+    return res.data.slug;
   } catch {
-    return undefined
+    return undefined;
   }
 }
 
-export async function createBlog(state: unknown, data: unknown) {
-  const token = await getTokenFromCookie()
+export async function createBlog(_state: unknown, data: unknown) {
+  const token = await getTokenFromCookie();
 
   try {
     await api.post("/api/admin/blogs", data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
+    });
   } catch (e) {
     return {
       isSuccess: false,
       message: e instanceof Error ? e.message : "Blog creation failed.",
-    }
+    };
   }
 
-  revalidateTag(CACHE_TAGS.BLOG_LIST, "max")
-  redirect("/admin")
+  revalidateTag(CACHE_TAGS.BLOG_LIST, "max");
+  redirect("/admin");
 }
 
-export async function updateBlog(slug: string, state: unknown, data: unknown) {
-  const token = await getTokenFromCookie()
+export async function updateBlog(slug: string, _state: unknown, data: unknown) {
+  const token = await getTokenFromCookie();
 
   try {
     await api.put(`/api/admin/blogs/${slug}`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
+    });
   } catch (e) {
     return {
       isSuccess: false,
       message: e instanceof Error ? e.message : "Blog update failed.",
-    }
+    };
   }
 
-  revalidateTag(CACHE_TAGS.BLOG_LIST, "max")
-  revalidateTag(slug, "max")
-  redirect(`/admin/blogs/${slug}`, RedirectType.replace)
+  revalidateTag(CACHE_TAGS.BLOG_LIST, "max");
+  revalidateTag(slug, "max");
+  redirect(`/admin/blogs/${slug}`, RedirectType.replace);
 }
 
 export async function deleteBlog(slug: string) {
-  const token = await getTokenFromCookie()
+  const token = await getTokenFromCookie();
 
   try {
     await api.delete(`/api/admin/blogs/${slug}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
+    });
   } catch (e) {
     return {
       isSuccess: false,
       message: e instanceof Error ? e.message : "Blog deletion failed.",
-    }
+    };
   }
 
-  revalidateTag(CACHE_TAGS.BLOG_LIST, "max")
-  revalidateTag(slug, "max")
-  redirect("/admin")
+  revalidateTag(CACHE_TAGS.BLOG_LIST, "max");
+  revalidateTag(slug, "max");
+  redirect("/admin");
 }
 
 export async function toggleBlogVisibility(slug: string, isPublic: boolean) {
-  const token = await getTokenFromCookie()
+  const token = await getTokenFromCookie();
 
   try {
     await api.put(
@@ -130,35 +130,35 @@ export async function toggleBlogVisibility(slug: string, isPublic: boolean) {
           Authorization: `Bearer ${token}`,
         },
       },
-    )
+    );
   } catch (e) {
     return {
       isSuccess: false,
       message: e instanceof Error ? e.message : "Failed to update visibility.",
-    }
+    };
   }
 
-  revalidateTag(CACHE_TAGS.BLOG_LIST, "max")
-  revalidateTag(slug, "max")
-  redirect("/admin")
+  revalidateTag(CACHE_TAGS.BLOG_LIST, "max");
+  revalidateTag(slug, "max");
+  redirect("/admin");
 }
 
 export async function uploadMedia(formData: FormData) {
-  const token = await getTokenFromCookie()
+  const token = await getTokenFromCookie();
 
   try {
     const res = await api.post<string[]>("/api/admin/media", formData, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
-    return res
+    });
+    return res;
   } catch (e) {
     return {
       isSuccess: false,
       message: e instanceof Error ? e.message : "Media upload failed.",
       data: [] as string[],
-    }
+    };
   }
 }
 
@@ -167,9 +167,9 @@ export async function uploadMedia(formData: FormData) {
 // ============================================================================
 
 export async function toggleReaction(slug: string, reaction: ReactionType) {
-  const token = await getTokenFromCookie()
+  const token = await getTokenFromCookie();
   if (!token) {
-    return { isSuccess: false, message: "Not authenticated" }
+    return { isSuccess: false, message: "Not authenticated" };
   }
 
   try {
@@ -177,21 +177,21 @@ export async function toggleReaction(slug: string, reaction: ReactionType) {
       "/api/reactions",
       { identifier: slug, to: "BLOG", reaction },
       { headers: { Authorization: `Bearer ${token}` } },
-    )
-    revalidatePath(`/${slug}`)
-    return { isSuccess: true }
+    );
+    revalidatePath(`/${slug}`);
+    return { isSuccess: true };
   } catch (e) {
     return {
       isSuccess: false,
       message: e instanceof Error ? e.message : "Failed to toggle reaction",
-    }
+    };
   }
 }
 
 export async function addComment(slug: string, content: string) {
-  const token = await getTokenFromCookie()
+  const token = await getTokenFromCookie();
   if (!token) {
-    return { isSuccess: false, message: "Not authenticated", data: null }
+    return { isSuccess: false, message: "Not authenticated", data: null };
   }
 
   try {
@@ -199,15 +199,15 @@ export async function addComment(slug: string, content: string) {
       `/api/blogs/${slug}/comments`,
       { content },
       { headers: { Authorization: `Bearer ${token}` } },
-    )
-    revalidatePath(`/${slug}`)
-    return { isSuccess: true, data: response.data }
+    );
+    revalidatePath(`/${slug}`);
+    return { isSuccess: true, data: response.data };
   } catch (e) {
     return {
       isSuccess: false,
       message: e instanceof Error ? e.message : "Failed to add comment",
       data: null,
-    }
+    };
   }
 }
 
@@ -216,9 +216,9 @@ export async function editComment(
   commentId: string,
   content: string,
 ) {
-  const token = await getTokenFromCookie()
+  const token = await getTokenFromCookie();
   if (!token) {
-    return { isSuccess: false, message: "Not authenticated" }
+    return { isSuccess: false, message: "Not authenticated" };
   }
 
   try {
@@ -226,34 +226,34 @@ export async function editComment(
       `/api/comments/${commentId}`,
       { content },
       { headers: { Authorization: `Bearer ${token}` } },
-    )
-    revalidatePath(`/${slug}`)
-    return { isSuccess: true }
+    );
+    revalidatePath(`/${slug}`);
+    return { isSuccess: true };
   } catch (e) {
     return {
       isSuccess: false,
       message: e instanceof Error ? e.message : "Failed to edit comment",
-    }
+    };
   }
 }
 
 export async function deleteComment(slug: string, commentId: string) {
-  const token = await getTokenFromCookie()
+  const token = await getTokenFromCookie();
   if (!token) {
-    return { isSuccess: false, message: "Not authenticated" }
+    return { isSuccess: false, message: "Not authenticated" };
   }
 
   try {
     await api.delete(`/api/comments/${commentId}`, {
       headers: { Authorization: `Bearer ${token}` },
-    })
-    revalidatePath(`/${slug}`)
-    return { isSuccess: true }
+    });
+    revalidatePath(`/${slug}`);
+    return { isSuccess: true };
   } catch (e) {
     return {
       isSuccess: false,
       message: e instanceof Error ? e.message : "Failed to delete comment",
-    }
+    };
   }
 }
 
@@ -262,9 +262,9 @@ export async function addReply(
   parentId: string,
   content: string,
 ) {
-  const token = await getTokenFromCookie()
+  const token = await getTokenFromCookie();
   if (!token) {
-    return { isSuccess: false, message: "Not authenticated", data: null }
+    return { isSuccess: false, message: "Not authenticated", data: null };
   }
 
   try {
@@ -272,15 +272,15 @@ export async function addReply(
       `/api/comments/${parentId}/replies`,
       { content },
       { headers: { Authorization: `Bearer ${token}` } },
-    )
-    revalidatePath(`/${slug}`)
-    return { isSuccess: true, data: response.data }
+    );
+    revalidatePath(`/${slug}`);
+    return { isSuccess: true, data: response.data };
   } catch (e) {
     return {
       isSuccess: false,
       message: e instanceof Error ? e.message : "Failed to add reply",
       data: null,
-    }
+    };
   }
 }
 
@@ -288,9 +288,9 @@ export async function toggleCommentReaction(
   commentId: string,
   reaction: ReactionType,
 ) {
-  const token = await getTokenFromCookie()
+  const token = await getTokenFromCookie();
   if (!token) {
-    return { isSuccess: false, message: "Not authenticated" }
+    return { isSuccess: false, message: "Not authenticated" };
   }
 
   try {
@@ -298,12 +298,12 @@ export async function toggleCommentReaction(
       "/api/reactions",
       { identifier: commentId, to: "COMMENT", reaction },
       { headers: { Authorization: `Bearer ${token}` } },
-    )
-    return { isSuccess: true }
+    );
+    return { isSuccess: true };
   } catch (e) {
     return {
       isSuccess: false,
       message: e instanceof Error ? e.message : "Failed to toggle reaction",
-    }
+    };
   }
 }
