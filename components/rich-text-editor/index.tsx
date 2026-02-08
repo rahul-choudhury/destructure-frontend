@@ -231,11 +231,15 @@ function ToolbarPlugin({
     });
   }, [editor]);
 
-  const formatHeading = (tag: "h2" | "h3") => {
+  const formatHeading = (tag: "h2" | "h3", pressed: boolean) => {
     editor.update(() => {
       const selection = $getSelection();
       if ($isRangeSelection(selection)) {
-        $setBlocksType(selection, () => $createHeadingNode(tag));
+        if (pressed) {
+          $setBlocksType(selection, () => $createHeadingNode(tag));
+        } else {
+          $setBlocksType(selection, () => $createParagraphNode());
+        }
       }
     });
   };
@@ -303,7 +307,7 @@ function ToolbarPlugin({
         aria-label="Heading 2"
         className={toolbarButtonClass}
         pressed={headingTag === "h2"}
-        onPressedChange={() => formatHeading("h2")}
+        onPressedChange={(pressed) => formatHeading("h2", pressed)}
       >
         <Heading2 size={18} />
       </Toggle>
@@ -311,7 +315,7 @@ function ToolbarPlugin({
         aria-label="Heading 3"
         className={toolbarButtonClass}
         pressed={headingTag === "h3"}
-        onPressedChange={() => formatHeading("h3")}
+        onPressedChange={(pressed) => formatHeading("h3", pressed)}
       >
         <Heading3 size={18} />
       </Toggle>
