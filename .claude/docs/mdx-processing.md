@@ -6,10 +6,10 @@ Blog content is rendered as MDX via `components/mdx-content.tsx`.
 
 - `rehypeSlug` - generates heading IDs
 - `rehypeAutolinkHeadings` - adds anchor links to headings
-- `rehypeShiki` - code syntax highlighting (ayu-dark theme)
+- `rehypeShiki` - code syntax highlighting (ayu-light/ayu-dark themes)
 - `rehypeExternalLinks` - opens external links in new tabs
 - `rehypeImageDimensions` - extracts width/height from URL params
 
 ## TOC Extraction
 
-`lib/process-markdown.ts` extracts table of contents from markdown using remark/rehype.
+TOC is extracted inline in `components/mdx-content.tsx` via `rehypeExtractToc()` plugin.

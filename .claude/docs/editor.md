@@ -12,9 +12,13 @@ Built with Lexical editor.
 
 ## Plugins
 
-- Code highlighting (`@lexical/code-shiki`)
-- Media upload
-- Link handling
+- `CodeHighlightPlugin` - syntax highlighting with Shiki (vitesse themes)
+- `ImagePlugin` - image node support
+- `VideoPlugin` - video node support
+- `LinkClickPlugin` - Cmd/Ctrl+click to open links, click to edit
+- `LinkDialog` - insert/edit link dialog
+- `MediaUploadDialog` - upload images/videos
+- `useToolbarState` hook - toolbar button state management
 
 ## Usage
 

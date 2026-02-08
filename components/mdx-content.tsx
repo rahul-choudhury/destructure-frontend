@@ -108,7 +108,10 @@ export async function MdxContent({ source }: { source: string }) {
           [
             rehypeShiki,
             {
-              themes: { light: "vitesse-light", dark: "vitesse-dark" },
+              themes: {
+                light: "ayu-light",
+                dark: "ayu-dark",
+              },
               defaultColor: "light-dark()",
             },
           ],
