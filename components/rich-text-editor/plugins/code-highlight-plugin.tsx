@@ -31,18 +31,16 @@ export function CodeHighlightPlugin() {
   );
 
   useEffect(() => {
-    return registerCodeHighlighting(editor, {
-      ...ShikiTokenizer,
-      defaultTheme: theme,
-    });
-  }, [editor, theme]);
-
-  useEffect(() => {
     editor.update(() => {
       const nodes = $nodesOfType(CodeNode);
       for (const node of nodes) {
         node.setTheme(theme);
       }
+    });
+
+    return registerCodeHighlighting(editor, {
+      ...ShikiTokenizer,
+      defaultTheme: theme,
     });
   }, [editor, theme]);
 
