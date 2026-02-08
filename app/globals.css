@@ -145,4 +145,8 @@ body {
   .blog-content img {
     @apply my-6 rounded-lg;
   }
+
+  .blog-content blockquote {
+    @apply mb-6 border-l-4 border-accent pl-4 italic text-foreground-70;
+  }
 }
