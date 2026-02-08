@@ -3,7 +3,6 @@
 import {
   useEffect,
   useImperativeHandle,
-  useRef,
   useState,
 } from "react";
 import { usePathname } from "next/navigation";
@@ -563,22 +562,6 @@ function EditorRefPlugin({
   return null;
 }
 
-function InitialContentPlugin({ initialContent }: { initialContent?: string }) {
-  const [editor] = useLexicalComposerContext();
-  const isInitialized = useRef(false);
-
-  useEffect(() => {
-    if (initialContent && !isInitialized.current) {
-      isInitialized.current = true;
-      editor.update(() => {
-        $getRoot().clear();
-        $convertFromMarkdownString(initialContent, BLOG_TRANSFORMERS);
-      });
-    }
-  }, [editor, initialContent]);
-
-  return null;
-}
 
 export type RichTextEditorRef = {
   getMarkdown: () => string;
@@ -598,31 +581,26 @@ function handleLexicalError(error: Error) {
   console.error("Lexical error:", error);
 }
 
-const initialConfig = {
-  namespace: "BlogEditor",
-  theme: editorTheme,
-  nodes: [
-    HeadingNode,
-    QuoteNode,
-    ListNode,
-    ListItemNode,
-    LinkNode,
-    CodeNode,
-    CustomCodeHighlightNode,
-    {
-      replace: CodeHighlightNode,
-      with: (node: CodeHighlightNode) =>
-        new CustomCodeHighlightNode(
-          node.__text,
-          node.__highlightType ?? undefined,
-        ),
-      withKlass: CustomCodeHighlightNode,
-    },
-    ImageNode,
-    VideoNode,
-  ],
-  onError: handleLexicalError,
-};
+const editorNodes = [
+  HeadingNode,
+  QuoteNode,
+  ListNode,
+  ListItemNode,
+  LinkNode,
+  CodeNode,
+  CustomCodeHighlightNode,
+  {
+    replace: CodeHighlightNode,
+    with: (node: CodeHighlightNode) =>
+      new CustomCodeHighlightNode(
+        node.__text,
+        node.__highlightType ?? undefined,
+      ),
+    withKlass: CustomCodeHighlightNode,
+  },
+  ImageNode,
+  VideoNode,
+];
 
 export function RichTextEditor({
   id,
@@ -632,6 +610,15 @@ export function RichTextEditor({
   ref,
   "aria-labelledby": ariaLabelledby,
 }: RichTextEditorProps) {
+  const initialConfig = {
+    namespace: "BlogEditor",
+    theme: editorTheme,
+    nodes: editorNodes,
+    onError: handleLexicalError,
+    editorState: initialContent
+      ? () => $convertFromMarkdownString(initialContent, BLOG_TRANSFORMERS)
+      : undefined,
+  };
   const [linkDialogState, setLinkDialogState] = useState<LinkDialogState>({
     open: false,
     isEditing: false,
@@ -716,7 +703,6 @@ export function RichTextEditor({
         <FocusResetPlugin />
         <EditorRefPlugin editorRef={ref} />
         <CodeHighlightPlugin />
-        <InitialContentPlugin initialContent={initialContent} />
         <ImagePlugin />
         <VideoPlugin />
         <LinkClickPlugin onEditLink={handleEditLink} />
