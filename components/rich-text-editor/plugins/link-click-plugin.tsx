@@ -20,27 +20,24 @@ export function LinkClickPlugin({ onEditLink }: LinkClickPluginProps) {
     const rootElement = editor.getRootElement();
     if (!rootElement) return;
 
-    const updateLinkCursors = (isModifierPressed: boolean) => {
-      const links = rootElement.querySelectorAll("a");
-      links.forEach((link) => {
-        (link as HTMLElement).style.cursor = isModifierPressed ? "pointer" : "";
-      });
+    const setModKey = (active: boolean) => {
+      rootElement.toggleAttribute("data-mod-key", active);
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.metaKey || event.ctrlKey) {
-        updateLinkCursors(true);
+        setModKey(true);
       }
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
       if (event.key === "Meta" || event.key === "Control") {
-        updateLinkCursors(false);
+        setModKey(false);
       }
     };
 
     const handleBlur = () => {
-      updateLinkCursors(false);
+      setModKey(false);
     };
 
     const handleClick = (event: MouseEvent) => {
@@ -86,7 +83,7 @@ export function LinkClickPlugin({ onEditLink }: LinkClickPluginProps) {
       document.removeEventListener("keyup", handleKeyUp);
       window.removeEventListener("blur", handleBlur);
       rootElement.removeEventListener("click", handleClick);
-      updateLinkCursors(false);
+      setModKey(false);
     };
   }, [editor, onEditLink]);
 

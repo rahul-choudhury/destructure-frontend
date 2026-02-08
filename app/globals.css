@@ -150,3 +150,7 @@ body {
     @apply mb-6 border-l-4 border-accent pl-4 italic text-foreground-70;
   }
 }
+
+[data-mod-key] a {
+  cursor: pointer;
+}
