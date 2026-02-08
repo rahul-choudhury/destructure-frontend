@@ -32,6 +32,7 @@ import {
   ListItemNode,
   INSERT_UNORDERED_LIST_COMMAND,
   INSERT_ORDERED_LIST_COMMAND,
+  REMOVE_LIST_COMMAND,
   $isListNode,
 } from "@lexical/list";
 import { LinkNode } from "@lexical/link";
@@ -325,8 +326,11 @@ function ToolbarPlugin({
         aria-label="Bullet List"
         className={cn(toolbarButtonClass, "hidden md:flex")}
         pressed={listType === "bullet"}
-        onPressedChange={() =>
-          editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
+        onPressedChange={(pressed) =>
+          editor.dispatchCommand(
+            pressed ? INSERT_UNORDERED_LIST_COMMAND : REMOVE_LIST_COMMAND,
+            undefined,
+          )
         }
       >
         <List size={18} />
@@ -335,8 +339,11 @@ function ToolbarPlugin({
         aria-label="Numbered List"
         className={cn(toolbarButtonClass, "hidden md:flex")}
         pressed={listType === "number"}
-        onPressedChange={() =>
-          editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
+        onPressedChange={(pressed) =>
+          editor.dispatchCommand(
+            pressed ? INSERT_ORDERED_LIST_COMMAND : REMOVE_LIST_COMMAND,
+            undefined,
+          )
         }
       >
         <ListOrdered size={18} />
@@ -400,7 +407,9 @@ function ToolbarPlugin({
               <Menu.Item
                 onClick={() =>
                   editor.dispatchCommand(
-                    INSERT_UNORDERED_LIST_COMMAND,
+                    listType === "bullet"
+                      ? REMOVE_LIST_COMMAND
+                      : INSERT_UNORDERED_LIST_COMMAND,
                     undefined,
                   )
                 }
@@ -410,7 +419,12 @@ function ToolbarPlugin({
               </Menu.Item>
               <Menu.Item
                 onClick={() =>
-                  editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
+                  editor.dispatchCommand(
+                    listType === "number"
+                      ? REMOVE_LIST_COMMAND
+                      : INSERT_ORDERED_LIST_COMMAND,
+                    undefined,
+                  )
                 }
                 className={menuItemClass}
               >
