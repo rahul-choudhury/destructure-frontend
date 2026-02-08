@@ -552,6 +552,8 @@ function EditorRefPlugin({
           $getRoot().clear();
           if (markdown) {
             $convertFromMarkdownString(markdown, BLOG_TRANSFORMERS);
+          } else {
+            $getRoot().append($createParagraphNode());
           }
         });
       },
