@@ -36,7 +36,7 @@ import {
   REMOVE_LIST_COMMAND,
   $isListNode,
 } from "@lexical/list";
-import { LinkNode } from "@lexical/link";
+import { LinkNode, $isLinkNode } from "@lexical/link";
 import {
   CodeNode,
   CodeHighlightNode,
@@ -179,28 +179,33 @@ function ToolbarPlugin({
       (event: KeyboardEvent) => {
         if (event.key === "k" && (event.metaKey || event.ctrlKey)) {
           event.preventDefault();
-          onLinkDialogChange({
-            open: true,
-            isEditing: isLink,
-            initialUrl: isLink ? (linkUrl ?? "") : "",
-            initialLabel: isLink ? (linkText ?? "") : selectedText,
-            linkNodeKey: isLink ? linkNodeKey : null,
+
+          editor.getEditorState().read(() => {
+            const selection = $getSelection();
+            if (!$isRangeSelection(selection)) return;
+
+            const anchorNode = selection.anchor.getNode();
+            const parent = anchorNode.getParent();
+            const isLinkNow = $isLinkNode(parent);
+
+            onLinkDialogChange({
+              open: true,
+              isEditing: isLinkNow,
+              initialUrl: isLinkNow ? parent.getURL() : "",
+              initialLabel: isLinkNow
+                ? parent.getTextContent()
+                : selection.getTextContent(),
+              linkNodeKey: isLinkNow ? parent.getKey() : null,
+            });
           });
+
           return true;
         }
         return false;
       },
       COMMAND_PRIORITY_HIGH,
     );
-  }, [
-    editor,
-    isLink,
-    linkUrl,
-    linkText,
-    linkNodeKey,
-    selectedText,
-    onLinkDialogChange,
-  ]);
+  }, [editor, onLinkDialogChange]);
 
   useEffect(() => {
     return editor.registerUpdateListener(({ editorState }) => {
