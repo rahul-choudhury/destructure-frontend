@@ -529,6 +529,14 @@ function EditorRefPlugin({
         });
         return markdown;
       },
+      setMarkdown: (markdown: string) => {
+        editor.update(() => {
+          $getRoot().clear();
+          if (markdown) {
+            $convertFromMarkdownString(markdown, BLOG_TRANSFORMERS);
+          }
+        });
+      },
     }),
     [editor],
   );
@@ -555,6 +563,7 @@ function InitialContentPlugin({ initialContent }: { initialContent?: string }) {
 
 export type RichTextEditorRef = {
   getMarkdown: () => string;
+  setMarkdown: (markdown: string) => void;
 };
 
 export type RichTextEditorProps = {
